@@ -21,6 +21,7 @@ export default function RoomPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem('poker-name')
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (stored) setName(stored)
   }, [])
 
@@ -33,9 +34,9 @@ export default function RoomPage() {
     })
 
     socketRef.current = socket
-    setMyId(socket.id)
 
     socket.addEventListener('open', () => {
+      setMyId(socket.id)
       const msg: ClientMessage = { type: 'join', name, isSpectator, deck: 'fibonacci' }
       socket.send(JSON.stringify(msg))
     })
