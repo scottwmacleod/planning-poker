@@ -23,8 +23,13 @@ export default function ParticipantList({ participants, phase, myId, compact }: 
             <VoteIndicator participant={p} phase={phase} />
             <span className="text-xs font-medium whitespace-nowrap max-w-[80px] truncate">
               {p.name}
-              {p.isSpectator && <span className="text-gray-500 ml-1">👁</span>}
-              {p.id === myId && <span className="text-gray-500 ml-1">·you</span>}
+              {p.isSpectator && (
+                <>
+                  <span aria-hidden="true" className="ml-1">👁</span>
+                  <span className="sr-only"> spectator</span>
+                </>
+              )}
+              {p.id === myId && <span className="text-gray-400 ml-1">·you</span>}
             </span>
           </div>
         ))}
@@ -44,8 +49,13 @@ export default function ParticipantList({ participants, phase, myId, compact }: 
         >
           <span className="text-sm font-medium truncate max-w-[140px]">
             {p.name}
-            {p.id === myId && <span className="text-gray-500 ml-1">(you)</span>}
-            {p.isSpectator && <span className="text-gray-500 ml-1">👁</span>}
+            {p.id === myId && <span className="text-gray-400 ml-1">(you)</span>}
+            {p.isSpectator && (
+              <>
+                <span aria-hidden="true" className="ml-1">👁</span>
+                <span className="sr-only"> spectator</span>
+              </>
+            )}
           </span>
           <VoteIndicator participant={p} phase={phase} />
         </div>
@@ -66,6 +76,10 @@ function VoteIndicator({ participant, phase }: { participant: Participant; phase
   }
 
   return (
-    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${participant.vote !== null ? 'bg-green-500' : 'bg-gray-600'}`} />
+    <span
+      role="img"
+      aria-label={participant.vote !== null ? 'voted' : 'not yet voted'}
+      className={`w-2.5 h-2.5 rounded-full shrink-0 ${participant.vote !== null ? 'bg-green-500' : 'bg-gray-600'}`}
+    />
   )
 }

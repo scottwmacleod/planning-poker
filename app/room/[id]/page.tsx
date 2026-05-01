@@ -17,6 +17,7 @@ export default function RoomPage() {
   const [nameInput, setNameInput] = useState('')
   const [roomState, setRoomState] = useState<RoomState | null>(null)
   const [myId, setMyId] = useState<string>('')
+  const [copied, setCopied] = useState(false)
   const socketRef = useRef<PartySocket | null>(null)
 
   useEffect(() => {
@@ -63,33 +64,43 @@ export default function RoomPage() {
     setName(n)
   }
 
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   if (!name) {
     return (
       <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center gap-8 p-6">
         <h1 className="text-3xl font-bold">Join Room</h1>
         <form onSubmit={handleJoin} className="flex flex-col gap-4 w-full max-w-sm">
-          <input
-            autoFocus
-            type="text"
-            value={nameInput}
-            onChange={e => setNameInput(e.target.value)}
-            placeholder="Your name"
-            maxLength={24}
-            className="w-full py-3 px-4 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white placeholder-gray-500 text-base"
-          />
+          <div className="flex flex-col gap-1">
+            <label htmlFor="player-name" className="text-sm text-gray-400">Your name</label>
+            <input
+              id="player-name"
+              autoFocus
+              type="text"
+              value={nameInput}
+              onChange={e => setNameInput(e.target.value)}
+              placeholder="e.g. Alice"
+              maxLength={24}
+              className="w-full py-3 px-4 bg-gray-900 border border-gray-700 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 text-white placeholder-gray-400 text-base"
+            />
+          </div>
           <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={isSpectator}
               onChange={e => setIsSpectator(e.target.checked)}
-              className="w-4 h-4 accent-indigo-600"
+              className="w-4 h-4 accent-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
             />
             <span className="text-gray-300">I&apos;m just observing</span>
           </label>
           <button
             type="submit"
             disabled={!nameInput.trim()}
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-semibold transition-colors text-base touch-manipulation"
+            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-semibold transition-colors text-base touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
           >
             Enter Room
           </button>
@@ -101,7 +112,7 @@ export default function RoomPage() {
   if (!roomState) {
     return (
       <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">Connecting…</p>
+        <p role="status" className="text-gray-400">Connecting…</p>
       </main>
     )
   }
@@ -113,18 +124,28 @@ export default function RoomPage() {
 
   return (
     <main className="min-h-screen bg-gray-950 text-white flex flex-col">
+      {/* Screen reader phase announcer */}
+      <p className="sr-only" aria-live="assertive" aria-atomic="true">
+        {roomState.phase === 'voting' ? 'Voting in progress' : 'Cards revealed'}
+      </p>
+
       {/* Header */}
       <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-800 shrink-0">
+        <h1 className="text-sm font-medium">
+          <span className="text-gray-400 font-normal">Room </span>
+          <span className="font-mono">{id}</span>
+        </h1>
         <div>
-          <span className="text-sm text-gray-400">Room </span>
-          <span className="font-mono text-sm font-medium">{id}</span>
+          <button
+            onClick={copyLink}
+            className="text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm"
+          >
+            {copied ? 'Copied!' : 'Copy link'}
+          </button>
+          <div aria-live="polite" aria-atomic="true" className="sr-only">
+            {copied ? 'Room link copied to clipboard' : ''}
+          </div>
         </div>
-        <button
-          onClick={() => navigator.clipboard.writeText(window.location.href)}
-          className="text-sm text-gray-400 hover:text-white transition-colors touch-manipulation"
-        >
-          Copy link
-        </button>
       </header>
 
       {/* Mobile: participants strip */}
@@ -153,11 +174,11 @@ export default function RoomPage() {
           {roomState.phase === 'voting' ? (
             <>
               <div className="text-center">
-                <p className="text-gray-400 text-sm">
+                <p aria-live="polite" className="text-gray-400 text-sm">
                   {votedCount} / {players.length} voted
                 </p>
                 {myParticipant?.isSpectator && (
-                  <p className="text-gray-500 text-sm mt-1">Observing</p>
+                  <p className="text-gray-400 text-sm mt-1">Observing</p>
                 )}
               </div>
 
@@ -173,7 +194,7 @@ export default function RoomPage() {
 
               <button
                 onClick={() => send({ type: 'reveal' })}
-                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-sm font-medium transition-colors touch-manipulation"
+                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-sm font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
               >
                 Flip Cards
               </button>
