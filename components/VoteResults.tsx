@@ -19,18 +19,26 @@ export default function VoteResults({ participants, onNewRound }: VoteResultsPro
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex flex-wrap justify-center gap-3">
-        {players.map(p => (
-          <div key={p.id} className="flex flex-col items-center gap-1">
-            <div
-              className={`w-16 h-24 rounded-xl flex items-center justify-center text-xl font-bold border-2 ${
-                isOutlier(p.vote!, votes) ? 'bg-amber-900 border-amber-500 text-amber-200' : 'bg-indigo-900 border-indigo-600 text-white'
-              }`}
-            >
-              {p.vote}
+        {players.map(p => {
+          const outlier = isOutlier(p.vote!, votes)
+          return (
+            <div key={p.id} className="flex flex-col items-center gap-1">
+              <div
+                role="img"
+                aria-label={outlier ? `${p.vote}, outlier` : String(p.vote)}
+                className={`w-16 h-24 rounded-xl flex flex-col items-center justify-center text-xl font-bold border-2 ${
+                  outlier ? 'bg-amber-900 border-amber-500 text-amber-200' : 'bg-indigo-900 border-indigo-600 text-white'
+                }`}
+              >
+                <span aria-hidden="true">{p.vote}</span>
+                {outlier && (
+                  <span aria-hidden="true" className="text-xs mt-1 opacity-70">△</span>
+                )}
+              </div>
+              <span className="text-xs text-gray-400 truncate max-w-[64px] text-center">{p.name}</span>
             </div>
-            <span className="text-xs text-gray-400 truncate max-w-[64px] text-center">{p.name}</span>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <div className="flex flex-col items-center gap-1">
@@ -46,7 +54,7 @@ export default function VoteResults({ participants, onNewRound }: VoteResultsPro
 
       <button
         onClick={onNewRound}
-        className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold transition-colors"
+        className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
       >
         New Round
       </button>
