@@ -142,6 +142,13 @@ describe('PokerRoom', () => {
       room.onClose(conn2)
       expect(room.state.phase).toBe('revealed')
     })
+
+    it('does not reveal when last player disconnects without voting', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onClose(conn)
+      expect(room.state.phase).toBe('voting')
+    })
   })
 
   describe('onConnect', () => {
@@ -159,6 +166,40 @@ describe('PokerRoom', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
       expect(mockRoom.broadcast).toHaveBeenCalled()
+    })
+  })
+
+  describe('edge cases', () => {
+    it('newRound is idempotent when already in voting phase', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onMessage(JSON.stringify({ type: 'newRound' }), conn)
+      expect(room.state.phase).toBe('voting')
+      expect(room.state.participants['conn-1'].vote).toBeNull()
+    })
+
+    it('unknown message type is silently ignored', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      const stateBefore = JSON.stringify(room.state)
+      room.onMessage(JSON.stringify({ type: 'unknown_action' }), conn)
+      expect(JSON.stringify(room.state)).toBe(stateBefore)
+    })
+
+    it('changeDeck during active voting clears votes and stays in voting', () => {
+      const conn1 = makeConn('conn-1')
+      const conn2 = makeConn('conn-2')
+      join(room, conn1, 'Alice')
+      join(room, conn2, 'Bob')
+      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn1)
+      room.onMessage(JSON.stringify({ type: 'changeDeck', deck: 'tshirt' }), conn1)
+      expect(room.state.deck).toBe('tshirt')
+      expect(room.state.phase).toBe('voting')
+      expect(room.state.participants['conn-1'].vote).toBeNull()
+    })
+
+    it('auto-reveal does not fire on empty room', () => {
+      expect(room.state.phase).toBe('voting')
     })
   })
 })
