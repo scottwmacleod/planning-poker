@@ -50,3 +50,10 @@ jobs:
         run: npx partykit deploy
         env:
           PARTYKIT_TOKEN: ${{ secrets.PARTYKIT_TOKEN }}
+          # partykit's CLI only uses env-based (non-interactive) auth when both
+          # PARTYKIT_TOKEN and PARTYKIT_LOGIN are set (see getUserConfig() in
+          # partykit's bin.mjs) - without this it falls back to an interactive
+          # login flow that hangs forever on a CI runner, regardless of
+          # whether the token is valid. This is your partykit account/team
+          # handle, not a secret.
+          PARTYKIT_LOGIN: scottwmacleod
