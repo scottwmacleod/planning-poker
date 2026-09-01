@@ -1,14 +1,62 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { useParams } from 'next/navigation'
 import PartySocket from 'partysocket'
 import CardDeck from '../../../components/CardDeck'
 import ParticipantList from '../../../components/ParticipantList'
 import VoteResults from '../../../components/VoteResults'
-import type { ClientMessage, RoomState, ServerMessage } from '../../../lib/types'
+import type { ClientMessage, Participant, RoomState, ServerMessage } from '../../../lib/types'
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
+
+function persistName(n: string) {
+  localStorage.setItem('poker-name', n)
+}
+
+function NameEditor({
+  participant,
+  editing,
+  inputRef,
+  onStartEdit,
+  onCommit,
+  onCancel,
+}: {
+  participant: Participant
+  editing: boolean
+  inputRef: RefObject<HTMLInputElement | null>
+  onStartEdit: () => void
+  onCommit: () => void
+  onCancel: () => void
+}) {
+  if (editing) {
+    return (
+      <form onSubmit={e => { e.preventDefault(); onCommit() }}>
+        <label htmlFor="rename-input" className="sr-only">Your name</label>
+        <input
+          id="rename-input"
+          ref={inputRef}
+          autoFocus
+          defaultValue={participant.name}
+          onBlur={onCommit}
+          onKeyDown={e => { if (e.key === 'Escape') onCancel() }}
+          maxLength={24}
+          className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-sm text-white w-28 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+        />
+      </form>
+    )
+  }
+
+  return (
+    <button
+      onClick={onStartEdit}
+      className="text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm"
+    >
+      {participant.name} <span aria-hidden="true">✎</span>
+      <span className="sr-only">Edit your name</span>
+    </button>
+  )
+}
 
 export default function RoomPage() {
   const { id } = useParams<{ id: string }>()
@@ -18,7 +66,13 @@ export default function RoomPage() {
   const [roomState, setRoomState] = useState<RoomState | null>(null)
   const [myId, setMyId] = useState<string>('')
   const [copied, setCopied] = useState(false)
+  const [isEditingName, setIsEditingName] = useState(false)
   const socketRef = useRef<PartySocket | null>(null)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  // Tracks the name actually sent to the server, so a socket reconnect (which
+  // re-runs the 'open' handler below) rejoins with the latest name instead of
+  // the stale value `name` was initialized to.
+  const liveNameRef = useRef<string | null>(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('poker-name')
@@ -28,6 +82,7 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!name) return
+    liveNameRef.current = name
 
     const socket = new PartySocket({
       host: PARTYKIT_HOST,
@@ -38,7 +93,7 @@ export default function RoomPage() {
 
     socket.addEventListener('open', () => {
       setMyId(socket.id)
-      const msg: ClientMessage = { type: 'join', name, isSpectator, deck: 'fibonacci' }
+      const msg: ClientMessage = { type: 'join', name: liveNameRef.current ?? name, isSpectator, deck: 'fibonacci' }
       socket.send(JSON.stringify(msg))
     })
 
@@ -60,7 +115,7 @@ export default function RoomPage() {
     e.preventDefault()
     const n = nameInput.trim()
     if (!n) return
-    localStorage.setItem('poker-name', n)
+    persistName(n)
     setName(n)
   }
 
@@ -68,6 +123,16 @@ export default function RoomPage() {
     navigator.clipboard.writeText(window.location.href)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  function commitRename() {
+    if (!isEditingName) return
+    setIsEditingName(false)
+    const n = nameInputRef.current?.value.trim() ?? ''
+    if (!n || n === myParticipant?.name) return
+    persistName(n)
+    liveNameRef.current = n
+    send({ type: 'rename', name: n })
   }
 
   if (!name) {
@@ -131,10 +196,22 @@ export default function RoomPage() {
 
       {/* Header */}
       <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-800 shrink-0">
-        <h1 className="text-sm font-medium">
-          <span className="text-gray-400 font-normal">Room </span>
-          <span className="font-mono">{id}</span>
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-sm font-medium">
+            <span className="text-gray-400 font-normal">Room </span>
+            <span className="font-mono">{id}</span>
+          </h1>
+          {myParticipant && (
+            <NameEditor
+              participant={myParticipant}
+              editing={isEditingName}
+              inputRef={nameInputRef}
+              onStartEdit={() => setIsEditingName(true)}
+              onCommit={commitRename}
+              onCancel={() => setIsEditingName(false)}
+            />
+          )}
+        </div>
         <div>
           <button
             onClick={copyLink}
