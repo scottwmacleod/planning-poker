@@ -125,6 +125,43 @@ describe('PokerRoom', () => {
     })
   })
 
+  describe('rename', () => {
+    it('updates participant name', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onMessage(JSON.stringify({ type: 'rename', name: 'Alicia' }), conn)
+      expect(room.state.participants['conn-1'].name).toBe('Alicia')
+    })
+
+    it('trims whitespace', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onMessage(JSON.stringify({ type: 'rename', name: '  Bob  ' }), conn)
+      expect(room.state.participants['conn-1'].name).toBe('Bob')
+    })
+
+    it('ignores blank name', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onMessage(JSON.stringify({ type: 'rename', name: '   ' }), conn)
+      expect(room.state.participants['conn-1'].name).toBe('Alice')
+    })
+
+    it('ignores rename from unknown connection', () => {
+      const conn = makeConn('conn-1')
+      room.onMessage(JSON.stringify({ type: 'rename', name: 'Ghost' }), conn)
+      expect(room.state.participants['conn-1']).toBeUndefined()
+    })
+
+    it('preserves vote and spectator status', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
+      room.onMessage(JSON.stringify({ type: 'rename', name: 'Alicia' }), conn)
+      expect(room.state.participants['conn-1']).toMatchObject({ name: 'Alicia', vote: '5', isSpectator: false })
+    })
+  })
+
   describe('onClose', () => {
     it('removes participant on disconnect', () => {
       const conn = makeConn('conn-1')

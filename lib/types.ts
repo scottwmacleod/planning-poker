@@ -24,6 +24,7 @@ export type RoomState = {
 export type ClientMessage =
   | { type: 'join'; name: string; isSpectator: boolean; deck: Deck }
   | { type: 'vote'; value: string }
+  | { type: 'rename'; name: string }
   | { type: 'reveal' }
   | { type: 'newRound' }
   | { type: 'changeDeck'; deck: Deck }

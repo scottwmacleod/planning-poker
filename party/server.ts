@@ -37,8 +37,16 @@ export default class PokerRoom implements Party.Server {
         }
         break
       }
+      case 'rename': {
+        const p = this.getSelf(sender)
+        const name = data.name.trim()
+        if (p && name) {
+          p.name = name
+        }
+        break
+      }
       case 'vote': {
-        const p = this.state.participants[sender.id]
+        const p = this.getSelf(sender)
         if (p && !p.isSpectator && this.state.phase === 'voting') {
           p.vote = data.value
           this.checkAutoReveal()
@@ -67,6 +75,10 @@ export default class PokerRoom implements Party.Server {
     }
 
     this.broadcast()
+  }
+
+  private getSelf(conn: Party.Connection): Participant | undefined {
+    return this.state.participants[conn.id]
   }
 
   private checkAutoReveal() {
