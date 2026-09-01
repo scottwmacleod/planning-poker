@@ -45,6 +45,17 @@ export default class PokerRoom implements Party.Server {
         }
         break
       }
+      case 'setSpectator': {
+        const p = this.getSelf(sender)
+        if (p) {
+          p.isSpectator = data.isSpectator
+          if (p.isSpectator) {
+            p.vote = null
+            this.checkAutoReveal()
+          }
+        }
+        break
+      }
       case 'vote': {
         const p = this.getSelf(sender)
         if (p && !p.isSpectator && this.state.phase === 'voting') {

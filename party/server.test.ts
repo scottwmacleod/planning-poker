@@ -162,6 +162,48 @@ describe('PokerRoom', () => {
     })
   })
 
+  describe('setSpectator', () => {
+    it('switches a player to a spectator', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice')
+      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      expect(room.state.participants['conn-1'].isSpectator).toBe(true)
+    })
+
+    it('switches a spectator to a player', () => {
+      const conn = makeConn('conn-1')
+      join(room, conn, 'Alice', true)
+      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: false }), conn)
+      expect(room.state.participants['conn-1'].isSpectator).toBe(false)
+    })
+
+    it('clears vote when switching to spectator', () => {
+      const conn = makeConn('conn-1')
+      const conn2 = makeConn('conn-2')
+      join(room, conn, 'Alice')
+      join(room, conn2, 'Bob')
+      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
+      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      expect(room.state.participants['conn-1'].vote).toBeNull()
+    })
+
+    it('triggers auto-reveal if remaining players already voted', () => {
+      const conn = makeConn('conn-1')
+      const conn2 = makeConn('conn-2')
+      join(room, conn, 'Alice')
+      join(room, conn2, 'Bob')
+      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn2)
+      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      expect(room.state.phase).toBe('revealed')
+    })
+
+    it('ignores setSpectator from unknown connection', () => {
+      const conn = makeConn('conn-1')
+      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      expect(room.state.participants['conn-1']).toBeUndefined()
+    })
+  })
+
   describe('onClose', () => {
     it('removes participant on disconnect', () => {
       const conn = makeConn('conn-1')

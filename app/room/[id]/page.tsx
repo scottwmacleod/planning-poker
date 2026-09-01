@@ -10,8 +10,14 @@ import type { ClientMessage, Participant, RoomState, ServerMessage } from '../..
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
 
+const ghostButtonClass = 'text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm'
+
 function persistName(n: string) {
   localStorage.setItem('poker-name', n)
+}
+
+function persistSpectator(v: boolean) {
+  localStorage.setItem('poker-spectator', String(v))
 }
 
 function NameEditor({
@@ -48,12 +54,22 @@ function NameEditor({
   }
 
   return (
-    <button
-      onClick={onStartEdit}
-      className="text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm"
-    >
+    <button onClick={onStartEdit} className={ghostButtonClass}>
       {participant.name} <span aria-hidden="true">✎</span>
       <span className="sr-only">Edit your name</span>
+    </button>
+  )
+}
+
+function SpectatorToggle({ participant, onToggle }: { participant: Participant; onToggle: () => void }) {
+  const label = participant.isSpectator
+    ? { icon: '👁', text: 'Observing', action: 'join voting' }
+    : { icon: '🃏', text: 'Playing', action: 'switch to observing' }
+
+  return (
+    <button onClick={onToggle} aria-pressed={participant.isSpectator} className={ghostButtonClass}>
+      <span aria-hidden="true">{label.icon}</span> {label.text}
+      <span className="sr-only"> — click to {label.action}</span>
     </button>
   )
 }
@@ -69,20 +85,24 @@ export default function RoomPage() {
   const [isEditingName, setIsEditingName] = useState(false)
   const socketRef = useRef<PartySocket | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
-  // Tracks the name actually sent to the server, so a socket reconnect (which
-  // re-runs the 'open' handler below) rejoins with the latest name instead of
-  // the stale value `name` was initialized to.
+  // These track what was actually sent to the server, so a socket reconnect
+  // (which re-runs the 'open' handler below) rejoins with the latest values
+  // instead of the stale ones `name`/`isSpectator` were initialized to.
   const liveNameRef = useRef<string | null>(null)
+  const liveSpectatorRef = useRef(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem('poker-name')
+    const storedName = localStorage.getItem('poker-name')
+    const storedSpectator = localStorage.getItem('poker-spectator')
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setName(stored)
+    if (storedName) setName(storedName)
+    if (storedSpectator !== null) setIsSpectator(storedSpectator === 'true')
   }, [])
 
   useEffect(() => {
     if (!name) return
     liveNameRef.current = name
+    liveSpectatorRef.current = isSpectator
 
     const socket = new PartySocket({
       host: PARTYKIT_HOST,
@@ -93,7 +113,12 @@ export default function RoomPage() {
 
     socket.addEventListener('open', () => {
       setMyId(socket.id)
-      const msg: ClientMessage = { type: 'join', name: liveNameRef.current ?? name, isSpectator, deck: 'fibonacci' }
+      const msg: ClientMessage = {
+        type: 'join',
+        name: liveNameRef.current ?? name,
+        isSpectator: liveSpectatorRef.current,
+        deck: 'fibonacci',
+      }
       socket.send(JSON.stringify(msg))
     })
 
@@ -116,6 +141,7 @@ export default function RoomPage() {
     const n = nameInput.trim()
     if (!n) return
     persistName(n)
+    persistSpectator(isSpectator)
     setName(n)
   }
 
@@ -133,6 +159,14 @@ export default function RoomPage() {
     persistName(n)
     liveNameRef.current = n
     send({ type: 'rename', name: n })
+  }
+
+  function toggleSpectator() {
+    if (!myParticipant) return
+    const next = !myParticipant.isSpectator
+    liveSpectatorRef.current = next
+    persistSpectator(next)
+    send({ type: 'setSpectator', isSpectator: next })
   }
 
   if (!name) {
@@ -202,21 +236,21 @@ export default function RoomPage() {
             <span className="font-mono">{id}</span>
           </h1>
           {myParticipant && (
-            <NameEditor
-              participant={myParticipant}
-              editing={isEditingName}
-              inputRef={nameInputRef}
-              onStartEdit={() => setIsEditingName(true)}
-              onCommit={commitRename}
-              onCancel={() => setIsEditingName(false)}
-            />
+            <>
+              <NameEditor
+                participant={myParticipant}
+                editing={isEditingName}
+                inputRef={nameInputRef}
+                onStartEdit={() => setIsEditingName(true)}
+                onCommit={commitRename}
+                onCancel={() => setIsEditingName(false)}
+              />
+              <SpectatorToggle participant={myParticipant} onToggle={toggleSpectator} />
+            </>
           )}
         </div>
         <div>
-          <button
-            onClick={copyLink}
-            className="text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm"
-          >
+          <button onClick={copyLink} className={ghostButtonClass}>
             {copied ? 'Copied!' : 'Copy link'}
           </button>
           <div aria-live="polite" aria-atomic="true" className="sr-only">
