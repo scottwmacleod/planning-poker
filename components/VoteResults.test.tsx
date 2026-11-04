@@ -106,6 +106,21 @@ describe('VoteResults', () => {
       expect(card5).not.toHaveClass('bg-amber-900')
     })
 
+    it('no outliers when every numeric vote is the same', () => {
+      const participants = {
+        a: player('a', '5'),
+        b: player('b', '5'),
+      }
+      render(<VoteResults participants={participants} onNewRound={() => {}} />)
+
+      const cards = screen.getAllByRole('img')
+      expect(cards).toHaveLength(2)
+      cards.forEach(card => {
+        expect(card).not.toHaveClass('bg-amber-900')
+        expect(card).toHaveAccessibleName('5')
+      })
+    })
+
     it('no outliers when all non-numeric', () => {
       const participants = {
         a: player('a', '?'),
