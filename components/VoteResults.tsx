@@ -69,5 +69,6 @@ function isOutlier(vote: string, allVotes: string[]): boolean {
   if (isNaN(v)) return false
   const min = Math.min(...numeric)
   const max = Math.max(...numeric)
+  if (min === max) return false
   return v === min || v === max
 }
