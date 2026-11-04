@@ -34,6 +34,20 @@ When a feature is ready, open a PR with:
 2. **What's not done yet** — honest about gaps
 3. **Test checklist** — step-by-step how to verify in the browser
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`scottwmacleod/planning-poker`, via `gh`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at repo root. See `docs/agents/domain.md`.
+
 ## Off-limits without explicit approval
 
 - Adding third-party dependencies
