@@ -1,34 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Planning Poker
 
-## Getting Started
+Real-time planning poker for agile teams. Create a room, share the link, and everyone votes on an estimate at the same time. Votes stay hidden until everyone has voted (or someone reveals them), then everyone sees the cards, a tally of each value, and any outlier votes highlighted. Supports Fibonacci and T-shirt-size decks, spectators, and renaming yourself mid-session. There are no accounts and nothing to install for players.
+
+Live site: https://planning-poker-eta-neon.vercel.app
+
+## How it fits together
+
+- **Frontend:** a Next.js app (`app/`, `components/`, `lib/`).
+- **Room server:** a [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) Durable Object on Cloudflare Workers (`party/server.ts`, configured in `wrangler.jsonc`). Each room is one Durable Object; browsers connect to it over a WebSocket on the path `/parties/main/<room id>`, and it keeps the room's state and broadcasts every change to everyone in the room.
+
+See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cloudflare.md) for why the room server runs on Cloudflare.
+
+## Local setup
+
+You need Node.js 22 (the version CI uses) and npm. No Cloudflare or Vercel account is needed.
 
 ```bash
+git clone https://github.com/scottwmacleod/planning-poker.git
+cd planning-poker
 npm install
 npm run dev
 ```
 
-This starts two servers:
+`npm run dev` starts two servers side by side:
 
 - the Next.js app on [http://localhost:3000](http://localhost:3000)
-- the room server (a [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) Durable Object, run locally by `wrangler dev`) on `localhost:1999`
+- the room server on `localhost:1999`, run locally by `wrangler dev`
 
-No Cloudflare account is needed for local development. Run them separately with `npm run dev:next` and `npm run dev:party`.
+To check it works, open http://localhost:3000, click **Create Room**, enter your name and click **Enter Room**, then paste the room URL into a second browser window (or a private window) and join with another name. Votes in one window show up in the other.
 
-The app connects to the room server at `NEXT_PUBLIC_PARTYKIT_HOST` (default `localhost:1999`), on the path `/parties/main/<room id>`.
+To run the two servers in separate terminals, use `npm run dev:next` and `npm run dev:party`.
 
-The room server lives in `party/server.ts` and is configured in `wrangler.jsonc`. After changing `wrangler.jsonc`, run `npm run cf-typegen` to regenerate `party/worker-configuration.d.ts`.
+## Configuration
 
-## Learn More
+The only setting is where the frontend finds the room server. Copy [`.env.example`](.env.example) to `.env.local` if you need to change it.
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Default | What it does |
+| --- | --- | --- |
+| `NEXT_PUBLIC_PARTYKIT_HOST` | `localhost:1999` | Host of the room server, with no `https://`. In production this is the Cloudflare Worker host, `planning-poker.square-poetry-83d1.workers.dev`. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`NEXT_PUBLIC_*` values are baked into the frontend at build time, so after changing one in Vercel you must redeploy.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the app and the room server together |
+| `npm test` | Run the test suite once (Vitest) |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run typecheck` | Type-check the app and the room server |
+| `npm run lint` | Lint with ESLint |
+| `npm run build` | Production build of the Next.js app |
+| `npm run cf-typegen` | Regenerate `party/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+CI runs `typecheck`, `lint` and `test` on every pull request; all three must pass before a PR can merge.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+- **Frontend:** Vercel builds and deploys `main` automatically, and builds a preview for each pull request. `NEXT_PUBLIC_PARTYKIT_HOST` is set in the Vercel project's environment variables.
+- **Room server:** the `deploy-worker` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `wrangler deploy` on every push to `main`, after CI passes. It needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. The Worker is served at https://planning-poker.square-poetry-83d1.workers.dev.
+
+## Licence
+
+[MIT](LICENSE)
