@@ -338,7 +338,7 @@ describe('bad messages', () => {
 
   describe('join', () => {
     function joinRaw(conn: Connection, msg: object) {
-      room.onMessage(conn, JSON.stringify({ type: 'join', name: 'Bob', isSpectator: false, deck: 'fibonacci', ...msg }))
+      room.onMessage(conn, JSON.stringify({ type: 'join', name: 'Bob', isSpectator: false, ...msg }))
     }
 
     it.each([
@@ -346,7 +346,6 @@ describe('bad messages', () => {
       ['a whitespace-only name', { name: '   ' }],
       ['a non-string name', { name: 7 }],
       ['a non-boolean isSpectator', { isSpectator: 'no' }],
-      ['an unknown deck', { deck: 'emoji' }],
     ])('rejects %s', (_label, msg) => {
       const bob = makeConn('bob')
       joinRaw(bob, msg)
@@ -364,13 +363,6 @@ describe('bad messages', () => {
       const bob = makeConn('bob')
       joinRaw(bob, { name: 'B'.repeat(100) })
       expect(room.state.participants['bob'].name).toBe('B'.repeat(24))
-    })
-
-    it('does not let an unknown deck reach the room state', () => {
-      const fresh = new PokerRoom({} as DurableObjectState, {} as Env)
-      const bob = makeConn('bob')
-      fresh.onMessage(bob, JSON.stringify({ type: 'join', name: 'Bob', isSpectator: false, deck: 'emoji' }))
-      expect(fresh.state.deck).toBe('fibonacci')
     })
   })
 

@@ -25,8 +25,8 @@ function parseClientMessage(raw: string): ClientMessage | null {
   switch (msg.type) {
     case 'join': {
       const name = cleanName(msg.name)
-      if (!name || typeof msg.isSpectator !== 'boolean' || !isDeck(msg.deck)) return null
-      return { type: 'join', name, isSpectator: msg.isSpectator, deck: msg.deck }
+      if (!name || typeof msg.isSpectator !== 'boolean') return null
+      return { type: 'join', name, isSpectator: msg.isSpectator }
     }
     case 'rename': {
       if (typeof msg.name !== 'string') return null
