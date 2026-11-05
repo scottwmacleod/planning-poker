@@ -1,5 +1,50 @@
 import { routePartykitRequest, Server, type Connection } from 'partyserver'
-import type { ClientMessage, Participant, RoomState, ServerMessage } from '../lib/types'
+import { DECKS, type ClientMessage, type Deck, type Participant, type RoomState, type ServerMessage } from '../lib/types'
+
+const MAX_NAME_LENGTH = 24
+
+const isDeck = (v: unknown): v is Deck => typeof v === 'string' && Object.hasOwn(DECKS, v)
+
+// Trimmed and capped, or null if nothing is left.
+function cleanName(v: unknown): string | null {
+  if (typeof v !== 'string') return null
+  return v.trim().slice(0, MAX_NAME_LENGTH) || null
+}
+
+// Returns a well-formed message, or null for anything the protocol doesn't allow.
+function parseClientMessage(raw: string): ClientMessage | null {
+  let data: unknown
+  try {
+    data = JSON.parse(raw)
+  } catch {
+    return null
+  }
+  if (typeof data !== 'object' || data === null) return null
+  const msg = data as Record<string, unknown>
+
+  switch (msg.type) {
+    case 'join': {
+      const name = cleanName(msg.name)
+      if (!name || typeof msg.isSpectator !== 'boolean') return null
+      return { type: 'join', name, isSpectator: msg.isSpectator }
+    }
+    case 'rename': {
+      if (typeof msg.name !== 'string') return null
+      return { type: 'rename', name: msg.name }
+    }
+    case 'vote':
+      return typeof msg.value === 'string' ? { type: 'vote', value: msg.value } : null
+    case 'setSpectator':
+      return typeof msg.isSpectator === 'boolean' ? { type: 'setSpectator', isSpectator: msg.isSpectator } : null
+    case 'changeDeck':
+      return isDeck(msg.deck) ? { type: 'changeDeck', deck: msg.deck } : null
+    case 'reveal':
+    case 'newRound':
+      return { type: msg.type }
+    default:
+      return null
+  }
+}
 
 export class PokerRoom extends Server {
   state: RoomState = {
@@ -19,7 +64,8 @@ export class PokerRoom extends Server {
   }
 
   onMessage(sender: Connection, message: string) {
-    const data: ClientMessage = JSON.parse(message)
+    const data = parseClientMessage(message)
+    if (!data) return
 
     switch (data.type) {
       case 'join': {
@@ -33,7 +79,7 @@ export class PokerRoom extends Server {
       }
       case 'rename': {
         const p = this.getSelf(sender)
-        const name = data.name.trim()
+        const name = cleanName(data.name)
         if (p && name) {
           p.name = name
         }
@@ -51,6 +97,7 @@ export class PokerRoom extends Server {
         break
       }
       case 'vote': {
+        if (!DECKS[this.state.deck].map(String).includes(data.value)) return
         const p = this.getSelf(sender)
         if (p && !p.isSpectator && this.state.phase === 'voting') {
           p.vote = data.value

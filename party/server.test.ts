@@ -288,6 +288,111 @@ describe('PokerRoom', () => {
   })
 })
 
+describe('bad messages', () => {
+  let room: PokerRoom
+  let alice: Connection
+
+  beforeEach(() => {
+    room = new PokerRoom({} as DurableObjectState, {} as Env)
+    alice = makeConn('alice')
+    join(room, alice, 'Alice')
+    vi.mocked(room.broadcast).mockClear()
+  })
+
+  function expectIgnored(raw: string) {
+    const before = JSON.stringify(room.state)
+    expect(() => room.onMessage(alice, raw)).not.toThrow()
+    expect(JSON.stringify(room.state)).toBe(before)
+    expect(room.broadcast).not.toHaveBeenCalled()
+  }
+
+  it.each([
+    ['malformed JSON', '{not json'],
+    ['JSON null', 'null'],
+    ['a JSON string', '"vote"'],
+    ['a JSON array', '[1,2]'],
+    ['an unknown type', JSON.stringify({ type: 'explode' })],
+    ['a missing type', JSON.stringify({ name: 'Mallory' })],
+    ['vote without a value', JSON.stringify({ type: 'vote' })],
+    ['vote with a non-string value', JSON.stringify({ type: 'vote', value: 5 })],
+    ['vote not in the current deck', JSON.stringify({ type: 'vote', value: 'XL' })],
+    ['vote with an arbitrary string', JSON.stringify({ type: 'vote', value: 'x'.repeat(1000) })],
+    ['rename without a name', JSON.stringify({ type: 'rename' })],
+    ['rename with a non-string name', JSON.stringify({ type: 'rename', name: 42 })],
+    ['setSpectator with a non-boolean', JSON.stringify({ type: 'setSpectator', isSpectator: 'yes' })],
+    ['changeDeck to an unknown deck', JSON.stringify({ type: 'changeDeck', deck: 'emoji' })],
+    ['changeDeck without a deck', JSON.stringify({ type: 'changeDeck' })],
+  ])('ignores %s', (_label, raw) => {
+    expectIgnored(raw)
+  })
+
+  it('keeps working for everyone after junk', () => {
+    const bob = makeConn('bob')
+    room.onMessage(alice, '{not json')
+    join(room, bob, 'Bob')
+    send(room, alice, { type: 'vote', value: '3' })
+    send(room, bob, { type: 'vote', value: '5' })
+    expect(room.state.phase).toBe('revealed')
+    expect(room.broadcast).toHaveBeenCalled()
+  })
+
+  describe('join', () => {
+    function joinRaw(conn: Connection, msg: object) {
+      room.onMessage(conn, JSON.stringify({ type: 'join', name: 'Bob', isSpectator: false, ...msg }))
+    }
+
+    it.each([
+      ['an empty name', { name: '' }],
+      ['a whitespace-only name', { name: '   ' }],
+      ['a non-string name', { name: 7 }],
+      ['a non-boolean isSpectator', { isSpectator: 'no' }],
+    ])('rejects %s', (_label, msg) => {
+      const bob = makeConn('bob')
+      joinRaw(bob, msg)
+      expect(room.state.participants['bob']).toBeUndefined()
+      expect(room.broadcast).not.toHaveBeenCalled()
+    })
+
+    it('trims the name', () => {
+      const bob = makeConn('bob')
+      joinRaw(bob, { name: '  Bob  ' })
+      expect(room.state.participants['bob'].name).toBe('Bob')
+    })
+
+    it('caps the name at 24 characters', () => {
+      const bob = makeConn('bob')
+      joinRaw(bob, { name: 'B'.repeat(100) })
+      expect(room.state.participants['bob'].name).toBe('B'.repeat(24))
+    })
+  })
+
+  describe('rename', () => {
+    it('caps the name at 24 characters', () => {
+      send(room, alice, { type: 'rename', name: '  ' + 'A'.repeat(100) })
+      expect(room.state.participants['alice'].name).toBe('A'.repeat(24))
+    })
+  })
+
+  describe('vote', () => {
+    it('accepts a card from the current deck after a deck change', () => {
+      send(room, alice, { type: 'changeDeck', deck: 'tshirt' })
+      send(room, alice, { type: 'vote', value: 'XL' })
+      expect(room.state.participants['alice'].vote).toBe('XL')
+    })
+
+    it('rejects a card from the other deck', () => {
+      send(room, alice, { type: 'changeDeck', deck: 'tshirt' })
+      vi.mocked(room.broadcast).mockClear()
+      expectIgnored(JSON.stringify({ type: 'vote', value: '5' }))
+    })
+
+    it('accepts "?"', () => {
+      send(room, alice, { type: 'vote', value: '?' })
+      expect(room.state.participants['alice'].vote).toBe('?')
+    })
+  })
+})
+
 describe('worker fetch', () => {
   const env = {} as Env
   const request = new Request('http://localhost/parties/main/room-1')
