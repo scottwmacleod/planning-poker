@@ -12,6 +12,13 @@ const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
 
 const ghostButtonClass = 'text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm'
 
+const COPY_LABELS = { idle: 'Copy link', copied: 'Copied!', failed: 'Copy failed' }
+const COPY_ANNOUNCEMENTS = {
+  idle: '',
+  copied: 'Room link copied to clipboard',
+  failed: "Couldn't copy the link. Copy it from the address bar instead.",
+}
+
 function persistName(n: string) {
   localStorage.setItem('poker-name', n)
 }
@@ -81,7 +88,7 @@ export default function RoomPage() {
   const [nameInput, setNameInput] = useState('')
   const [roomState, setRoomState] = useState<RoomState | null>(null)
   const [myId, setMyId] = useState<string>('')
-  const [copied, setCopied] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<keyof typeof COPY_LABELS>('idle')
   const [isEditingName, setIsEditingName] = useState(false)
   const socketRef = useRef<PartySocket | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
@@ -117,7 +124,6 @@ export default function RoomPage() {
         type: 'join',
         name: liveNameRef.current ?? name,
         isSpectator: liveSpectatorRef.current,
-        deck: 'fibonacci',
       }
       socket.send(JSON.stringify(msg))
     })
@@ -145,10 +151,16 @@ export default function RoomPage() {
     setName(n)
   }
 
-  function copyLink() {
-    navigator.clipboard.writeText(window.location.href)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  async function copyLink() {
+    try {
+      // `navigator.clipboard` is missing on non-HTTPS pages, and writeText
+      // rejects when the browser denies permission.
+      await navigator.clipboard.writeText(window.location.href)
+      setCopyStatus('copied')
+    } catch {
+      setCopyStatus('failed')
+    }
+    setTimeout(() => setCopyStatus('idle'), 2000)
   }
 
   function commitRename() {
@@ -251,10 +263,10 @@ export default function RoomPage() {
         </div>
         <div>
           <button onClick={copyLink} className={ghostButtonClass}>
-            {copied ? 'Copied!' : 'Copy link'}
+            {COPY_LABELS[copyStatus]}
           </button>
           <div aria-live="polite" aria-atomic="true" className="sr-only">
-            {copied ? 'Room link copied to clipboard' : ''}
+            {COPY_ANNOUNCEMENTS[copyStatus]}
           </div>
         </div>
       </header>
