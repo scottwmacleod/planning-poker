@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "planning-poker",
+  "main": "party/server.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "durable_objects": {
+    "bindings": [{ "name": "Main", "class_name": "PokerRoom" }]
+  },
+  // Port the client expects by default (NEXT_PUBLIC_PARTYKIT_HOST falls back to localhost:1999).
+  "dev": { "port": 1999 },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PokerRoom"] }]
+}

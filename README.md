@@ -2,23 +2,21 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This starts two servers:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- the Next.js app on [http://localhost:3000](http://localhost:3000)
+- the room server (a [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) Durable Object, run locally by `wrangler dev`) on `localhost:1999`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+No Cloudflare account is needed for local development. Run them separately with `npm run dev:next` and `npm run dev:party`.
+
+The app connects to the room server at `NEXT_PUBLIC_PARTYKIT_HOST` (default `localhost:1999`), on the path `/parties/main/<room id>`.
+
+The room server lives in `party/server.ts` and is configured in `wrangler.jsonc`. After changing `wrangler.jsonc`, run `npm run cf-typegen` to regenerate `party/worker-configuration.d.ts`.
 
 ## Learn More
 

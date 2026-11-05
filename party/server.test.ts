@@ -1,26 +1,35 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type * as Party from 'partykit/server'
-import PokerRoom from './server'
+import type { Connection } from 'partyserver'
 
-function makeRoom(): Party.Room {
-  return { broadcast: vi.fn() } as unknown as Party.Room
+// partyserver imports `cloudflare:workers`, which only exists inside the
+// Workers runtime. Swap in a minimal Server so the room logic runs in Node.
+const { routePartykitRequest } = vi.hoisted(() => ({ routePartykitRequest: vi.fn() }))
+vi.mock('partyserver', () => ({
+  Server: class {
+    broadcast = vi.fn()
+  },
+  routePartykitRequest,
+}))
+
+import worker, { PokerRoom } from './server'
+
+function makeConn(id: string): Connection {
+  return { id, send: vi.fn() } as unknown as Connection
 }
 
-function makeConn(id: string): Party.Connection {
-  return { id, send: vi.fn() } as unknown as Party.Connection
+function send(room: PokerRoom, conn: Connection, msg: object) {
+  room.onMessage(conn, JSON.stringify(msg))
 }
 
-function join(room: PokerRoom, conn: Party.Connection, name: string, isSpectator = false) {
-  room.onMessage(JSON.stringify({ type: 'join', name, isSpectator, deck: 'fibonacci' }), conn)
+function join(room: PokerRoom, conn: Connection, name: string, isSpectator = false) {
+  send(room, conn, { type: 'join', name, isSpectator, deck: 'fibonacci' })
 }
 
 describe('PokerRoom', () => {
   let room: PokerRoom
-  let mockRoom: Party.Room
 
   beforeEach(() => {
-    mockRoom = makeRoom()
-    room = new PokerRoom(mockRoom)
+    room = new PokerRoom({} as DurableObjectState, {} as Env)
   })
 
   describe('join', () => {
@@ -32,15 +41,15 @@ describe('PokerRoom', () => {
 
     it('first player sets the deck', () => {
       const conn = makeConn('conn-1')
-      room.onMessage(JSON.stringify({ type: 'join', name: 'Alice', isSpectator: false, deck: 'tshirt' }), conn)
+      send(room, conn, { type: 'join', name: 'Alice', isSpectator: false, deck: 'tshirt' })
       expect(room.state.deck).toBe('tshirt')
     })
 
     it('second player does not override deck', () => {
       const conn1 = makeConn('conn-1')
       const conn2 = makeConn('conn-2')
-      room.onMessage(JSON.stringify({ type: 'join', name: 'Alice', isSpectator: false, deck: 'tshirt' }), conn1)
-      room.onMessage(JSON.stringify({ type: 'join', name: 'Bob', isSpectator: false, deck: 'fibonacci' }), conn2)
+      send(room, conn1, { type: 'join', name: 'Alice', isSpectator: false, deck: 'tshirt' })
+      send(room, conn2, { type: 'join', name: 'Bob', isSpectator: false, deck: 'fibonacci' })
       expect(room.state.deck).toBe('tshirt')
     })
   })
@@ -49,22 +58,22 @@ describe('PokerRoom', () => {
     it('records vote for player', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
+      send(room, conn, { type: 'vote', value: '5' })
       expect(room.state.participants['conn-1'].vote).toBe('5')
     })
 
     it('spectators cannot vote', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice', true)
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
+      send(room, conn, { type: 'vote', value: '5' })
       expect(room.state.participants['conn-1'].vote).toBeNull()
     })
 
     it('votes blocked after reveal', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'reveal' }), conn)
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
+      send(room, conn, { type: 'reveal' })
+      send(room, conn, { type: 'vote', value: '5' })
       expect(room.state.participants['conn-1'].vote).toBeNull()
     })
   })
@@ -75,9 +84,9 @@ describe('PokerRoom', () => {
       const conn2 = makeConn('conn-2')
       join(room, conn1, 'Alice')
       join(room, conn2, 'Bob')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '3' }), conn1)
+      send(room, conn1, { type: 'vote', value: '3' })
       expect(room.state.phase).toBe('voting')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn2)
+      send(room, conn2, { type: 'vote', value: '5' })
       expect(room.state.phase).toBe('revealed')
     })
 
@@ -86,7 +95,7 @@ describe('PokerRoom', () => {
       const conn2 = makeConn('conn-2')
       join(room, conn1, 'Alice')
       join(room, conn2, 'Spectator', true)
-      room.onMessage(JSON.stringify({ type: 'vote', value: '3' }), conn1)
+      send(room, conn1, { type: 'vote', value: '3' })
       expect(room.state.phase).toBe('revealed')
     })
   })
@@ -95,7 +104,7 @@ describe('PokerRoom', () => {
     it('sets phase to revealed', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'reveal' }), conn)
+      send(room, conn, { type: 'reveal' })
       expect(room.state.phase).toBe('revealed')
     })
   })
@@ -104,9 +113,9 @@ describe('PokerRoom', () => {
     it('resets phase and clears votes', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
-      room.onMessage(JSON.stringify({ type: 'reveal' }), conn)
-      room.onMessage(JSON.stringify({ type: 'newRound' }), conn)
+      send(room, conn, { type: 'vote', value: '5' })
+      send(room, conn, { type: 'reveal' })
+      send(room, conn, { type: 'newRound' })
       expect(room.state.phase).toBe('voting')
       expect(room.state.participants['conn-1'].vote).toBeNull()
     })
@@ -116,9 +125,9 @@ describe('PokerRoom', () => {
     it('changes deck and resets round', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
-      room.onMessage(JSON.stringify({ type: 'reveal' }), conn)
-      room.onMessage(JSON.stringify({ type: 'changeDeck', deck: 'tshirt' }), conn)
+      send(room, conn, { type: 'vote', value: '5' })
+      send(room, conn, { type: 'reveal' })
+      send(room, conn, { type: 'changeDeck', deck: 'tshirt' })
       expect(room.state.deck).toBe('tshirt')
       expect(room.state.phase).toBe('voting')
       expect(room.state.participants['conn-1'].vote).toBeNull()
@@ -129,35 +138,35 @@ describe('PokerRoom', () => {
     it('updates participant name', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'rename', name: 'Alicia' }), conn)
+      send(room, conn, { type: 'rename', name: 'Alicia' })
       expect(room.state.participants['conn-1'].name).toBe('Alicia')
     })
 
     it('trims whitespace', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'rename', name: '  Bob  ' }), conn)
+      send(room, conn, { type: 'rename', name: '  Bob  ' })
       expect(room.state.participants['conn-1'].name).toBe('Bob')
     })
 
     it('ignores blank name', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'rename', name: '   ' }), conn)
+      send(room, conn, { type: 'rename', name: '   ' })
       expect(room.state.participants['conn-1'].name).toBe('Alice')
     })
 
     it('ignores rename from unknown connection', () => {
       const conn = makeConn('conn-1')
-      room.onMessage(JSON.stringify({ type: 'rename', name: 'Ghost' }), conn)
+      send(room, conn, { type: 'rename', name: 'Ghost' })
       expect(room.state.participants['conn-1']).toBeUndefined()
     })
 
     it('preserves vote and spectator status', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
-      room.onMessage(JSON.stringify({ type: 'rename', name: 'Alicia' }), conn)
+      send(room, conn, { type: 'vote', value: '5' })
+      send(room, conn, { type: 'rename', name: 'Alicia' })
       expect(room.state.participants['conn-1']).toMatchObject({ name: 'Alicia', vote: '5', isSpectator: false })
     })
   })
@@ -166,14 +175,14 @@ describe('PokerRoom', () => {
     it('switches a player to a spectator', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      send(room, conn, { type: 'setSpectator', isSpectator: true })
       expect(room.state.participants['conn-1'].isSpectator).toBe(true)
     })
 
     it('switches a spectator to a player', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice', true)
-      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: false }), conn)
+      send(room, conn, { type: 'setSpectator', isSpectator: false })
       expect(room.state.participants['conn-1'].isSpectator).toBe(false)
     })
 
@@ -182,8 +191,8 @@ describe('PokerRoom', () => {
       const conn2 = makeConn('conn-2')
       join(room, conn, 'Alice')
       join(room, conn2, 'Bob')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn)
-      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      send(room, conn, { type: 'vote', value: '5' })
+      send(room, conn, { type: 'setSpectator', isSpectator: true })
       expect(room.state.participants['conn-1'].vote).toBeNull()
     })
 
@@ -192,14 +201,14 @@ describe('PokerRoom', () => {
       const conn2 = makeConn('conn-2')
       join(room, conn, 'Alice')
       join(room, conn2, 'Bob')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn2)
-      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      send(room, conn2, { type: 'vote', value: '5' })
+      send(room, conn, { type: 'setSpectator', isSpectator: true })
       expect(room.state.phase).toBe('revealed')
     })
 
     it('ignores setSpectator from unknown connection', () => {
       const conn = makeConn('conn-1')
-      room.onMessage(JSON.stringify({ type: 'setSpectator', isSpectator: true }), conn)
+      send(room, conn, { type: 'setSpectator', isSpectator: true })
       expect(room.state.participants['conn-1']).toBeUndefined()
     })
   })
@@ -217,7 +226,7 @@ describe('PokerRoom', () => {
       const conn2 = makeConn('conn-2')
       join(room, conn1, 'Alice')
       join(room, conn2, 'Bob')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '3' }), conn1)
+      send(room, conn1, { type: 'vote', value: '3' })
       room.onClose(conn2)
       expect(room.state.phase).toBe('revealed')
     })
@@ -244,7 +253,7 @@ describe('PokerRoom', () => {
     it('broadcasts state after each message', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      expect(mockRoom.broadcast).toHaveBeenCalled()
+      expect(room.broadcast).toHaveBeenCalled()
     })
   })
 
@@ -252,7 +261,7 @@ describe('PokerRoom', () => {
     it('newRound is idempotent when already in voting phase', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
-      room.onMessage(JSON.stringify({ type: 'newRound' }), conn)
+      send(room, conn, { type: 'newRound' })
       expect(room.state.phase).toBe('voting')
       expect(room.state.participants['conn-1'].vote).toBeNull()
     })
@@ -261,7 +270,7 @@ describe('PokerRoom', () => {
       const conn = makeConn('conn-1')
       join(room, conn, 'Alice')
       const stateBefore = JSON.stringify(room.state)
-      room.onMessage(JSON.stringify({ type: 'unknown_action' }), conn)
+      send(room, conn, { type: 'unknown_action' })
       expect(JSON.stringify(room.state)).toBe(stateBefore)
     })
 
@@ -270,8 +279,8 @@ describe('PokerRoom', () => {
       const conn2 = makeConn('conn-2')
       join(room, conn1, 'Alice')
       join(room, conn2, 'Bob')
-      room.onMessage(JSON.stringify({ type: 'vote', value: '5' }), conn1)
-      room.onMessage(JSON.stringify({ type: 'changeDeck', deck: 'tshirt' }), conn1)
+      send(room, conn1, { type: 'vote', value: '5' })
+      send(room, conn1, { type: 'changeDeck', deck: 'tshirt' })
       expect(room.state.deck).toBe('tshirt')
       expect(room.state.phase).toBe('voting')
       expect(room.state.participants['conn-1'].vote).toBeNull()
@@ -280,5 +289,23 @@ describe('PokerRoom', () => {
     it('auto-reveal does not fire on empty room', () => {
       expect(room.state.phase).toBe('voting')
     })
+  })
+})
+
+describe('worker fetch', () => {
+  const env = {} as Env
+  const request = new Request('http://localhost/parties/main/room-1')
+
+  it('hands party requests to the room server', async () => {
+    const response = new Response('ok')
+    routePartykitRequest.mockResolvedValueOnce(response)
+    expect(await worker.fetch(request, env)).toBe(response)
+    expect(routePartykitRequest).toHaveBeenCalledWith(request, env)
+  })
+
+  it('returns 404 for anything else', async () => {
+    routePartykitRequest.mockResolvedValueOnce(null)
+    const res = await worker.fetch(request, env)
+    expect(res.status).toBe(404)
   })
 })

@@ -1,27 +1,24 @@
-import type * as Party from 'partykit/server'
-import type { ClientMessage, Deck, Participant, RoomState, ServerMessage } from '../lib/types'
+import { routePartykitRequest, Server, type Connection } from 'partyserver'
+import type { ClientMessage, Participant, RoomState, ServerMessage } from '../lib/types'
 
-export default class PokerRoom implements Party.Server {
+export class PokerRoom extends Server {
   state: RoomState = {
     participants: {},
     phase: 'voting',
     deck: 'fibonacci',
   }
 
-  constructor(readonly room: Party.Room) {}
-
-  onConnect(conn: Party.Connection) {
-    const msg: ServerMessage = { type: 'state', ...this.state }
-    conn.send(JSON.stringify(msg))
+  onConnect(conn: Connection) {
+    conn.send(this.stateMessage())
   }
 
-  onClose(conn: Party.Connection) {
+  onClose(conn: Connection) {
     delete this.state.participants[conn.id]
     this.checkAutoReveal()
-    this.broadcast()
+    this.broadcastState()
   }
 
-  onMessage(message: string, sender: Party.Connection) {
+  onMessage(sender: Connection, message: string) {
     const data: ClientMessage = JSON.parse(message)
 
     switch (data.type) {
@@ -85,10 +82,10 @@ export default class PokerRoom implements Party.Server {
       }
     }
 
-    this.broadcast()
+    this.broadcastState()
   }
 
-  private getSelf(conn: Party.Connection): Participant | undefined {
+  private getSelf(conn: Connection): Participant | undefined {
     return this.state.participants[conn.id]
   }
 
@@ -100,10 +97,19 @@ export default class PokerRoom implements Party.Server {
     }
   }
 
-  private broadcast() {
+  private stateMessage() {
     const msg: ServerMessage = { type: 'state', ...this.state }
-    this.room.broadcast(JSON.stringify(msg))
+    return JSON.stringify(msg)
+  }
+
+  private broadcastState() {
+    this.broadcast(this.stateMessage())
   }
 }
 
-PokerRoom satisfies Party.Worker
+// Routes /parties/main/:room to the PokerRoom Durable Object bound as `Main`.
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    return (await routePartykitRequest(request, env)) ?? new Response('Not found', { status: 404 })
+  },
+} satisfies ExportedHandler<Env>
