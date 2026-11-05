@@ -30,6 +30,12 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Build app
+        run: npm run build
+
+      - name: Bundle room server (dry run, no deploy)
+        run: npx wrangler deploy --dry-run
+
   deploy-worker:
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
