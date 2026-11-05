@@ -118,7 +118,7 @@ describe('RoomPage', () => {
 
       act(() => socket().open())
       expect(socket().sent).toEqual([
-        { type: 'join', name: 'Bob', isSpectator: true, deck: 'fibonacci' },
+        { type: 'join', name: 'Bob', isSpectator: true },
       ])
     })
 
@@ -142,7 +142,7 @@ describe('RoomPage', () => {
 
       act(() => socket().open())
       expect(socket().sent).toEqual([
-        { type: 'join', name: 'Alice', isSpectator: true, deck: 'fibonacci' },
+        { type: 'join', name: 'Alice', isSpectator: true },
       ])
       expect(screen.getByRole('status')).toHaveTextContent('Connecting…')
 
@@ -234,7 +234,7 @@ describe('RoomPage', () => {
 
       const joins = sentOf('join')
       expect(joins).toHaveLength(2)
-      expect(joins[1]).toEqual({ type: 'join', name: 'Carol', isSpectator: true, deck: 'fibonacci' })
+      expect(joins[1]).toEqual({ type: 'join', name: 'Carol', isSpectator: true })
     })
   })
 
@@ -272,6 +272,49 @@ describe('RoomPage', () => {
 
       await user.click(screen.getByRole('button', { name: 'New Round' }))
       expect(sentOf('newRound')).toEqual([{ type: 'newRound' }])
+    })
+  })
+
+  describe('copy link', () => {
+    // userEvent.setup() installs its own clipboard stub, so these run after it.
+    function mockClipboard(writeText: () => Promise<void>) {
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    }
+
+    it('says Copied! once the link is on the clipboard', async () => {
+      const user = userEvent.setup()
+      const writeText = vi.fn(() => Promise.resolve())
+      mockClipboard(writeText)
+      await renderInRoom()
+
+      await user.click(screen.getByRole('button', { name: 'Copy link' }))
+
+      expect(writeText).toHaveBeenCalledWith(window.location.href)
+      expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument()
+      expect(screen.getByText('Room link copied to clipboard')).toBeInTheDocument()
+    })
+
+    it('says it could not copy when the browser blocks the clipboard', async () => {
+      const user = userEvent.setup()
+      mockClipboard(() => Promise.reject(new Error('NotAllowedError')))
+      await renderInRoom()
+
+      await user.click(screen.getByRole('button', { name: 'Copy link' }))
+
+      expect(screen.queryByText('Copied!')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Copy failed' })).toBeInTheDocument()
+      expect(screen.getByText(/couldn't copy the link/i)).toBeInTheDocument()
+    })
+
+    it('says it could not copy when the clipboard is unavailable', async () => {
+      const user = userEvent.setup()
+      Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true })
+      await renderInRoom()
+
+      await user.click(screen.getByRole('button', { name: 'Copy link' }))
+
+      expect(screen.queryByText('Copied!')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Copy failed' })).toBeInTheDocument()
     })
   })
 })

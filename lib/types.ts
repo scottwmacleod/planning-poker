@@ -22,7 +22,7 @@ export type RoomState = {
 
 // Client → Server messages
 export type ClientMessage =
-  | { type: 'join'; name: string; isSpectator: boolean; deck: Deck }
+  | { type: 'join'; name: string; isSpectator: boolean }
   | { type: 'vote'; value: string }
   | { type: 'rename'; name: string }
   | { type: 'setSpectator'; isSpectator: boolean }
