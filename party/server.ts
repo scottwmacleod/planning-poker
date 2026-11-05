@@ -75,9 +75,6 @@ export class PokerRoom extends Server {
           isSpectator: data.isSpectator,
           vote: null,
         }
-        if (Object.keys(this.state.participants).length === 1) {
-          this.state.deck = data.deck
-        }
         break
       }
       case 'rename': {

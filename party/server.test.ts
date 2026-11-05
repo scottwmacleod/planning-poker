@@ -22,7 +22,7 @@ function send(room: PokerRoom, conn: Connection, msg: object) {
 }
 
 function join(room: PokerRoom, conn: Connection, name: string, isSpectator = false) {
-  send(room, conn, { type: 'join', name, isSpectator, deck: 'fibonacci' })
+  send(room, conn, { type: 'join', name, isSpectator })
 }
 
 describe('PokerRoom', () => {
@@ -39,17 +39,13 @@ describe('PokerRoom', () => {
       expect(room.state.participants['conn-1']).toMatchObject({ name: 'Alice', isSpectator: false, vote: null })
     })
 
-    it('first player sets the deck', () => {
-      const conn = makeConn('conn-1')
-      send(room, conn, { type: 'join', name: 'Alice', isSpectator: false, deck: 'tshirt' })
-      expect(room.state.deck).toBe('tshirt')
-    })
+    it('keeps the room deck when someone joins an emptied room', () => {
+      const alice = makeConn('conn-1')
+      join(room, alice, 'Alice')
+      send(room, alice, { type: 'changeDeck', deck: 'tshirt' })
+      room.onClose(alice)
 
-    it('second player does not override deck', () => {
-      const conn1 = makeConn('conn-1')
-      const conn2 = makeConn('conn-2')
-      send(room, conn1, { type: 'join', name: 'Alice', isSpectator: false, deck: 'tshirt' })
-      send(room, conn2, { type: 'join', name: 'Bob', isSpectator: false, deck: 'fibonacci' })
+      join(room, makeConn('conn-2'), 'Bob')
       expect(room.state.deck).toBe('tshirt')
     })
   })
