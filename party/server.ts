@@ -1,7 +1,21 @@
 import { routePartykitRequest, Server, type Connection } from 'partyserver'
-import { DECKS, type ClientMessage, type Deck, type Participant, type RoomState, type ServerMessage } from '../lib/types'
+import { DECKS, ROOM_FULL_CODE, type ClientMessage, type Deck, type Participant, type RoomState, type ServerMessage } from '../lib/types'
 
 const MAX_NAME_LENGTH = 24
+export const MAX_CONNECTIONS_PER_ROOM = 50
+
+// Browsers always send Origin, so this stops other websites using the server.
+// It doesn't stop scripts, which can send any Origin they like.
+const ALLOWED_ORIGINS = [
+  /^https:\/\/planning-poker-eta-neon\.vercel\.app$/,
+  // Vercel preview and branch deployments, e.g. planning-poker-git-<branch>-scottwmacleods-projects.vercel.app
+  /^https:\/\/planning-poker-[a-z0-9-]+-scottwmacleods-projects\.vercel\.app$/,
+  /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
+]
+
+function isAllowedOrigin(origin: string | null): boolean {
+  return origin !== null && ALLOWED_ORIGINS.some(re => re.test(origin))
+}
 
 const isDeck = (v: unknown): v is Deck => typeof v === 'string' && Object.hasOwn(DECKS, v)
 
@@ -54,6 +68,10 @@ export class PokerRoom extends Server {
   }
 
   onConnect(conn: Connection) {
+    if ([...this.getConnections()].length > MAX_CONNECTIONS_PER_ROOM) {
+      conn.close(ROOM_FULL_CODE, 'Room is full')
+      return
+    }
     conn.send(this.stateMessage())
   }
 
@@ -154,6 +172,9 @@ export class PokerRoom extends Server {
 // Routes /parties/main/:room to the PokerRoom Durable Object bound as `Main`.
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    if (!isAllowedOrigin(request.headers.get('Origin'))) {
+      return new Response('Forbidden', { status: 403 })
+    }
     return (await routePartykitRequest(request, env)) ?? new Response('Not found', { status: 404 })
   },
 } satisfies ExportedHandler<Env>

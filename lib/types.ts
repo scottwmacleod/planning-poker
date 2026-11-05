@@ -32,3 +32,6 @@ export type ClientMessage =
 
 // Server → Client messages
 export type ServerMessage = { type: 'state' } & RoomState
+
+// WebSocket close code the server uses when a room is at its size limit.
+export const ROOM_FULL_CODE = 4000
