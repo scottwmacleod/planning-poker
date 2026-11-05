@@ -35,6 +35,10 @@ const { FakeSocket, sockets } = vi.hoisted(() => {
       this.listeners.open?.forEach(fn => fn({}))
     }
 
+    serverClose(code: number) {
+      this.listeners.close?.forEach(fn => fn({ code }))
+    }
+
     receive(data: unknown) {
       this.listeners.message?.forEach(fn => fn({ data: JSON.stringify(data) }))
     }
@@ -235,6 +239,25 @@ describe('RoomPage', () => {
       const joins = sentOf('join')
       expect(joins).toHaveLength(2)
       expect(joins[1]).toEqual({ type: 'join', name: 'Carol', isSpectator: true })
+    })
+  })
+
+  describe('full room', () => {
+    it('stops reconnecting and says the room is full', async () => {
+      localStorage.setItem('poker-name', 'Alice')
+      render(<RoomPage />)
+      const s = socket()
+      await act(async () => s.serverClose(4000))
+
+      expect(s.closed).toBe(true)
+      expect(screen.getByRole('status')).toHaveTextContent(/room is full/i)
+    })
+
+    it('keeps reconnecting after an ordinary disconnect', async () => {
+      await renderInRoom()
+      const s = socket()
+      await act(async () => s.serverClose(1006))
+      expect(s.closed).toBe(false)
     })
   })
 

@@ -7,14 +7,15 @@ const { routePartykitRequest } = vi.hoisted(() => ({ routePartykitRequest: vi.fn
 vi.mock('partyserver', () => ({
   Server: class {
     broadcast = vi.fn()
+    getConnections = vi.fn((): Connection[] => [])
   },
   routePartykitRequest,
 }))
 
-import worker, { PokerRoom } from './server'
+import worker, { MAX_CONNECTIONS_PER_ROOM, PokerRoom } from './server'
 
 function makeConn(id: string): Connection {
-  return { id, send: vi.fn() } as unknown as Connection
+  return { id, send: vi.fn(), close: vi.fn() } as unknown as Connection
 }
 
 function send(room: PokerRoom, conn: Connection, msg: object) {
@@ -243,6 +244,22 @@ describe('PokerRoom', () => {
         JSON.stringify({ type: 'state', participants: {}, phase: 'voting', deck: 'fibonacci' })
       )
     })
+
+    it('lets the last person in when the room is at the cap', () => {
+      const conn = makeConn('conn-1')
+      vi.mocked(room.getConnections).mockReturnValue(Array(MAX_CONNECTIONS_PER_ROOM).fill(conn))
+      room.onConnect(conn)
+      expect(conn.close).not.toHaveBeenCalled()
+      expect(conn.send).toHaveBeenCalled()
+    })
+
+    it('turns away a connection once the room is full', () => {
+      const conn = makeConn('conn-1')
+      vi.mocked(room.getConnections).mockReturnValue(Array(MAX_CONNECTIONS_PER_ROOM + 1).fill(conn))
+      room.onConnect(conn)
+      expect(conn.close).toHaveBeenCalledWith(4000, 'Room is full')
+      expect(conn.send).not.toHaveBeenCalled()
+    })
   })
 
   describe('broadcast', () => {
@@ -395,18 +412,40 @@ describe('bad messages', () => {
 
 describe('worker fetch', () => {
   const env = {} as Env
-  const request = new Request('http://localhost/parties/main/room-1')
+  const requestFrom = (origin?: string) =>
+    new Request('http://localhost/parties/main/room-1', origin ? { headers: { Origin: origin } } : undefined)
 
-  it('hands party requests to the room server', async () => {
+  beforeEach(() => routePartykitRequest.mockReset())
+
+  it.each([
+    'https://planning-poker-eta-neon.vercel.app',
+    'https://planning-poker-9q72zv2vu-scottwmacleods-projects.vercel.app',
+    'https://planning-poker-git-some-branch-scottwmacleods-projects.vercel.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+  ])('hands party requests from %s to the room server', async origin => {
+    const request = requestFrom(origin)
     const response = new Response('ok')
     routePartykitRequest.mockResolvedValueOnce(response)
     expect(await worker.fetch(request, env)).toBe(response)
     expect(routePartykitRequest).toHaveBeenCalledWith(request, env)
   })
 
+  it.each([
+    ['another site', 'https://evil.example'],
+    ['another Vercel site', 'https://planning-poker-copy.vercel.app'],
+    ['a lookalike domain', 'https://planning-poker-eta-neon.vercel.app.evil.example'],
+    ['plain http to production', 'http://planning-poker-eta-neon.vercel.app'],
+    ['no origin', undefined],
+  ])('refuses requests from %s', async (_, origin) => {
+    const res = await worker.fetch(requestFrom(origin), env)
+    expect(res.status).toBe(403)
+    expect(routePartykitRequest).not.toHaveBeenCalled()
+  })
+
   it('returns 404 for anything else', async () => {
     routePartykitRequest.mockResolvedValueOnce(null)
-    const res = await worker.fetch(request, env)
+    const res = await worker.fetch(requestFrom('http://localhost:3000'), env)
     expect(res.status).toBe(404)
   })
 })

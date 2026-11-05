@@ -6,7 +6,7 @@ import PartySocket from 'partysocket'
 import CardDeck from '../../../components/CardDeck'
 import ParticipantList from '../../../components/ParticipantList'
 import VoteResults from '../../../components/VoteResults'
-import type { ClientMessage, Participant, RoomState, ServerMessage } from '../../../lib/types'
+import { ROOM_FULL_CODE, type ClientMessage, type Participant, type RoomState, type ServerMessage } from '../../../lib/types'
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
 
@@ -90,6 +90,7 @@ export default function RoomPage() {
   const [myId, setMyId] = useState<string>('')
   const [copyStatus, setCopyStatus] = useState<keyof typeof COPY_LABELS>('idle')
   const [isEditingName, setIsEditingName] = useState(false)
+  const [roomFull, setRoomFull] = useState(false)
   const socketRef = useRef<PartySocket | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
   // These track what was actually sent to the server, so a socket reconnect
@@ -126,6 +127,14 @@ export default function RoomPage() {
         isSpectator: liveSpectatorRef.current,
       }
       socket.send(JSON.stringify(msg))
+    })
+
+    // A full room would turn every reconnect away too, so stop trying.
+    socket.addEventListener('close', (e: CloseEvent) => {
+      if (e.code === ROOM_FULL_CODE) {
+        socket.close()
+        setRoomFull(true)
+      }
     })
 
     socket.addEventListener('message', (e: MessageEvent) => {
@@ -216,6 +225,14 @@ export default function RoomPage() {
             Enter Room
           </button>
         </form>
+      </main>
+    )
+  }
+
+  if (roomFull) {
+    return (
+      <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-6">
+        <p role="status" className="text-gray-400 text-center">This room is full. Try again later, or start a new room.</p>
       </main>
     )
   }
