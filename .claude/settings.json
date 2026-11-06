@@ -1,0 +1,61 @@
+{
+  "enabledPlugins": {
+    "mattpocock-skills@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm ci)",
+      "Bash(npm run *)",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(npx vitest *)",
+      "Bash(npx wrangler deploy --dry-run*)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git checkout *)",
+      "Bash(git fetch *)",
+      "Bash(git rebase *)",
+      "Bash(git worktree *)",
+      "Bash(git push *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh issue comment *)",
+      "Bash(gh issue edit *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)"
+    ],
+    "deny": [
+      "Bash(git push *--force*)",
+      "Bash(git push * -f *)",
+      "Bash(git push *+*)",
+      "Bash(git push *--delete*)",
+      "Bash(git push * :*)",
+      "Bash(git push * main)",
+      "Bash(git push *:main*)",
+      "Bash(git push * master)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean *)",
+      "Bash(git branch -D *)",
+      "Bash(gh repo *)",
+      "Bash(gh secret *)",
+      "Bash(gh api *protection*)",
+      "Bash(gh api *secrets*)",
+      "Bash(gh api *-X *)",
+      "Bash(gh api *--method*)",
+      "Bash(rm -rf *)",
+      "Bash(npx wrangler deploy)",
+      "Bash(npx wrangler deploy --env*)"
+    ]
+  }
+}
