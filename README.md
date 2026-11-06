@@ -13,7 +13,7 @@ See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cl
 
 ## Local setup
 
-You need Node.js 22 (the version CI uses) and npm. No Cloudflare or Vercel account is needed.
+You need Node.js 24 (the version in `.nvmrc`, which CI uses) and npm. No Cloudflare or Vercel account is needed.
 
 ```bash
 git clone https://github.com/scottwmacleod/planning-poker.git
