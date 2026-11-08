@@ -112,3 +112,36 @@ Ratios computed via WCAG 2.1 relative luminance formula from exact OKLCH-derived
 | Moderate | 5 |
 
 Most of the serious issues (C2, S1, S3–S5) share a root cause: there is no focus management or live-region infrastructure in the app at all. Addressing these as a group (adding a `focus-visible` ring utility, a global `aria-live` announcer component) would resolve several findings in one pass.
+
+---
+
+## 4. New palette contrast (design system tokens, 2026-11-08)
+
+The tokens in `app/globals.css` replace the Tailwind gray/indigo palette. Ratios use the WCAG 2.1 relative luminance formula on the exact token hex values; tinted backgrounds are blended over `ground`. Targets: 4.5:1 text, 3:1 controls, card outlines and focus rings (WCAG 1.4.3, 1.4.11). Lime (`signal`) is a fill only, never text on a light ground; `signal-ink` is the text/focus colour.
+
+| Pair | Dark | Light | Use |
+|---|---|---|---|
+| `ink` on `ground` | 16.92 | 17.20 | Headings, UI text |
+| `ink-body` on `ground` | 14.14 | 12.83 | Prose |
+| `ink-muted` on `ground` | 7.43 | 5.91 | Labels, hints |
+| `ink` on `surface` | 15.85 | 18.51 | Text in panels |
+| `ink-muted` on `surface` | 6.95 | 6.36 | Labels in panels |
+| `on-signal` on `signal` | 14.87 | 14.87 | Primary button text |
+| `signal-ink` on `ground` | 14.87 | 7.32 | Accent text, focus ring |
+| `signal-ink` on `surface` | 13.93 | 7.87 | Accent text, focus ring in panels |
+| `signal-ink` on `signal-tint` | 12.88 | 6.86 | `+` rows |
+| `wip` on `ground` | 11.15 | 5.88 | `~` sign and label |
+| `wip` on `surface` | 10.44 | 6.33 | `~` in panels |
+| `wip` on `wip-tint` | 9.85 | 5.37 | `~` rows |
+| `removed` on `ground` | 8.58 | 6.11 | `-` sign |
+| `removed` on `surface` | 8.04 | 6.57 | `-` in panels |
+| `control-line` on `ground` | 3.91 | 3.70 | Card and control outlines |
+| `control-line` on `surface` | 3.67 | 3.99 | Outlines in panels |
+| `line-strong` on `ground` | **1.64** | **1.99** | Decorative only; fails 3:1 |
+| `line` on `ground` | 1.35 | 1.29 | Decorative hairlines only |
+
+All text pairs pass AA. `line-strong` and `line` fail 3:1, so they must only be decorative (dividers, hairlines between surfaces). Anything that identifies a control or card uses `control-line`, a token added in this app (`#6B716A` dark, `#7C8178` light) that is not in the design system.
+
+The shared focus ring (`.focus-ring`: 2px `signal-ink` outline, 2px offset) is 14.87:1 dark and 7.32:1 light on `ground`. Because the body font stack now comes from the tokens, the old `Arial` body font and the unused `--background`/`--foreground` variables noted in section 1 are gone; the light theme now follows `prefers-color-scheme`.
+
+Existing screens still use the old Tailwind classes until the reskin issues land, so findings 1 to 3 above remain open until then.
