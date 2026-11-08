@@ -8,6 +8,7 @@ export const MAX_CONNECTIONS_PER_ROOM = 50
 // It doesn't stop scripts, which can send any Origin they like.
 const ALLOWED_ORIGINS = [
   /^https:\/\/planning-poker-eta-neon\.vercel\.app$/,
+  /^https:\/\/planning-poker\.scottmacleod\.co$/,
   // Vercel preview and branch deployments, e.g. planning-poker-git-<branch>-scottwmacleods-projects.vercel.app
   /^https:\/\/planning-poker-[a-z0-9-]+-scottwmacleods-projects\.vercel\.app$/,
   /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,

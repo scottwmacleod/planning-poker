@@ -419,6 +419,7 @@ describe('worker fetch', () => {
 
   it.each([
     'https://planning-poker-eta-neon.vercel.app',
+    'https://planning-poker.scottmacleod.co',
     'https://planning-poker-9q72zv2vu-scottwmacleods-projects.vercel.app',
     'https://planning-poker-git-some-branch-scottwmacleods-projects.vercel.app',
     'http://localhost:3000',
@@ -435,6 +436,9 @@ describe('worker fetch', () => {
     ['another site', 'https://evil.example'],
     ['another Vercel site', 'https://planning-poker-copy.vercel.app'],
     ['a lookalike domain', 'https://planning-poker-eta-neon.vercel.app.evil.example'],
+    ['plain http to the custom domain', 'http://planning-poker.scottmacleod.co'],
+    ['a lookalike of the custom domain', 'https://planning-poker.scottmacleod.co.evil.example'],
+    ['a sibling subdomain', 'https://other.scottmacleod.co'],
     ['plain http to production', 'http://planning-poker-eta-neon.vercel.app'],
     ['no origin', undefined],
   ])('refuses requests from %s', async (_, origin) => {
