@@ -68,20 +68,27 @@ export default function ParticipantList({ participants, phase, myId, compact }: 
           const status = statusOf(p, phase)
           return (
             <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
-              <span className="flex items-center gap-2 min-w-0">
-                <Sign status={status} />
-                <span className={`truncate max-w-[110px] ${status === 'observing' ? 'text-ink-muted' : 'text-ink'}`}>
-                  {p.name}
+              <div className="flex flex-col min-w-0">
+                <span className="flex items-center gap-2 min-w-0">
+                  <Sign status={status} />
+                  <span title={p.name} className={`truncate ${status === 'observing' ? 'text-ink-muted' : 'text-ink'}`}>
+                    {p.name}
+                  </span>
+                  {p.id === myId && <span className="text-ink-muted text-xs shrink-0">you</span>}
                 </span>
-                {p.id === myId && <span className="text-ink-muted text-xs">you</span>}
-              </span>
-              <StatusText p={p} status={status} phase={phase} />
+                {status === 'observing' && <ObservingTag className="pl-7" />}
+              </div>
+              {status !== 'observing' && <StatusText p={p} status={status} phase={phase} />}
             </li>
           )
         })}
       </ul>
     </div>
   )
+}
+
+function ObservingTag({ className = '' }: { className?: string }) {
+  return <span className={`text-xs text-ink-muted ${className}`}>observing</span>
 }
 
 function Sign({ status }: { status: Status }) {
@@ -92,7 +99,7 @@ function Sign({ status }: { status: Status }) {
 // screen-reader text for every state.
 function StatusText({ p, status, phase }: { p: Participant; status: Status; phase: Phase }): ReactNode {
   if (status === 'observing') {
-    return <span className="text-xs text-ink-muted">observing</span>
+    return <ObservingTag />
   }
   if (phase === 'revealed') {
     if (status === 'no-vote') {

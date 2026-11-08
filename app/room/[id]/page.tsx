@@ -303,7 +303,7 @@ export default function RoomPage() {
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop: sidebar */}
-        <aside className="hidden md:block w-56 shrink-0 p-6 border-r border-line overflow-y-auto">
+        <aside className="hidden md:block w-64 shrink-0 p-6 border-r border-line overflow-y-auto">
           <ParticipantList
             participants={roomState.participants}
             phase={roomState.phase}
