@@ -4,9 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { nanoid } from 'nanoid'
 
+const buttonBase =
+  'focus-ring w-full rounded-1 border px-space-4 font-mono font-medium transition-colors'
+const limeButton =
+  'border-signal-ink bg-signal text-on-signal hover:bg-signal-ink hover:text-ground'
+
 export default function Home() {
   const router = useRouter()
   const [joinId, setJoinId] = useState('')
+  const canJoin = joinId.trim() !== ''
 
   function createRoom() {
     const id = nanoid(8)
@@ -20,45 +26,65 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center gap-12 p-8">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-2">Planning Poker</h1>
-        <p className="text-gray-400">Estimate together, in real time</p>
-      </div>
-
-      <div className="flex flex-col gap-6 w-full max-w-sm">
-        <button
-          onClick={createRoom}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-        >
-          Create Room
-        </button>
-
-        <div className="relative flex items-center gap-4">
-          <div className="flex-1 h-px bg-gray-800" />
-          <span className="text-gray-400 text-sm">or join existing</span>
-          <div className="flex-1 h-px bg-gray-800" />
+    <div className="flex min-h-screen flex-col bg-ground text-ink">
+      <main className="flex flex-1 flex-col items-center justify-center gap-space-7 p-space-6">
+        <div className="text-center">
+          <h1 className="mb-space-2 font-mono text-4xl font-semibold">
+            planning-poker
+            <span
+              aria-hidden="true"
+              className="ml-space-1 inline-block h-[0.9em] w-[0.5em] translate-y-[0.1em] bg-signal"
+            />
+          </h1>
+          <p className="font-mono text-ink-muted">estimate together, in real time</p>
         </div>
 
-        <form onSubmit={joinRoom} className="flex flex-col gap-3">
-          <label htmlFor="room-id" className="text-sm text-gray-400">Room ID</label>
-          <input
-            id="room-id"
-            type="text"
-            value={joinId}
-            onChange={e => setJoinId(e.target.value)}
-            placeholder="e.g. abc12345"
-            className="w-full py-3 px-4 bg-gray-900 border border-gray-700 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 text-white placeholder-gray-400"
-          />
-          <button
-            type="submit"
-            disabled={!joinId.trim()}
-            className="w-full py-3 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-          >
-            Join Room
+        <div className="flex w-full max-w-sm flex-col gap-space-5">
+          <button onClick={createRoom} className={`${buttonBase} ${limeButton} py-space-4 text-lg`}>
+            create room <span aria-hidden="true">→</span>
           </button>
-        </form>
-      </div>
-    </main>
+
+          <div className="flex items-center gap-space-4">
+            <div className="h-px flex-1 bg-line" />
+            <span className="font-mono text-sm text-ink-muted">or join one that exists</span>
+            <div className="h-px flex-1 bg-line" />
+          </div>
+
+          <form onSubmit={joinRoom} className="flex flex-col gap-space-3">
+            <label htmlFor="room-id" className="font-mono text-sm text-ink-muted">
+              room id
+            </label>
+            <input
+              id="room-id"
+              type="text"
+              value={joinId}
+              onChange={e => setJoinId(e.target.value)}
+              placeholder="e.g. abc12345"
+              className="focus-ring w-full rounded-1 border border-control-line bg-surface px-space-4 py-space-3 text-ink placeholder:text-ink-muted"
+            />
+            <button
+              type="submit"
+              disabled={!canJoin}
+              className={`${buttonBase} py-space-3 ${
+                canJoin
+                  ? limeButton
+                  : 'cursor-not-allowed border-control-line bg-transparent text-ink-muted'
+              }`}
+            >
+              join room
+            </button>
+          </form>
+        </div>
+      </main>
+
+      <footer className="p-space-5 text-center font-mono text-sm">
+        <a
+          href="https://scottmacleod.co"
+          className="focus-ring text-ink-muted underline underline-offset-4 hover:text-signal-ink"
+        >
+          by scottmacleod.co
+        </a>
+      </footer>
+    </div>
   )
 }
