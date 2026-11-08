@@ -4,132 +4,150 @@ import userEvent from '@testing-library/user-event'
 import VoteResults from './VoteResults'
 import type { Participant } from '../lib/types'
 
-function player(id: string, vote: string | null): Participant {
-  return { id, name: `Player ${id}`, isSpectator: false, vote }
+function player(id: string, vote: string | null, name = `Player ${id}`): Participant {
+  return { id, name, isSpectator: false, vote }
 }
 
 function spectator(id: string): Participant {
   return { id, name: `Spectator ${id}`, isSpectator: true, vote: null }
 }
 
+function renderResults(participants: Record<string, Participant>, extra: { deck?: 'fibonacci' | 'tshirt'; onNewRound?: () => void } = {}) {
+  return render(
+    <VoteResults
+      participants={participants}
+      deck={extra.deck ?? 'fibonacci'}
+      onNewRound={extra.onNewRound ?? (() => {})}
+    />
+  )
+}
+
+const cards = () => screen.getAllByRole('img')
+
 describe('VoteResults', () => {
-  describe('rendering', () => {
-    it('renders voted players', () => {
-      const participants = {
-        a: player('a', '5'),
-        b: player('b', '8'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-      expect(screen.getByText('5')).toBeInTheDocument()
-      expect(screen.getByText('8')).toBeInTheDocument()
+  describe('face-up cards', () => {
+    it('renders one card per voter with a name under it', () => {
+      renderResults({ a: player('a', '5', 'Dev'), b: player('b', '5', 'QA') })
+      expect(screen.getByRole('img', { name: 'Dev: 5' })).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: 'QA: 5' })).toBeInTheDocument()
+      expect(screen.getByText('Dev')).toHaveClass('text-ink-muted')
     })
 
-    it('renders player names', () => {
-      const participants = { a: player('a', '5') }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-      expect(screen.getByText('Player a')).toBeInTheDocument()
+    it('sorts cards low to high in deck order', () => {
+      renderResults({ a: player('a', '13'), b: player('b', '3'), c: player('c', '?'), d: player('d', '5') })
+      expect(cards().map(c => c.getAttribute('aria-label'))).toEqual([
+        'Player b: 3, outlier low',
+        'Player d: 5',
+        'Player a: 13, outlier high',
+        'Player c: ?',
+      ])
+    })
+
+    it('sorts t-shirt sizes in deck order', () => {
+      renderResults({ a: player('a', 'XL'), b: player('b', 'S'), c: player('c', 'M') }, { deck: 'tshirt' })
+      expect(cards().map(c => c.getAttribute('aria-label'))).toEqual(['Player b: S', 'Player c: M', 'Player a: XL'])
     })
 
     it('excludes spectators', () => {
-      const participants = {
-        a: player('a', '5'),
-        s: spectator('s'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
+      renderResults({ a: player('a', '5'), s: spectator('s') })
       expect(screen.queryByText('Spectator s')).not.toBeInTheDocument()
     })
 
-    it('excludes players who have not voted', () => {
-      const participants = {
-        a: player('a', '5'),
-        b: player('b', null),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-      expect(screen.queryByText('Player b')).not.toBeInTheDocument()
+    it('shows a dashed − card for players who did not vote', () => {
+      renderResults({ a: player('a', '5'), b: player('b', null, 'Ops') })
+      const card = screen.getByRole('img', { name: 'Ops: no vote' })
+      expect(card).toHaveClass('border-dashed')
+      expect(card).toHaveTextContent('−')
+      expect(screen.getByText('Ops')).toBeInTheDocument()
     })
 
-    it('shows vote count summary', () => {
-      const participants = {
-        a: player('a', '5'),
-        b: player('b', '5'),
-        c: player('c', '8'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-      expect(screen.getByText(/5 ×2/)).toBeInTheDocument()
-      expect(screen.getByText(/8 ×1/)).toBeInTheDocument()
-    })
-
-    it('calls onNewRound when button clicked', async () => {
-      const onNewRound = vi.fn()
-      const participants = { a: player('a', '5') }
-      render(<VoteResults participants={participants} onNewRound={onNewRound} />)
-      await userEvent.click(screen.getByRole('button', { name: /new round/i }))
-      expect(onNewRound).toHaveBeenCalledOnce()
+    it('cards are staggered 80ms apart', () => {
+      renderResults({ a: player('a', '3'), b: player('b', '5'), c: player('c', '8') })
+      expect(cards().map(c => c.style.getPropertyValue('--i'))).toEqual(['0', '1', '2'])
+      cards().forEach(c => expect(c).toHaveClass('deal-in'))
     })
   })
 
-  describe('outlier detection', () => {
-    it('marks min and max as outliers with amber style', () => {
-      const participants = {
-        a: player('a', '3'),
-        b: player('b', '5'),
-        c: player('c', '8'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
+  describe('outliers', () => {
+    it('marks min and max with amber styling, a label and an accessible name', () => {
+      renderResults({ a: player('a', '3', 'Dev'), b: player('b', '5', 'QA'), c: player('c', '13', 'Ops') })
 
-      const card3 = screen.getByText('3').closest('div')!
-      const card5 = screen.getByText('5').closest('div')!
-      const card8 = screen.getByText('8').closest('div')!
+      const low = screen.getByRole('img', { name: 'Dev: 3, outlier low' })
+      const mid = screen.getByRole('img', { name: 'QA: 5' })
+      const high = screen.getByRole('img', { name: 'Ops: 13, outlier high' })
 
-      expect(card3).toHaveClass('bg-amber-900')
-      expect(card5).not.toHaveClass('bg-amber-900')
-      expect(card8).toHaveClass('bg-amber-900')
+      expect(low).toHaveClass('border-wip', 'bg-wip-tint', 'text-wip')
+      expect(high).toHaveClass('border-wip', 'bg-wip-tint', 'text-wip')
+      expect(mid).not.toHaveClass('border-wip')
+
+      expect(screen.getByText('↓ low')).toBeInTheDocument()
+      expect(screen.getByText('↑ high')).toBeInTheDocument()
     })
 
     it('does not mark non-numeric votes as outliers', () => {
-      const participants = {
-        a: player('a', '3'),
-        b: player('b', '8'),
-        c: player('c', '?'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-
-      const cardQ = screen.getByText('?').closest('div')!
-      expect(cardQ).not.toHaveClass('bg-amber-900')
+      renderResults({ a: player('a', '3'), b: player('b', '8'), c: player('c', '?') })
+      expect(screen.getByRole('img', { name: 'Player c: ?' })).not.toHaveClass('border-wip')
     })
 
     it('no outliers when fewer than two numeric votes', () => {
-      const participants = { a: player('a', '5') }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-
-      const card5 = screen.getByText('5').closest('div')!
-      expect(card5).not.toHaveClass('bg-amber-900')
+      renderResults({ a: player('a', '5') })
+      expect(screen.getByRole('img', { name: 'Player a: 5' })).not.toHaveClass('border-wip')
+      expect(screen.queryByText(/outlier|↑|↓/)).not.toBeInTheDocument()
     })
 
     it('no outliers when every numeric vote is the same', () => {
-      const participants = {
-        a: player('a', '5'),
-        b: player('b', '5'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-
-      const cards = screen.getAllByRole('img')
-      expect(cards).toHaveLength(2)
-      cards.forEach(card => {
-        expect(card).not.toHaveClass('bg-amber-900')
-        expect(card).toHaveAccessibleName('5')
-      })
+      renderResults({ a: player('a', '5'), b: player('b', '5') })
+      cards().forEach(card => expect(card).not.toHaveClass('border-wip'))
+      expect(screen.queryByText(/↑|↓/)).not.toBeInTheDocument()
     })
 
     it('no outliers when all non-numeric', () => {
-      const participants = {
-        a: player('a', '?'),
-        b: player('b', '?'),
-      }
-      render(<VoteResults participants={participants} onNewRound={() => {}} />)
-
-      const cards = screen.getAllByText('?').map(el => el.closest('div')!)
-      cards.forEach(card => expect(card).not.toHaveClass('bg-amber-900'))
+      renderResults({ a: player('a', '?'), b: player('b', '?') })
+      cards().forEach(card => expect(card).not.toHaveClass('border-wip'))
     })
+  })
+
+  describe('summary', () => {
+    it('draws one bar row per value with ×n counts and highlights the single most common', () => {
+      renderResults({ a: player('a', '5'), b: player('b', '5'), c: player('c', '8') })
+      const five = screen.getByText('×2').closest('li')!
+      const eight = screen.getByText('×1').closest('li')!
+      expect(five).toHaveTextContent('5')
+      expect(eight).toHaveTextContent('8')
+      expect(five.querySelector('.bg-signal-ink')).toBeInTheDocument()
+      expect(eight.querySelector('.bg-signal-ink')).not.toBeInTheDocument()
+      expect(eight.querySelector('.bg-ink-muted')).toBeInTheDocument()
+    })
+
+    it('reports most common, range and turnout', () => {
+      renderResults({
+        a: player('a', '3'), b: player('b', '5'), c: player('c', '5'), d: player('d', '13'), e: player('e', null),
+      })
+      expect(screen.getByText(/most common/)).toHaveTextContent('most common 5 · range 3–13 · 4 of 5 voted')
+    })
+
+    it('reads ties as "tied 5 / 8"', () => {
+      renderResults({ a: player('a', '5'), b: player('b', '8') })
+      expect(screen.getByText(/tied/)).toHaveTextContent('tied 5 / 8 · range 5–8 · 2 of 2 voted')
+    })
+
+    it('ranges t-shirt sizes by deck order', () => {
+      renderResults({ a: player('a', 'XL'), b: player('b', 'S') }, { deck: 'tshirt' })
+      expect(screen.getByText(/range/)).toHaveTextContent('range S–XL')
+    })
+
+    it('leaves out most common and range when nobody voted', () => {
+      renderResults({ a: player('a', null) })
+      expect(screen.getByText(/0 of 1 voted/)).not.toHaveTextContent(/most common|range|tied/)
+    })
+  })
+
+  it('calls onNewRound from the lime new round button', async () => {
+    const onNewRound = vi.fn()
+    renderResults({ a: player('a', '5') }, { onNewRound })
+    const button = screen.getByRole('button', { name: 'new round' })
+    expect(button).toHaveClass('bg-signal', 'text-on-signal')
+    await userEvent.click(button)
+    expect(onNewRound).toHaveBeenCalledOnce()
   })
 })

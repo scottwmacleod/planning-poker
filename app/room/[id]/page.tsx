@@ -316,11 +316,11 @@ export default function RoomPage() {
           {roomState.phase === 'voting' ? (
             <>
               <div className="text-center">
-                <p aria-live="polite" className="text-gray-400 text-sm">
-                  {votedCount} / {players.length} voted
+                <p aria-live="polite" className="font-mono text-ink-muted text-sm">
+                  <span className="text-ink">{votedCount}</span> of {players.length} voted
                 </p>
                 {myParticipant?.isSpectator && (
-                  <p className="text-gray-400 text-sm mt-1">Observing</p>
+                  <p className="font-mono text-ink-muted text-sm mt-1">Observing</p>
                 )}
               </div>
 
@@ -336,14 +336,15 @@ export default function RoomPage() {
 
               <button
                 onClick={() => send({ type: 'reveal' })}
-                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-sm font-medium transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                className="focus-ring px-6 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
               >
-                Flip Cards
+                flip cards
               </button>
             </>
           ) : (
             <VoteResults
               participants={roomState.participants}
+              deck={roomState.deck}
               onNewRound={() => send({ type: 'newRound' })}
             />
           )}
