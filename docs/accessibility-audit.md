@@ -145,3 +145,18 @@ All text pairs pass AA. `line-strong` and `line` fail 3:1, so they must only be 
 The shared focus ring (`.focus-ring`: 2px `signal-ink` outline, 2px offset) is 14.87:1 dark and 7.32:1 light on `ground`. Because the body font stack now comes from the tokens, the old `Arial` body font and the unused `--background`/`--foreground` variables noted in section 1 are gone; the light theme now follows `prefers-color-scheme`.
 
 Existing screens still use the old Tailwind classes until the reskin issues land, so findings 1 to 3 above remain open until then.
+
+### Join, connecting and full screens, room header (#47)
+
+These screens add no new colour pairs; every one is in the table above:
+
+| Element | Pair | Dark | Light |
+|---|---|---|---|
+| `enter room` | `on-signal` on `signal` | 14.87 | 14.87 |
+| Name input text, placeholder | `ink` / `ink-muted` on `surface` | 15.85 / 6.95 | 18.51 / 6.36 |
+| Input, checkbox and `copy link` outlines | `control-line` on `surface` / `ground` | 3.67 / 3.91 | 3.99 / 3.70 |
+| Focus ring, checkbox tick, title cursor | `signal-ink` on `ground` / `surface` | 14.87 / 13.93 | 7.32 / 7.87 |
+| Connecting and room-full messages, room code | `ink-muted` on `ground` | 7.43 | 5.91 |
+| Header and sidebar hairlines | `line` on `ground` | 1.35 | 1.29 (decorative only) |
+
+The disabled `enter room` button is exempt from 1.4.3. The old emoji on the observer toggle were removed, so its state is now carried by text and `aria-pressed`.

@@ -105,7 +105,7 @@ describe('RoomPage', () => {
   describe('joining', () => {
     it('shows the join form when no name is stored', () => {
       render(<RoomPage />)
-      expect(screen.getByRole('heading', { name: 'Join Room' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Join room' })).toBeInTheDocument()
       expect(sockets).toHaveLength(0)
     })
 
@@ -115,7 +115,7 @@ describe('RoomPage', () => {
 
       await user.type(screen.getByLabelText('Your name'), '  Bob  ')
       await user.click(screen.getByRole('checkbox', { name: /just observing/i }))
-      await user.click(screen.getByRole('button', { name: 'Enter Room' }))
+      await user.click(screen.getByRole('button', { name: 'enter room' }))
 
       expect(localStorage.getItem('poker-name')).toBe('Bob')
       expect(localStorage.getItem('poker-spectator')).toBe('true')
@@ -132,7 +132,7 @@ describe('RoomPage', () => {
 
       await user.type(screen.getByLabelText('Your name'), '   ')
 
-      expect(screen.getByRole('button', { name: 'Enter Room' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'enter room' })).toBeDisabled()
       expect(sockets).toHaveLength(0)
     })
 
@@ -141,7 +141,7 @@ describe('RoomPage', () => {
       localStorage.setItem('poker-spectator', 'true')
       render(<RoomPage />)
 
-      expect(screen.queryByRole('heading', { name: 'Join Room' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Join room' })).not.toBeInTheDocument()
       expect(screen.getByRole('status')).toHaveTextContent('Connecting…')
 
       act(() => socket().open())
@@ -198,6 +198,23 @@ describe('RoomPage', () => {
       await renameInRoom('Alice{Enter}')
 
       expect(sentOf('rename')).toEqual([])
+    })
+  })
+
+  describe('header', () => {
+    it('titles the page planning-poker and shows the room code', async () => {
+      await renderInRoom()
+
+      expect(screen.getByRole('heading', { level: 1, name: 'planning-poker' })).toBeInTheDocument()
+      expect(screen.getByText('abc123')).toBeInTheDocument()
+    })
+
+    it('labels the observer toggle in plain words without emoji', async () => {
+      await renderInRoom()
+
+      const toggle = screen.getByRole('button', { name: /switch to observing/i })
+      expect(toggle).toHaveTextContent('playing')
+      expect(toggle.textContent).not.toMatch(/[\u{1F300}-\u{1FAFF}]/u)
     })
   })
 
@@ -304,16 +321,16 @@ describe('RoomPage', () => {
       Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
     }
 
-    it('says Copied! once the link is on the clipboard', async () => {
+    it('says copied once the link is on the clipboard', async () => {
       const user = userEvent.setup()
       const writeText = vi.fn(() => Promise.resolve())
       mockClipboard(writeText)
       await renderInRoom()
 
-      await user.click(screen.getByRole('button', { name: 'Copy link' }))
+      await user.click(screen.getByRole('button', { name: 'copy link' }))
 
       expect(writeText).toHaveBeenCalledWith(window.location.href)
-      expect(screen.getByRole('button', { name: 'Copied!' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'copied' })).toBeInTheDocument()
       expect(screen.getByText('Room link copied to clipboard')).toBeInTheDocument()
     })
 
@@ -322,10 +339,10 @@ describe('RoomPage', () => {
       mockClipboard(() => Promise.reject(new Error('NotAllowedError')))
       await renderInRoom()
 
-      await user.click(screen.getByRole('button', { name: 'Copy link' }))
+      await user.click(screen.getByRole('button', { name: 'copy link' }))
 
-      expect(screen.queryByText('Copied!')).not.toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Copy failed' })).toBeInTheDocument()
+      expect(screen.queryByText('copied')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'copy failed' })).toBeInTheDocument()
       expect(screen.getByText(/couldn't copy the link/i)).toBeInTheDocument()
     })
 
@@ -334,10 +351,10 @@ describe('RoomPage', () => {
       Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true })
       await renderInRoom()
 
-      await user.click(screen.getByRole('button', { name: 'Copy link' }))
+      await user.click(screen.getByRole('button', { name: 'copy link' }))
 
-      expect(screen.queryByText('Copied!')).not.toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Copy failed' })).toBeInTheDocument()
+      expect(screen.queryByText('copied')).not.toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'copy failed' })).toBeInTheDocument()
     })
   })
 })

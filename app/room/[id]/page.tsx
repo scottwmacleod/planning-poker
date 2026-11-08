@@ -10,9 +10,11 @@ import { ROOM_FULL_CODE, type ClientMessage, type Participant, type RoomState, t
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
 
-const ghostButtonClass = 'text-sm text-gray-400 hover:text-white transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-sm'
+const outlineButtonClass = 'focus-ring border border-control-line px-3 py-1 font-mono text-sm text-ink hover:border-ink touch-manipulation'
+const primaryButtonClass = 'focus-ring w-full bg-signal px-4 py-4 font-mono text-base font-semibold text-on-signal hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation'
+const inputClass = 'focus-ring w-full border border-control-line bg-surface px-4 py-3 text-base text-ink placeholder:text-ink-muted'
 
-const COPY_LABELS = { idle: 'Copy link', copied: 'Copied!', failed: 'Copy failed' }
+const COPY_LABELS = { idle: 'copy link', copied: 'copied', failed: 'copy failed' }
 const COPY_ANNOUNCEMENTS = {
   idle: '',
   copied: 'Room link copied to clipboard',
@@ -54,14 +56,14 @@ function NameEditor({
           onBlur={onCommit}
           onKeyDown={e => { if (e.key === 'Escape') onCancel() }}
           maxLength={24}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-2 py-1 text-sm text-white w-28 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          className="focus-ring w-28 border border-control-line bg-surface px-2 py-1 text-sm text-ink"
         />
       </form>
     )
   }
 
   return (
-    <button onClick={onStartEdit} className={ghostButtonClass}>
+    <button onClick={onStartEdit} className={outlineButtonClass}>
       {participant.name} <span aria-hidden="true">✎</span>
       <span className="sr-only">Edit your name</span>
     </button>
@@ -70,12 +72,12 @@ function NameEditor({
 
 function SpectatorToggle({ participant, onToggle }: { participant: Participant; onToggle: () => void }) {
   const label = participant.isSpectator
-    ? { icon: '👁', text: 'Observing', action: 'join voting' }
-    : { icon: '🃏', text: 'Playing', action: 'switch to observing' }
+    ? { text: 'observing', action: 'join voting' }
+    : { text: 'playing', action: 'switch to observing' }
 
   return (
-    <button onClick={onToggle} aria-pressed={participant.isSpectator} className={ghostButtonClass}>
-      <span aria-hidden="true">{label.icon}</span> {label.text}
+    <button onClick={onToggle} aria-pressed={participant.isSpectator} className={outlineButtonClass}>
+      {label.text}
       <span className="sr-only"> — click to {label.action}</span>
     </button>
   )
@@ -192,11 +194,11 @@ export default function RoomPage() {
 
   if (!name) {
     return (
-      <main className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center gap-8 p-6">
-        <h1 className="text-3xl font-bold">Join Room</h1>
+      <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-ground p-6 text-ink">
+        <h1 className="font-mono text-2xl font-semibold">Join room</h1>
         <form onSubmit={handleJoin} className="flex flex-col gap-4 w-full max-w-sm">
           <div className="flex flex-col gap-1">
-            <label htmlFor="player-name" className="text-sm text-gray-400">Your name</label>
+            <label htmlFor="player-name" className="text-sm text-ink-muted">Your name</label>
             <input
               id="player-name"
               autoFocus
@@ -205,7 +207,7 @@ export default function RoomPage() {
               onChange={e => setNameInput(e.target.value)}
               placeholder="e.g. Alice"
               maxLength={24}
-              className="w-full py-3 px-4 bg-gray-900 border border-gray-700 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 text-white placeholder-gray-400 text-base"
+              className={inputClass}
             />
           </div>
           <label className="flex items-center gap-3 cursor-pointer">
@@ -213,16 +215,16 @@ export default function RoomPage() {
               type="checkbox"
               checked={isSpectator}
               onChange={e => setIsSpectator(e.target.checked)}
-              className="w-4 h-4 accent-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+              className="focus-ring h-4 w-4 accent-signal-ink"
             />
-            <span className="text-gray-300">I&apos;m just observing</span>
+            <span className="text-ink-body">I&apos;m just observing</span>
           </label>
           <button
             type="submit"
             disabled={!nameInput.trim()}
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-semibold transition-colors text-base touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+            className={primaryButtonClass}
           >
-            Enter Room
+            enter room
           </button>
         </form>
       </main>
@@ -231,16 +233,16 @@ export default function RoomPage() {
 
   if (roomFull) {
     return (
-      <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-6">
-        <p role="status" className="text-gray-400 text-center">This room is full. Try again later, or start a new room.</p>
+      <main className="flex min-h-screen items-center justify-center bg-ground p-6 text-ink">
+        <p role="status" className="text-center text-ink-muted">This room is full. Try again later, or start a new room.</p>
       </main>
     )
   }
 
   if (!roomState) {
     return (
-      <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p role="status" className="text-gray-400">Connecting…</p>
+      <main className="flex min-h-screen items-center justify-center bg-ground text-ink">
+        <p role="status" className="text-ink-muted">Connecting…</p>
       </main>
     )
   }
@@ -251,19 +253,19 @@ export default function RoomPage() {
   const votedCount = players.filter(p => p.vote !== null).length
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <main className="flex min-h-screen flex-col bg-ground text-ink">
       {/* Screen reader phase announcer */}
       <p className="sr-only" aria-live="assertive" aria-atomic="true">
         {roomState.phase === 'voting' ? 'Voting in progress' : 'Cards revealed'}
       </p>
 
       {/* Header */}
-      <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-800 shrink-0">
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-line shrink-0">
         <div className="flex items-center gap-3">
-          <h1 className="text-sm font-medium">
-            <span className="text-gray-400 font-normal">Room </span>
-            <span className="font-mono">{id}</span>
+          <h1 className="font-mono text-sm font-semibold">
+            planning-poker<span aria-hidden="true" className="text-signal-ink">_</span>
           </h1>
+          <span className="font-mono text-sm text-ink-muted">{id}</span>
           {myParticipant && (
             <>
               <NameEditor
@@ -279,7 +281,7 @@ export default function RoomPage() {
           )}
         </div>
         <div>
-          <button onClick={copyLink} className={ghostButtonClass}>
+          <button onClick={copyLink} className={outlineButtonClass}>
             {COPY_LABELS[copyStatus]}
           </button>
           <div aria-live="polite" aria-atomic="true" className="sr-only">
@@ -289,7 +291,7 @@ export default function RoomPage() {
       </header>
 
       {/* Mobile: participants strip */}
-      <div className="md:hidden border-b border-gray-800 px-3">
+      <div className="md:hidden border-b border-line px-3">
         <ParticipantList
           participants={roomState.participants}
           phase={roomState.phase}
@@ -301,7 +303,7 @@ export default function RoomPage() {
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop: sidebar */}
-        <aside className="hidden md:block w-56 shrink-0 p-6 border-r border-gray-800 overflow-y-auto">
+        <aside className="hidden md:block w-56 shrink-0 p-6 border-r border-line overflow-y-auto">
           <ParticipantList
             participants={roomState.participants}
             phase={roomState.phase}
