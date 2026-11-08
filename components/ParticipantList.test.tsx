@@ -35,6 +35,25 @@ describe('ParticipantList', () => {
     })
   })
 
+  describe('long names', () => {
+    it('lets the name use the row width instead of a fixed cap, and exposes it in full', () => {
+      const long = { id: 'l', name: 'Alexandria Montgomery', isSpectator: false, vote: null }
+      render(<ParticipantList participants={{ l: long }} phase="voting" myId="x" />)
+      const name = screen.getByText('Alexandria Montgomery')
+      expect(name.className).not.toMatch(/max-w-/)
+      expect(name).toHaveClass('truncate')
+      expect(name).toHaveAttribute('title', 'Alexandria Montgomery')
+    })
+
+    it('shows the observing tag on its own line so it never squeezes the name', () => {
+      render(<ParticipantList participants={{ s: spectator('s') }} phase="voting" myId="x" />)
+      const nameLine = screen.getByText('Spectator s').parentElement!
+      const tag = within(row('Spectator s')).getByText('observing')
+      expect(nameLine).not.toContainElement(tag)
+      expect(nameLine.nextElementSibling).toBe(tag)
+    })
+  })
+
   describe('status signs', () => {
     it('voted shows + with "voted" for screen readers', () => {
       render(<ParticipantList participants={{ a: player('a', '5') }} phase="voting" myId="x" />)
