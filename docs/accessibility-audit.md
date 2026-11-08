@@ -144,6 +144,20 @@ All text pairs pass AA. `line-strong` and `line` fail 3:1, so they must only be 
 
 The shared focus ring (`.focus-ring`: 2px `signal-ink` outline, 2px offset) is 14.87:1 dark and 7.32:1 light on `ground`. Because the body font stack now comes from the tokens, the old `Arial` body font and the unused `--background`/`--foreground` variables noted in section 1 are gone; the light theme now follows `prefers-color-scheme`.
 
+### Home page pairs (#46)
+
+| Pair | Dark | Light | Use |
+|---|---|---|---|
+| `on-signal` on `signal` | 14.87 | 14.87 | Lime button text |
+| `signal-ink` border on `ground` | 14.87 | 7.32 | Lime button outline. The `signal` fill alone is about 1.2:1 on the light ground, so the border carries the 3:1 control boundary |
+| `ground` on `signal-ink` | 14.87 | 7.32 | Lime button text on hover (`signal-ink` fill) |
+| `ink-muted` on `ground` | 7.43 | 5.91 | Tagline, divider label, `room id` label, footer link |
+| `ink-muted` on `surface` | 6.95 | 6.36 | Input placeholder |
+| `control-line` on `ground` | 3.91 | 3.70 | Disabled `join room` outline |
+| `control-line` on `surface` | 3.67 | 3.99 | Room ID input border |
+
+The disabled `join room` label is `ink-muted` and is exempt from 1.4.3 as a disabled control. Both themes' footer link is underlined, so it does not rely on colour alone.
+
 Existing screens still use the old Tailwind classes until the reskin issues land, so findings 1 to 3 above remain open until then.
 
 ### Join, connecting and full screens, room header (#47)
