@@ -10,24 +10,27 @@ interface CardDeckProps {
   disabled: boolean
 }
 
+const DECK_BUTTONS: { deck: Deck; label: string }[] = [
+  { deck: 'fibonacci', label: 'fibonacci' },
+  { deck: 'tshirt', label: 't-shirt' },
+]
+
 export default function CardDeck({ deck, selectedCard, onVote, onChangeDeck, disabled }: CardDeckProps) {
   const cards = DECKS[deck]
 
   return (
     <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
-      <div role="group" aria-label="Card deck" className="flex gap-2">
-        {(['fibonacci', 'tshirt'] as Deck[]).map(d => (
+      <div role="group" aria-label="Card deck" className="flex font-mono text-sm">
+        {DECK_BUTTONS.map(({ deck: d, label }, i) => (
           <button
             key={d}
             onClick={() => onChangeDeck(d)}
             aria-pressed={deck === d}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${
-              deck === d
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            className={`focus-ring px-4 py-1.5 border border-line touch-manipulation ${i > 0 ? '-ml-px' : ''} ${
+              deck === d ? 'bg-surface text-ink' : 'text-ink-muted hover:text-ink'
             }`}
           >
-            {d === 'fibonacci' ? 'Fibonacci' : 'T-Shirt'}
+            {label}
           </button>
         ))}
       </div>
@@ -42,17 +45,27 @@ export default function CardDeck({ deck, selectedCard, onVote, onChangeDeck, dis
               onClick={() => !disabled && onVote(val)}
               disabled={disabled}
               aria-pressed={isSelected}
-              className={`w-12 h-[4.5rem] sm:w-16 sm:h-24 rounded-xl text-base sm:text-xl font-bold border-2 transition-all select-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 ${
+              className={`focus-ring relative w-12 h-[4.5rem] sm:w-16 sm:h-24 rounded-1 font-mono font-semibold tabular-nums text-lg sm:text-[22px] select-none touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed ${
                 isSelected
-                  ? 'bg-indigo-600 border-indigo-400 text-white scale-105 shadow-lg shadow-indigo-900'
-                  : 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700 hover:border-gray-500 hover:scale-105'
-              } disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100`}
+                  ? 'bg-signal-tint border-2 border-signal-ink text-signal-ink'
+                  : 'bg-surface border border-control-line text-ink hover:border-ink'
+              }`}
             >
+              {isSelected && (
+                <span aria-hidden="true" className="absolute top-1 left-1.5 text-xs leading-none">+</span>
+              )}
               {val}
             </button>
           )
         })}
       </div>
+
+      {selectedCard !== null && (
+        <p className="font-mono text-sm text-ink-muted">
+          <span aria-hidden="true" className="text-signal-ink">+ </span>
+          you voted {selectedCard}
+        </p>
+      )}
     </div>
   )
 }

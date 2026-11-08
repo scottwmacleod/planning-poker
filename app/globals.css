@@ -98,3 +98,16 @@ body {
   outline: 2px solid var(--color-signal-ink);
   outline-offset: 2px;
 }
+
+/* Revealed cards appear one by one (80ms stagger, no fade). */
+@keyframes deal-in {
+  from { visibility: hidden; }
+  to { visibility: visible; }
+}
+.deal-in {
+  animation: deal-in 0s linear backwards;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .deal-in { animation: none; }
+}

@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { Participant, Phase } from '../lib/types'
 
 interface ParticipantListProps {
@@ -9,77 +10,105 @@ interface ParticipantListProps {
   compact?: boolean
 }
 
+type Status = 'voted' | 'thinking' | 'observing' | 'no-vote'
+
+const SIGN: Record<Status, { sign: string; classes: string }> = {
+  voted: { sign: '+', classes: 'text-signal-ink bg-signal-tint' },
+  thinking: { sign: '~', classes: 'text-wip bg-wip-tint' },
+  observing: { sign: '·', classes: 'text-ink-muted' },
+  'no-vote': { sign: '−', classes: 'text-removed' },
+}
+
+function statusOf(p: Participant, phase: Phase): Status {
+  if (p.isSpectator) return 'observing'
+  if (p.vote !== null) return 'voted'
+  return phase === 'revealed' ? 'no-vote' : 'thinking'
+}
+
+function srText(status: Status): string {
+  switch (status) {
+    case 'observing': return 'observing'
+    case 'no-vote': return 'did not vote'
+    case 'thinking': return 'still thinking'
+    case 'voted': return 'voted'
+  }
+}
+
 export default function ParticipantList({ participants, phase, myId, compact }: ParticipantListProps) {
   const list = Object.values(participants)
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2 overflow-x-auto py-2 px-1 scrollbar-hide">
-        {list.map(p => (
-          <div
-            key={p.id}
-            className="flex items-center gap-1.5 bg-gray-900 rounded-full px-3 py-1.5 shrink-0"
-          >
-            <VoteIndicator participant={p} phase={phase} />
-            <span className="text-xs font-medium whitespace-nowrap max-w-[80px] truncate">
-              {p.name}
-              {p.isSpectator && (
-                <>
-                  <span aria-hidden="true" className="ml-1">👁</span>
-                  <span className="sr-only"> spectator</span>
-                </>
-              )}
-              {p.id === myId && <span className="text-gray-400 ml-1">·you</span>}
-            </span>
-          </div>
-        ))}
-      </div>
+      <ul className="flex items-center gap-2 overflow-x-auto py-2 px-1 scrollbar-hide font-mono">
+        {list.map(p => {
+          const status = statusOf(p, phase)
+          return (
+            <li
+              key={p.id}
+              className="flex items-center gap-1.5 border border-line px-3 py-1 shrink-0 text-xs"
+            >
+              <Sign status={status} />
+              <span className={`whitespace-nowrap max-w-[80px] truncate ${status === 'observing' ? 'text-ink-muted' : 'text-ink'}`}>
+                {p.name}
+              </span>
+              {p.id === myId && <span className="text-ink-muted">you</span>}
+              <StatusText p={p} status={status} phase={phase} />
+            </li>
+          )
+        })}
+      </ul>
     )
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full max-w-xs">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">
-        Participants ({list.length})
-      </h2>
-      {list.map(p => (
-        <div
-          key={p.id}
-          className="flex items-center justify-between bg-gray-900 rounded-lg px-3 py-2"
-        >
-          <span className="text-sm font-medium truncate max-w-[140px]">
-            {p.name}
-            {p.id === myId && <span className="text-gray-400 ml-1">(you)</span>}
-            {p.isSpectator && (
-              <>
-                <span aria-hidden="true" className="ml-1">👁</span>
-                <span className="sr-only"> spectator</span>
-              </>
-            )}
-          </span>
-          <VoteIndicator participant={p} phase={phase} />
-        </div>
-      ))}
+    <div className="flex flex-col gap-2 w-full max-w-xs font-mono">
+      <h2 className="text-xs text-ink-muted">participants ({list.length})</h2>
+      <ul className="border border-line divide-y divide-line">
+        {list.map(p => {
+          const status = statusOf(p, phase)
+          return (
+            <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2 text-sm">
+              <span className="flex items-center gap-2 min-w-0">
+                <Sign status={status} />
+                <span className={`truncate max-w-[110px] ${status === 'observing' ? 'text-ink-muted' : 'text-ink'}`}>
+                  {p.name}
+                </span>
+                {p.id === myId && <span className="text-ink-muted text-xs">you</span>}
+              </span>
+              <StatusText p={p} status={status} phase={phase} />
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
 
-function VoteIndicator({ participant, phase }: { participant: Participant; phase: Phase }) {
-  if (participant.isSpectator) return null
+function Sign({ status }: { status: Status }) {
+  return <span aria-hidden="true" className={`w-5 h-5 inline-flex items-center justify-center shrink-0 ${SIGN[status].classes}`}>{SIGN[status].sign}</span>
+}
 
+// Right-hand side of a row: visible text where the design has some, plus
+// screen-reader text for every state.
+function StatusText({ p, status, phase }: { p: Participant; status: Status; phase: Phase }): ReactNode {
+  if (status === 'observing') {
+    return <span className="text-xs text-ink-muted">observing</span>
+  }
   if (phase === 'revealed') {
+    if (status === 'no-vote') {
+      return (
+        <>
+          <span className="text-xs text-ink-muted">no vote</span>
+          <span className="sr-only">did not vote</span>
+        </>
+      )
+    }
     return (
-      <span className="text-sm font-bold text-indigo-400 min-w-[32px] text-right">
-        {participant.vote ?? '–'}
-      </span>
+      <>
+        <span aria-hidden="true" className="font-semibold text-ink">{p.vote}</span>
+        <span className="sr-only">voted {p.vote}</span>
+      </>
     )
   }
-
-  return (
-    <span
-      role="img"
-      aria-label={participant.vote !== null ? 'voted' : 'not yet voted'}
-      className={`w-2.5 h-2.5 rounded-full shrink-0 ${participant.vote !== null ? 'bg-green-500' : 'bg-gray-600'}`}
-    />
-  )
+  return <span className="sr-only">{srText(status)}</span>
 }

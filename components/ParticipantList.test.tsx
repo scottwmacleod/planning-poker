@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import ParticipantList from './ParticipantList'
 import type { Participant } from '../lib/types'
 
@@ -11,104 +11,112 @@ function spectator(id: string): Participant {
   return { id, name: `Spectator ${id}`, isSpectator: true, vote: null }
 }
 
+function row(name: string) {
+  return screen.getByText(name).closest('li')!
+}
+
 describe('ParticipantList', () => {
   describe('full mode', () => {
     it('renders all participants', () => {
-      const participants = {
-        a: player('a'),
-        b: player('b'),
-      }
-      render(<ParticipantList participants={participants} phase="voting" myId="x" />)
+      render(<ParticipantList participants={{ a: player('a'), b: player('b') }} phase="voting" myId="x" />)
       expect(screen.getByText('Player a')).toBeInTheDocument()
       expect(screen.getByText('Player b')).toBeInTheDocument()
     })
 
-    it('shows participant count in heading', () => {
-      const participants = { a: player('a'), b: player('b') }
-      render(<ParticipantList participants={participants} phase="voting" myId="x" />)
+    it('shows participant count in the label', () => {
+      render(<ParticipantList participants={{ a: player('a'), b: player('b') }} phase="voting" myId="x" />)
       expect(screen.getByText(/participants \(2\)/i)).toBeInTheDocument()
     })
 
-    it('shows (you) label for myId', () => {
-      const participants = { a: player('a') }
-      render(<ParticipantList participants={participants} phase="voting" myId="a" />)
-      expect(screen.getByText(/(you)/)).toBeInTheDocument()
+    it('shows a muted "you" after your own name only', () => {
+      render(<ParticipantList participants={{ a: player('a'), b: player('b') }} phase="voting" myId="a" />)
+      expect(screen.getAllByText('you')).toHaveLength(1)
+      expect(within(row('Player a')).getByText('you')).toBeInTheDocument()
+    })
+  })
+
+  describe('status signs', () => {
+    it('voted shows + with "voted" for screen readers', () => {
+      render(<ParticipantList participants={{ a: player('a', '5') }} phase="voting" myId="x" />)
+      const r = row('Player a')
+      expect(within(r).getByText('+')).toHaveAttribute('aria-hidden', 'true')
+      expect(r).toHaveTextContent('voted')
+      expect(within(r).getByText('voted')).toHaveClass('sr-only')
+      expect(within(r).getByText('+')).toHaveClass('bg-signal-tint', 'text-signal-ink')
     })
 
-    it('does not show (you) for other participants', () => {
-      const participants = { a: player('a'), b: player('b') }
-      render(<ParticipantList participants={participants} phase="voting" myId="a" />)
-      const youLabels = screen.getAllByText(/(you)/)
-      expect(youLabels).toHaveLength(1)
+    it('still thinking shows ~ with text for screen readers', () => {
+      render(<ParticipantList participants={{ a: player('a') }} phase="voting" myId="x" />)
+      const r = row('Player a')
+      expect(within(r).getByText('~')).toHaveAttribute('aria-hidden', 'true')
+      expect(within(r).getByText('still thinking')).toHaveClass('sr-only')
+      expect(within(r).getByText('~')).toHaveClass('bg-wip-tint', 'text-wip')
     })
 
-    it('shows spectator eye emoji', () => {
-      const participants = { s: spectator('s') }
-      render(<ParticipantList participants={participants} phase="voting" myId="x" />)
-      expect(screen.getByText(/👁/)).toBeInTheDocument()
+    it('observer shows · and "observing" instead of the eye emoji', () => {
+      const { container } = render(
+        <ParticipantList participants={{ s: spectator('s') }} phase="voting" myId="x" />
+      )
+      const r = row('Spectator s')
+      expect(within(r).getByText('·')).toHaveAttribute('aria-hidden', 'true')
+      expect(within(r).getByText('observing')).toBeInTheDocument()
+      expect(container).not.toHaveTextContent('👁')
+    })
+
+    it('voted card values stay hidden while voting', () => {
+      render(<ParticipantList participants={{ a: player('a', '8') }} phase="voting" myId="x" />)
+      expect(screen.queryByText('8')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('after reveal', () => {
+    it('shows the vote on the right with "voted 8" for screen readers', () => {
+      render(<ParticipantList participants={{ a: player('a', '8') }} phase="revealed" myId="x" />)
+      const r = row('Player a')
+      expect(within(r).getByText('8')).toBeInTheDocument()
+      expect(r).toHaveTextContent('voted 8')
+    })
+
+    it('shows − and "no vote" for a player who did not vote', () => {
+      render(<ParticipantList participants={{ a: player('a', null) }} phase="revealed" myId="x" />)
+      const r = row('Player a')
+      expect(within(r).getByText('−')).toHaveAttribute('aria-hidden', 'true')
+      expect(within(r).getByText('no vote')).toBeInTheDocument()
+      expect(within(r).getByText('did not vote')).toHaveClass('sr-only')
+    })
+
+    it('observers still read as observing', () => {
+      render(<ParticipantList participants={{ s: spectator('s') }} phase="revealed" myId="x" />)
+      expect(within(row('Spectator s')).getByText('observing')).toBeInTheDocument()
     })
   })
 
   describe('compact mode', () => {
-    it('renders participant names as chips', () => {
-      const participants = { a: player('a'), b: player('b') }
-      render(<ParticipantList participants={participants} phase="voting" myId="x" compact />)
-      expect(screen.getByText(/Player a/)).toBeInTheDocument()
-      expect(screen.getByText(/Player b/)).toBeInTheDocument()
+    it('renders participants as chips with the same signs', () => {
+      render(
+        <ParticipantList
+          participants={{ a: player('a', '5'), b: player('b'), s: spectator('s') }}
+          phase="voting"
+          myId="x"
+          compact
+        />
+      )
+      expect(within(row('Player a')).getByText('+')).toBeInTheDocument()
+      expect(within(row('Player a')).getByText('voted')).toBeInTheDocument()
+      expect(within(row('Player b')).getByText('~')).toBeInTheDocument()
+      expect(within(row('Player b')).getByText('still thinking')).toBeInTheDocument()
+      expect(within(row('Spectator s')).getByText('·')).toBeInTheDocument()
+      expect(within(row('Spectator s')).getByText('observing')).toBeInTheDocument()
     })
 
-    it('does not render participants heading', () => {
-      const participants = { a: player('a') }
-      render(<ParticipantList participants={participants} phase="voting" myId="x" compact />)
+    it('does not render the participants label', () => {
+      render(<ParticipantList participants={{ a: player('a') }} phase="voting" myId="x" compact />)
       expect(screen.queryByText(/participants/i)).not.toBeInTheDocument()
     })
-  })
 
-  describe('VoteIndicator', () => {
-    it('renders no indicator for spectators', () => {
-      const participants = { s: spectator('s') }
-      const { container } = render(
-        <ParticipantList participants={participants} phase="voting" myId="x" />
-      )
-      expect(container.querySelector('.rounded-full.bg-green-500')).not.toBeInTheDocument()
-      expect(container.querySelector('.rounded-full.bg-gray-600')).not.toBeInTheDocument()
-    })
-
-    it('shows green dot when player has voted in voting phase', () => {
-      const participants = { a: player('a', '5') }
-      const { container } = render(
-        <ParticipantList participants={participants} phase="voting" myId="x" />
-      )
-      expect(container.querySelector('.bg-green-500')).toBeInTheDocument()
-    })
-
-    it('shows gray dot when player has not voted in voting phase', () => {
-      const participants = { a: player('a', null) }
-      const { container } = render(
-        <ParticipantList participants={participants} phase="voting" myId="x" />
-      )
-      expect(container.querySelector('.bg-gray-600')).toBeInTheDocument()
-    })
-
-    it('shows vote value in revealed phase', () => {
-      const participants = { a: player('a', '8') }
-      render(<ParticipantList participants={participants} phase="revealed" myId="x" />)
-      expect(screen.getByText('8')).toBeInTheDocument()
-    })
-
-    it('shows dash for player without vote in revealed phase', () => {
-      const participants = { a: player('a', null) }
-      render(<ParticipantList participants={participants} phase="revealed" myId="x" />)
-      expect(screen.getByText('–')).toBeInTheDocument()
-    })
-
-    it('hides dots in revealed phase', () => {
-      const participants = { a: player('a', '5') }
-      const { container } = render(
-        <ParticipantList participants={participants} phase="revealed" myId="x" />
-      )
-      expect(container.querySelector('.bg-green-500')).not.toBeInTheDocument()
-      expect(container.querySelector('.bg-gray-600')).not.toBeInTheDocument()
+    it('marks yourself with "you"', () => {
+      render(<ParticipantList participants={{ a: player('a') }} phase="voting" myId="a" compact />)
+      expect(screen.getByText('you')).toBeInTheDocument()
     })
   })
 })

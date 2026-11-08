@@ -279,7 +279,7 @@ describe('RoomPage', () => {
   })
 
   describe('phases', () => {
-    it('voting phase shows the deck, vote count and Flip Cards, which sends reveal', async () => {
+    it('voting phase shows the deck, vote count and flip cards, which sends reveal', async () => {
       const user = userEvent.setup()
       await renderInRoom(state({
         participants: {
@@ -289,10 +289,10 @@ describe('RoomPage', () => {
       }))
 
       expect(screen.getByRole('group', { name: 'Card deck' })).toBeInTheDocument()
-      expect(screen.getByText('1 / 2 voted')).toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'New Round' })).not.toBeInTheDocument()
+      expect(screen.getByText(/of 2 voted/)).toHaveTextContent('1 of 2 voted')
+      expect(screen.queryByRole('button', { name: 'new round' })).not.toBeInTheDocument()
 
-      await user.click(screen.getByRole('button', { name: 'Flip Cards' }))
+      await user.click(screen.getByRole('button', { name: 'flip cards' }))
       expect(sentOf('reveal')).toEqual([{ type: 'reveal' }])
     })
 
@@ -300,17 +300,17 @@ describe('RoomPage', () => {
       await renderInRoom(observerState())
 
       expect(screen.queryByRole('group', { name: 'Card deck' })).not.toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Flip Cards' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'flip cards' })).toBeInTheDocument()
     })
 
-    it('revealed phase shows results and New Round instead of the deck', async () => {
+    it('revealed phase shows results and new round instead of the deck', async () => {
       const user = userEvent.setup()
       await renderInRoom(state({ phase: 'revealed', participants: { me: me({ vote: '5' }) } }))
 
       expect(screen.queryByRole('group', { name: 'Card deck' })).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'Flip Cards' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'flip cards' })).not.toBeInTheDocument()
 
-      await user.click(screen.getByRole('button', { name: 'New Round' }))
+      await user.click(screen.getByRole('button', { name: 'new round' }))
       expect(sentOf('newRound')).toEqual([{ type: 'newRound' }])
     })
   })

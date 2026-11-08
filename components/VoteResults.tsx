@@ -1,74 +1,119 @@
 'use client'
 
-import { Participant } from '../lib/types'
+import { DECKS, Deck, Participant } from '../lib/types'
 
 interface VoteResultsProps {
   participants: Record<string, Participant>
+  deck: Deck
   onNewRound: () => void
 }
 
-export default function VoteResults({ participants, onNewRound }: VoteResultsProps) {
-  const players = Object.values(participants).filter(p => !p.isSpectator && p.vote !== null)
+export default function VoteResults({ participants, deck, onNewRound }: VoteResultsProps) {
+  const order = DECKS[deck].map(String)
+  const rank = (v: string) => {
+    const i = order.indexOf(v)
+    return i === -1 ? order.length : i
+  }
 
-  const votes = players.map(p => p.vote as string)
-  const voteCounts = votes.reduce<Record<string, number>>((acc, v) => {
+  const players = Object.values(participants)
+    .filter(p => !p.isSpectator)
+    .sort((a, b) => {
+      // Non-voters go last; everyone else is low to high in deck order.
+      if ((a.vote === null) !== (b.vote === null)) return a.vote === null ? 1 : -1
+      return a.vote === null ? 0 : rank(a.vote) - rank(b.vote!)
+    })
+
+  const votes = players.flatMap(p => (p.vote === null ? [] : [p.vote]))
+  const counts = votes.reduce<Record<string, number>>((acc, v) => {
     acc[v] = (acc[v] ?? 0) + 1
     return acc
   }, {})
+  const distribution = Object.entries(counts).sort((a, b) => rank(a[0]) - rank(b[0]))
+  const top = Math.max(0, ...Object.values(counts))
+  const mostCommon = distribution.filter(([, c]) => c === top).map(([v]) => v)
+
+  const winner = mostCommon.length === 1 ? mostCommon[0] : null
+
+  const ranked = votes.filter(v => rank(v) < order.length && v !== '?').sort((a, b) => rank(a) - rank(b))
+  const range = ranked.length > 0 ? `${ranked[0]}–${ranked[ranked.length - 1]}` : null
+
+  const facts = [
+    winner ? `most common ${winner}` : mostCommon.length > 1 ? `tied ${mostCommon.join(' / ')}` : null,
+    range && `range ${range}`,
+    `${votes.length} of ${players.length} voted`,
+  ].filter(Boolean).join(' · ')
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6 font-mono">
       <div className="flex flex-wrap justify-center gap-3">
-        {players.map(p => {
-          const outlier = isOutlier(p.vote!, votes)
+        {players.map((p, i) => {
+          const direction = p.vote === null ? null : outlierDirection(p.vote, votes)
+          const label =
+            p.vote === null ? `${p.name}: no vote`
+            : direction ? `${p.name}: ${p.vote}, outlier ${direction}`
+            : `${p.name}: ${p.vote}`
+          const face =
+            p.vote === null ? 'border border-dashed border-control-line text-ink-muted'
+            : direction ? 'border-2 border-wip bg-wip-tint text-wip'
+            : 'border border-control-line bg-surface text-ink'
           return (
             <div key={p.id} className="flex flex-col items-center gap-1">
               <div
                 role="img"
-                aria-label={outlier ? `${p.vote}, outlier` : String(p.vote)}
-                className={`w-16 h-24 rounded-xl flex flex-col items-center justify-center text-xl font-bold border-2 ${
-                  outlier ? 'bg-amber-900 border-amber-500 text-amber-200' : 'bg-indigo-900 border-indigo-600 text-white'
-                }`}
+                aria-label={label}
+                style={{ '--i': i } as React.CSSProperties}
+                className={`deal-in w-16 h-24 rounded-1 flex items-center justify-center text-[22px] font-semibold tabular-nums ${face}`}
               >
-                <span aria-hidden="true">{p.vote}</span>
-                {outlier && (
-                  <span aria-hidden="true" className="text-xs mt-1 opacity-70">△</span>
-                )}
+                <span aria-hidden="true">{p.vote ?? '−'}</span>
               </div>
-              <span className="text-xs text-gray-400 truncate max-w-[64px] text-center">{p.name}</span>
+              {direction && (
+                <span className="text-xs text-wip">{direction === 'high' ? '↑ high' : '↓ low'}</span>
+              )}
+              <span className="text-xs text-ink-muted truncate max-w-[64px] text-center">{p.name}</span>
             </div>
           )
         })}
       </div>
 
-      <div className="flex flex-col items-center gap-1">
-        {Object.keys(voteCounts).length > 0 && (
-          <p className="text-gray-400 text-sm">
-            {Object.entries(voteCounts)
-              .sort((a, b) => b[1] - a[1])
-              .map(([v, c]) => `${v} ×${c}`)
-              .join('  ·  ')}
-          </p>
-        )}
-      </div>
+      {distribution.length > 0 && (
+        <ul className="flex flex-col gap-1 w-full max-w-xs text-sm">
+          {distribution.map(([v, c]) => {
+            const isWinner = v === winner
+            return (
+            <li key={v} className="flex items-center gap-3">
+              <span className="w-8 text-right text-ink">{v}</span>
+              <span aria-hidden="true" className="flex-1 h-2 bg-line">
+                <span
+                  className={`block h-full ${isWinner ? 'bg-signal-ink' : 'bg-ink-muted'}`}
+                  style={{ width: `${(c / top) * 100}%` }}
+                />
+              </span>
+              <span className={`w-8 ${isWinner ? 'text-signal-ink' : 'text-ink-muted'}`}>×{c}</span>
+            </li>
+            )
+          })}
+        </ul>
+      )}
+
+      <p className="text-sm text-ink-muted">{facts}</p>
 
       <button
         onClick={onNewRound}
-        className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+        className="focus-ring px-8 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
       >
-        New Round
+        new round
       </button>
     </div>
   )
 }
 
-function isOutlier(vote: string, allVotes: string[]): boolean {
+function outlierDirection(vote: string, allVotes: string[]): 'high' | 'low' | null {
   const numeric = allVotes.map(Number).filter(n => !isNaN(n))
-  if (numeric.length < 2) return false
+  if (numeric.length < 2) return null
   const v = Number(vote)
-  if (isNaN(v)) return false
+  if (isNaN(v)) return null
   const min = Math.min(...numeric)
   const max = Math.max(...numeric)
-  if (min === max) return false
-  return v === min || v === max
+  if (min === max) return null
+  return v === max ? 'high' : v === min ? 'low' : null
 }

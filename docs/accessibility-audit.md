@@ -77,8 +77,8 @@ Ratios computed via WCAG 2.1 relative luminance formula from exact OKLCH-derived
 |---|---|---|---|
 | C1 | [`app/page.tsx:49`](../app/page.tsx#L49), [`room/[id]/page.tsx:78`](../app/room/%5Bid%5D/page.tsx#L78) | `focus:outline-none` removes the browser focus ring on inputs. The only replacement is a border-colour change (`focus:border-indigo-500`), which is colour-only and below the 3:1 non-text contrast requirement. | 2.4.7 Focus Visible |
 | C2 | All buttons in every component | No `:focus-visible` style on any `<button>` element. Keyboard users navigating via Tab have no visible focus indicator. | 2.4.7 Focus Visible |
-| C3 | [`components/VoteResults.tsx:26`](../components/VoteResults.tsx#L26) | Outlier cards are distinguished from normal cards by colour alone (amber vs indigo). No icon, text label, or shape difference is present. | 1.4.1 Use of Color |
-| C4 | [`components/ParticipantList.tsx:69`](../components/ParticipantList.tsx#L69) | The green/gray dot communicates "voted / not yet voted" through colour only. No `aria-label` or text equivalent is present. | 1.4.1, 4.1.2 Name/Role/Value |
+| C3 | [`components/VoteResults.tsx:26`](../components/VoteResults.tsx#L26) | **Fixed (voting redesign, 2026-11-08):** outliers now carry a `↑ high` / `↓ low` text label and an accessible name ending "outlier high/low" alongside the amber colour. Original: Outlier cards are distinguished from normal cards by colour alone (amber vs indigo). No icon, text label, or shape difference is present. | 1.4.1 Use of Color |
+| C4 | [`components/ParticipantList.tsx:69`](../components/ParticipantList.tsx#L69) | **Fixed (voting redesign, 2026-11-08):** status is a `+` / `~` / `·` / `−` sign with colour as reinforcement, plus screen-reader text (`voted`, `still thinking`, `observing`, `did not vote`). Original: The green/gray dot communicates "voted / not yet voted" through colour only. No `aria-label` or text equivalent is present. | 1.4.1, 4.1.2 Name/Role/Value |
 
 ### Serious — likely to create significant barriers
 
@@ -174,3 +174,7 @@ These screens add no new colour pairs; every one is in the table above:
 | Header and sidebar hairlines | `line` on `ground` | 1.35 | 1.29 (decorative only) |
 
 The disabled `enter room` button is exempt from 1.4.3. The old emoji on the observer toggle were removed, so its state is now carried by text and `aria-pressed`.
+
+### Voting view (2026-11-08)
+
+The voting view uses only pairs from the table above: card outlines use `control-line` (3.7–3.99:1, so 1.4.11 passes; `line-strong` is not used for controls), the selected card's `signal-ink` border and value on `signal-tint` are 6.86:1 or better, outlier `wip` on `wip-tint` is 5.37:1 or better, and the `new round` / `flip cards` buttons are `on-signal` on `signal` at 14.87:1. Focus uses the shared `.focus-ring` (`signal-ink`, 7.32:1 or better on ground). Hover only changes the border colour, with no scaling or shadow, and the one-by-one card reveal is disabled under `prefers-reduced-motion`.
