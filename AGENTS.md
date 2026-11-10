@@ -40,3 +40,7 @@ The five default labels. See `docs/agents/triage-labels.md`.
 ### Domain docs
 
 Single-context: `GLOSSARY.md` plus `docs/adr/` at the root. See `docs/agents/domain.md`.
+
+### UI skills
+
+Emil Kowalski's UI and animation skills ([emilkowalski/skills](https://github.com/emilkowalski/skills)) live in `.agents/skills/`, linked for each agent (Claude reads `.claude/skills/`), with versions in `skills-lock.json`. Use them for UI and motion work. Update them with `npx skills update -p -y`.
