@@ -336,7 +336,7 @@ export default function RoomPage() {
 
               <button
                 onClick={() => send({ type: 'reveal' })}
-                className="focus-ring px-6 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
+                className="focus-ring press px-6 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
               >
                 flip cards
               </button>

@@ -33,14 +33,14 @@ export default function Home() {
             planning-poker
             <span
               aria-hidden="true"
-              className="ml-space-1 inline-block h-[0.9em] w-[0.5em] translate-y-[0.1em] bg-signal"
+              className="cursor-blink ml-space-1 inline-block h-[0.9em] w-[0.5em] translate-y-[0.1em] bg-signal"
             />
           </h1>
           <p className="font-mono text-ink-muted">estimate together, in real time</p>
         </div>
 
         <div className="flex w-full max-w-sm flex-col gap-space-5">
-          <button onClick={createRoom} className={`${buttonBase} ${limeButton} py-space-4 text-lg`}>
+          <button onClick={createRoom} className={`${buttonBase} ${limeButton} press py-space-4 text-lg`}>
             create room <span aria-hidden="true">→</span>
           </button>
 

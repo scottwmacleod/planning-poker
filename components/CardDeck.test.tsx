@@ -17,6 +17,15 @@ describe('CardDeck', () => {
     vi.clearAllMocks()
   })
 
+  describe('press feedback', () => {
+    it('gives every card the shared press class', () => {
+      render(<CardDeck {...defaultProps} />)
+      DECKS.fibonacci.forEach(card => {
+        expect(screen.getByRole('button', { name: String(card) })).toHaveClass('press')
+      })
+    })
+  })
+
   describe('card rendering', () => {
     it('renders all fibonacci cards', () => {
       render(<CardDeck {...defaultProps} />)
