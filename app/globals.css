@@ -28,6 +28,7 @@
   --wip: #ffb547;
   --wip-tint: rgba(255, 181, 71, 0.08);
   --removed: #ff8a80;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @media (prefers-color-scheme: light) {
@@ -108,6 +109,41 @@ body {
   animation: deal-in 0s linear backwards;
   animation-delay: calc(var(--i, 0) * 80ms);
 }
+/* Press feedback: a subtle scale-down on the main actions (cards, flip, new round, create). */
+.press {
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 120ms var(--ease-out),
+    border-color 120ms var(--ease-out),
+    color 120ms var(--ease-out);
+}
+.press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Distribution bars grow after the cards are dealt (--n = bar's slot in the 80ms deal sequence). */
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.bar-grow {
+  transform-origin: left;
+  animation: bar-grow 200ms var(--ease-out) backwards;
+  animation-delay: calc(var(--n, 0) * 80ms);
+}
+
+/* Terminal-style cursor on the home title. */
+@keyframes blink {
+  from, 50% { opacity: 1; }
+  50.01%, to { opacity: 0; }
+}
+.cursor-blink {
+  animation: blink 1.1s step-end infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .deal-in { animation: none; }
+  .press:active { transform: none; }
+  .bar-grow { animation: none; }
+  .cursor-blink { animation: none; }
 }

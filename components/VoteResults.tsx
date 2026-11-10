@@ -77,15 +77,15 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
 
       {distribution.length > 0 && (
         <ul className="flex flex-col gap-1 w-full max-w-xs text-sm">
-          {distribution.map(([v, c]) => {
+          {distribution.map(([v, c], i) => {
             const isWinner = v === winner
             return (
             <li key={v} className="flex items-center gap-3">
               <span className="w-8 text-right text-ink">{v}</span>
               <span aria-hidden="true" className="flex-1 h-2 bg-line">
                 <span
-                  className={`block h-full ${isWinner ? 'bg-signal-ink' : 'bg-ink-muted'}`}
-                  style={{ width: `${(c / top) * 100}%` }}
+                  className={`bar-grow block h-full ${isWinner ? 'bg-signal-ink' : 'bg-ink-muted'}`}
+                  style={{ width: `${(c / top) * 100}%`, '--n': players.length + i } as React.CSSProperties}
                 />
               </span>
               <span className={`w-8 ${isWinner ? 'text-signal-ink' : 'text-ink-muted'}`}>×{c}</span>
@@ -99,7 +99,7 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
 
       <button
         onClick={onNewRound}
-        className="focus-ring px-8 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
+        className="focus-ring press px-8 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
       >
         new round
       </button>

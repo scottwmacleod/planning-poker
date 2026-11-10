@@ -45,7 +45,7 @@ export default function CardDeck({ deck, selectedCard, onVote, onChangeDeck, dis
               onClick={() => !disabled && onVote(val)}
               disabled={disabled}
               aria-pressed={isSelected}
-              className={`focus-ring relative w-12 h-[4.5rem] sm:w-16 sm:h-24 rounded-1 font-mono font-semibold tabular-nums text-lg sm:text-[22px] select-none touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed ${
+              className={`focus-ring press relative w-12 h-[4.5rem] sm:w-16 sm:h-24 rounded-1 font-mono font-semibold tabular-nums text-lg sm:text-[22px] select-none touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed ${
                 isSelected
                   ? 'bg-signal-tint border-2 border-signal-ink text-signal-ink'
                   : 'bg-surface border border-control-line text-ink hover:border-ink'

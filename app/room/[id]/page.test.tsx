@@ -279,6 +279,11 @@ describe('RoomPage', () => {
   })
 
   describe('phases', () => {
+    it('gives flip cards press feedback', async () => {
+      await renderInRoom(state({ participants: { me: me() } }))
+      expect(screen.getByRole('button', { name: 'flip cards' })).toHaveClass('press')
+    })
+
     it('voting phase shows the deck, vote count and flip cards, which sends reveal', async () => {
       const user = userEvent.setup()
       await renderInRoom(state({

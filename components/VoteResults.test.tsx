@@ -24,6 +24,18 @@ function renderResults(participants: Record<string, Participant>, extra: { deck?
 
 const cards = () => screen.getAllByRole('img')
 
+describe('VoteResults motion', () => {
+  it('grows each distribution bar after the dealt cards, and presses new round', () => {
+    const { container } = renderResults({ a: player('a', '5'), b: player('b', '8'), c: player('c', '5') })
+    const bars = container.querySelectorAll('li .bar-grow')
+    expect(bars).toHaveLength(2)
+    // two cards dealt 80ms apart settle first: bars start after the last of 3 cards
+    expect((bars[0] as HTMLElement).style.getPropertyValue('--n')).toBe('3')
+    expect((bars[1] as HTMLElement).style.getPropertyValue('--n')).toBe('4')
+    expect(screen.getByRole('button', { name: 'new round' })).toHaveClass('press')
+  })
+})
+
 describe('VoteResults', () => {
   describe('face-up cards', () => {
     it('renders one card per voter with a name under it', () => {

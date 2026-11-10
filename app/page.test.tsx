@@ -20,6 +20,12 @@ describe('Home page', () => {
     expect(cursor).toHaveClass('bg-signal')
   })
 
+  it('blinks the cursor block and gives create room press feedback', () => {
+    const { container } = render(<Home />)
+    expect(container.querySelector('h1 [aria-hidden="true"]')).toHaveClass('cursor-blink')
+    expect(screen.getByRole('button', { name: 'create room' })).toHaveClass('press')
+  })
+
   it('creates a room from the lime "create room" button', async () => {
     render(<Home />)
     const btn = screen.getByRole('button', { name: 'create room' })
