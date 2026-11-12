@@ -49,4 +49,4 @@ The domain terms of planning-poker, as the code and UI use them. Where the two d
 ## Naming work still to do
 
 - **Spectator to observer** in code, protocol, tests and docs: #64. Decided.
-- **PartyKit names** (`party/` folder, `NEXT_PUBLIC_PARTYKIT_HOST`, `dev:party`) that outlived the move to PartyServer and Cloudflare (ADR 0001): proposal in #65, awaiting a go-ahead.
+- **PartyKit names**: the `party/` folder is now `room-server/`, `dev:party` is `dev:room-server`, and `NEXT_PUBLIC_PARTYKIT_HOST` is `NEXT_PUBLIC_ROOM_SERVER_HOST` (#65). The old variable is still read as a fallback until it is removed from Vercel and the fallback is dropped. The `/parties/main/` URL path is set by the `partyserver` library and stays.

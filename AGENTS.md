@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # planning-poker
 
-Real-time planning poker for agile teams. A Next.js frontend on Vercel, plus a PartyServer room server on Cloudflare Workers (`party/`, configured in `wrangler.jsonc`). Merging to `main` deploys the room server.
+Real-time planning poker for agile teams. A Next.js frontend on Vercel, plus a PartyServer room server on Cloudflare Workers (`room-server/`, configured in `wrangler.jsonc`). Merging to `main` deploys the room server.
 
 ## Role
 

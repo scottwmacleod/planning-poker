@@ -6,14 +6,14 @@
   "scripts": {
     "dev": "concurrently \"next dev\" \"wrangler dev\"",
     "dev:next": "next dev",
-    "dev:party": "wrangler dev",
+    "dev:room-server": "wrangler dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit --incremental false && tsc -p party",
+    "typecheck": "tsc --noEmit --incremental false && tsc -p room-server",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cf-typegen": "wrangler types party/worker-configuration.d.ts"
+    "cf-typegen": "wrangler types room-server/worker-configuration.d.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
