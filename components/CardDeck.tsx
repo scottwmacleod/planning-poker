@@ -1,5 +1,6 @@
 'use client'
 
+import { KeyboardEvent, useRef, useState } from 'react'
 import { DECKS, Deck } from '../lib/types'
 
 interface CardDeckProps {
@@ -17,6 +18,28 @@ const DECK_BUTTONS: { deck: Deck; label: string }[] = [
 
 export default function CardDeck({ deck, selectedCard, onVote, onChangeDeck, disabled }: CardDeckProps) {
   const cards = DECKS[deck]
+  const cardRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
+
+  // One tab stop for the whole row: the focused card, else the selected card, else the first.
+  const selectedIndex = cards.findIndex(card => String(card) === selectedCard)
+  const tabStop = focusedIndex !== null && focusedIndex < cards.length
+    ? focusedIndex
+    : Math.max(selectedIndex, 0)
+
+  function moveFocus(e: KeyboardEvent<HTMLButtonElement>, from: number) {
+    const last = cards.length - 1
+    const target =
+      e.key === 'ArrowRight' || e.key === 'ArrowDown' ? (from === last ? 0 : from + 1)
+      : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? (from === 0 ? last : from - 1)
+      : e.key === 'Home' ? 0
+      : e.key === 'End' ? last
+      : null
+    if (target === null) return
+    e.preventDefault()
+    setFocusedIndex(target)
+    cardRefs.current[target]?.focus()
+  }
 
   return (
     <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
@@ -36,12 +59,16 @@ export default function CardDeck({ deck, selectedCard, onVote, onChangeDeck, dis
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3 px-2">
-        {cards.map(card => {
+        {cards.map((card, i) => {
           const val = String(card)
           const isSelected = selectedCard === val
           return (
             <button
               key={val}
+              ref={el => { cardRefs.current[i] = el }}
+              tabIndex={i === tabStop ? 0 : -1}
+              onKeyDown={e => moveFocus(e, i)}
+              onFocus={() => setFocusedIndex(i)}
               onClick={() => !disabled && onVote(val)}
               disabled={disabled}
               aria-pressed={isSelected}
