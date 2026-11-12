@@ -8,7 +8,12 @@ import ParticipantList from '../../../components/ParticipantList'
 import VoteResults from '../../../components/VoteResults'
 import { ROOM_FULL_CODE, type ClientMessage, type Participant, type RoomState, type ServerMessage } from '../../../lib/types'
 
-const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
+// Read when connecting rather than at import, so tests can stub the env per case.
+// Keep each variable as a literal `process.env.NEXT_PUBLIC_*` so Next can inline it.
+// The old NEXT_PUBLIC_PARTYKIT_HOST is only a fallback until it is removed from Vercel.
+function roomServerHost() {
+  return process.env.NEXT_PUBLIC_ROOM_SERVER_HOST ?? process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
+}
 
 const outlineButtonClass = 'focus-ring border border-control-line px-3 py-1 font-mono text-sm text-ink hover:border-ink touch-manipulation'
 const primaryButtonClass = 'focus-ring w-full bg-signal px-4 py-4 font-mono text-base font-semibold text-on-signal hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation'
@@ -115,7 +120,7 @@ export default function RoomPage() {
     liveSpectatorRef.current = isSpectator
 
     const socket = new PartySocket({
-      host: PARTYKIT_HOST,
+      host: roomServerHost(),
       room: id,
     })
 

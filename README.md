@@ -37,7 +37,7 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `NEXT_PUBLIC_PARTYKIT_HOST` | `localhost:1999` | Host of the room server, with no `https://`. In production this is the Cloudflare Worker host, `planning-poker.square-poetry-83d1.workers.dev`. |
+| `NEXT_PUBLIC_ROOM_SERVER_HOST` | `localhost:1999` | Host of the room server, with no `https://`. In production this is the Cloudflare Worker host, `planning-poker.square-poetry-83d1.workers.dev`. |
 
 `NEXT_PUBLIC_*` values are baked into the frontend at build time, so after changing one in Vercel you must redeploy.
 
@@ -57,7 +57,7 @@ CI runs `typecheck`, `lint` and `test` on every pull request; all three must pas
 
 ## Deployment
 
-- **Frontend:** Vercel builds and deploys `main` automatically, and builds a preview for each pull request. `NEXT_PUBLIC_PARTYKIT_HOST` is set in the Vercel project's environment variables.
+- **Frontend:** Vercel builds and deploys `main` automatically, and builds a preview for each pull request. `NEXT_PUBLIC_ROOM_SERVER_HOST` is set in the Vercel project's environment variables.
 - **Room server:** the `deploy-worker` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `wrangler deploy` on every push to `main`, after CI passes. It needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. The Worker is served at https://planning-poker.square-poetry-83d1.workers.dev.
 
 ## Licence

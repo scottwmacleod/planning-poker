@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import RoomPage from './page'
@@ -15,7 +15,7 @@ const { FakeSocket, sockets } = vi.hoisted(() => {
     closed = false
     private listeners: Record<string, ((e: unknown) => void)[]> = {}
 
-    constructor() {
+    constructor(public options: { host: string; room: string }) {
       sockets.push(this)
     }
 
@@ -102,6 +102,34 @@ beforeEach(() => {
 })
 
 describe('RoomPage', () => {
+  describe('room server host', () => {
+    afterEach(() => vi.unstubAllEnvs())
+
+    function connectedHost() {
+      localStorage.setItem('poker-name', 'Alice')
+      render(<RoomPage />)
+      return socket().options.host
+    }
+
+    it('uses NEXT_PUBLIC_ROOM_SERVER_HOST', () => {
+      vi.stubEnv('NEXT_PUBLIC_ROOM_SERVER_HOST', 'rooms.example.dev')
+      vi.stubEnv('NEXT_PUBLIC_PARTYKIT_HOST', 'old.example.dev')
+      expect(connectedHost()).toBe('rooms.example.dev')
+    })
+
+    it('falls back to the old NEXT_PUBLIC_PARTYKIT_HOST while it is still set', () => {
+      vi.stubEnv('NEXT_PUBLIC_ROOM_SERVER_HOST', undefined)
+      vi.stubEnv('NEXT_PUBLIC_PARTYKIT_HOST', 'old.example.dev')
+      expect(connectedHost()).toBe('old.example.dev')
+    })
+
+    it('defaults to the local room server', () => {
+      vi.stubEnv('NEXT_PUBLIC_ROOM_SERVER_HOST', undefined)
+      vi.stubEnv('NEXT_PUBLIC_PARTYKIT_HOST', undefined)
+      expect(connectedHost()).toBe('localhost:1999')
+    })
+  })
+
   describe('joining', () => {
     it('shows the join form when no name is stored', () => {
       render(<RoomPage />)
