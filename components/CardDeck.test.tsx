@@ -103,6 +103,81 @@ describe('CardDeck', () => {
     })
   })
 
+  describe('keyboard navigation', () => {
+    const card = (name: string) => screen.getByRole('button', { name })
+
+    it('makes only one card a tab stop, starting at the first card', () => {
+      render(<CardDeck {...defaultProps} />)
+      expect(card('1')).toHaveAttribute('tabindex', '0')
+      expect(card('3')).toHaveAttribute('tabindex', '-1')
+    })
+
+    it('makes the selected card the tab stop', () => {
+      render(<CardDeck {...defaultProps} selectedCard="8" />)
+      expect(card('8')).toHaveAttribute('tabindex', '0')
+      expect(card('1')).toHaveAttribute('tabindex', '-1')
+    })
+
+    it('moves focus to the next card with the right arrow', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('1').focus()
+      await userEvent.keyboard('{ArrowRight}')
+      expect(card('3')).toHaveFocus()
+      expect(card('3')).toHaveAttribute('tabindex', '0')
+      expect(card('1')).toHaveAttribute('tabindex', '-1')
+    })
+
+    it('moves focus to the previous card with the left arrow', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('5').focus()
+      await userEvent.keyboard('{ArrowLeft}')
+      expect(card('3')).toHaveFocus()
+    })
+
+    it('treats the down and up arrows like right and left', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('1').focus()
+      await userEvent.keyboard('{ArrowDown}')
+      expect(card('3')).toHaveFocus()
+      await userEvent.keyboard('{ArrowUp}')
+      expect(card('1')).toHaveFocus()
+    })
+
+    it('wraps from the last card to the first and back', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('?').focus()
+      await userEvent.keyboard('{ArrowRight}')
+      expect(card('1')).toHaveFocus()
+      await userEvent.keyboard('{ArrowLeft}')
+      expect(card('?')).toHaveFocus()
+    })
+
+    it('jumps to the first and last cards with Home and End', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('5').focus()
+      await userEvent.keyboard('{End}')
+      expect(card('?')).toHaveFocus()
+      await userEvent.keyboard('{Home}')
+      expect(card('1')).toHaveFocus()
+    })
+
+    it('does not vote when moving focus', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('1').focus()
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}')
+      expect(defaultProps.onVote).not.toHaveBeenCalled()
+    })
+
+    it('votes for the focused card with Enter and Space', async () => {
+      render(<CardDeck {...defaultProps} />)
+      card('1').focus()
+      await userEvent.keyboard('{ArrowRight}{Enter}')
+      expect(defaultProps.onVote).toHaveBeenLastCalledWith('3')
+      await userEvent.keyboard('{ArrowRight} ')
+      expect(defaultProps.onVote).toHaveBeenLastCalledWith('5')
+    })
+  })
+
   describe('deck switching', () => {
     it('calls onChangeDeck when fibonacci button clicked', async () => {
       render(<CardDeck {...defaultProps} deck="tshirt" />)
