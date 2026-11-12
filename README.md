@@ -7,7 +7,7 @@ Live site: https://planning-poker-eta-neon.vercel.app
 ## How it fits together
 
 - **Frontend:** a Next.js app (`app/`, `components/`, `lib/`).
-- **Room server:** a [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) Durable Object on Cloudflare Workers (`party/server.ts`, configured in `wrangler.jsonc`). Each room is one Durable Object; browsers connect to it over a WebSocket on the path `/parties/main/<room id>`, and it keeps the room's state and broadcasts every change to everyone in the room.
+- **Room server:** a [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) Durable Object on Cloudflare Workers (`room-server/server.ts`, configured in `wrangler.jsonc`). Each room is one Durable Object; browsers connect to it over a WebSocket on the path `/parties/main/<room id>`, and it keeps the room's state and broadcasts every change to everyone in the room.
 
 See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cloudflare.md) for why the room server runs on Cloudflare.
 
@@ -29,7 +29,7 @@ npm run dev
 
 To check it works, open http://localhost:3000, click **Create Room**, enter your name and click **Enter Room**, then paste the room URL into a second browser window (or a private window) and join with another name. Votes in one window show up in the other.
 
-To run the two servers in separate terminals, use `npm run dev:next` and `npm run dev:party`.
+To run the two servers in separate terminals, use `npm run dev:next` and `npm run dev:room-server`.
 
 ## Configuration
 
@@ -51,7 +51,7 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 | `npm run typecheck` | Type-check the app and the room server |
 | `npm run lint` | Lint with ESLint |
 | `npm run build` | Production build of the Next.js app |
-| `npm run cf-typegen` | Regenerate `party/worker-configuration.d.ts` after changing `wrangler.jsonc` |
+| `npm run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
 CI runs `typecheck`, `lint` and `test` on every pull request; all three must pass before a PR can merge.
 
