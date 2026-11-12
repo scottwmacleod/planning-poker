@@ -1,6 +1,6 @@
 # Glossary
 
-The domain terms of planning-poker, as the code and UI use them. Where the two disagree, the entry says which word to prefer. Open naming questions are at the bottom.
+The domain terms of planning-poker, as the code and UI use them. Where the two disagree, the entry says which word to prefer. Naming work still to do is at the bottom.
 
 ## Room
 
@@ -14,11 +14,11 @@ The domain terms of planning-poker, as the code and UI use them. Where the two d
 
 **Participant**: anyone in a room, whether voting or not. The room's state holds one participant per connection. _Avoid_: user, member.
 
-**Player**: a participant who is not a spectator. Only players vote, and only players count towards "x of y voted" and auto-reveal.
+**Player**: a participant who is not an observer. Only players vote, and only players count towards "x of y voted" and auto-reveal.
 
-**Spectator**: a participant who watches without voting. A participant can switch between player and spectator at any time; becoming a spectator discards their vote. The UI says _observing_; the code says `isSpectator`. _Avoid_: observer, viewer.
+**Observer**: a participant who watches without voting; the adjective is _observing_, which is what the UI says. A participant can switch between player and observer at any time; becoming an observer discards their vote. The code still says `isSpectator` until #64 renames it. _Avoid_: spectator (the old term), viewer.
 
-**Connection**: one open WebSocket from one browser tab. A participant is identified by their connection id, so a second tab is a second participant. A dropped connection removes the participant; a reconnect of the same socket rejoins under the same id with the latest name and spectator setting.
+**Connection**: one open WebSocket from one browser tab. A participant is identified by their connection id, so a second tab is a second participant. A dropped connection removes the participant; a reconnect of the same socket rejoins under the same id with the latest name and observer setting.
 
 ## Cards and voting
 
@@ -32,9 +32,9 @@ The domain terms of planning-poker, as the code and UI use them. Where the two d
 
 **Reveal**: the move from voting to revealed, so everyone sees every vote. The UI button says _flip cards_; the message is `reveal`. Anyone in the room can do it.
 
-**Auto-reveal**: a reveal the room triggers itself when there is at least one player and every player has voted. It can also fire when a non-voting player leaves or becomes a spectator.
+**Auto-reveal**: a reveal the room triggers itself when there is at least one player and every player has voted. It can also fire when a non-voting player leaves or becomes an observer.
 
-**Round**: one cycle of voting, then revealing, for a single item being estimated. There is no round object: a round starts when the room is created, when someone starts a **new round** (clears all votes, back to voting), or when the deck changes.
+**Round**: one cycle of voting, then revealing, for a single item being estimated. There is deliberately no round object or counter in the code: the phase cycle implies it, and a round is understood as defined here. A round starts when the room is created, when someone starts a **new round** (clears all votes, back to voting), or when the deck changes.
 
 ## Results
 
@@ -44,11 +44,9 @@ The domain terms of planning-poker, as the code and UI use them. Where the two d
 
 **Range**: the lowest to highest card among revealed votes, ignoring `?` and any value not in the deck.
 
-**Outlier**: a numeric vote that equals the highest or lowest numeric vote, flagged _high_ or _low_. A vote is only an outlier when there are at least two numeric votes and they are not all the same. Non-numeric cards (t-shirt sizes, `?`) are never outliers.
+**Outlier**: a numeric vote that equals the highest or lowest numeric vote, flagged _high_ or _low_. A vote is only an outlier when there are at least two numeric votes and they are not all the same. Non-numeric cards (t-shirt sizes, `?`) are never outliers, so a t-shirt round shows none. This is intended.
 
-## Open questions
+## Naming work still to do
 
-1. **Spectator vs observing.** Keep both (code says spectator, UI says observing), or settle on one? This glossary prefers _spectator_ for code and docs and leaves the UI copy alone.
-2. **Round.** Should it become a concept in the code (for example a round counter), or stay implied by the phase cycle?
-3. **PartyKit names.** The `party/` folder, the `NEXT_PUBLIC_PARTYKIT_HOST` variable and the `/parties/main/` URL path still use PartyKit's naming although the room server now runs on PartyServer and Cloudflare (ADR 0001). Rename, or leave as is?
-4. **Outliers in t-shirt decks.** Outliers are numeric-only today, so a t-shirt round never shows any. Is that intended?
+- **Spectator to observer** in code, protocol, tests and docs: #64. Decided.
+- **PartyKit names** (`party/` folder, `NEXT_PUBLIC_PARTYKIT_HOST`, `dev:party`) that outlived the move to PartyServer and Cloudflare (ADR 0001): proposal in #65, awaiting a go-ahead.
