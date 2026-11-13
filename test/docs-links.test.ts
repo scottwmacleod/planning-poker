@@ -4,7 +4,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const root = path.resolve(__dirname, '..')
-const docs = ['README.md', 'GLOSSARY.md', 'docs/accessibility-audit.md', 'docs/adr/0001-partyserver-on-cloudflare.md']
+const docs = ['README.md', 'CONTRIBUTING.md', 'SECURITY.md', 'GLOSSARY.md', 'docs/accessibility-audit.md', 'docs/adr/0001-partyserver-on-cloudflare.md']
 
 describe('docs links', () => {
   it('README points the live site at the custom domain', () => {
