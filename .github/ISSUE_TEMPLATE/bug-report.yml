@@ -1,0 +1,36 @@
+name: Bug report
+description: Something in planning-poker doesn't work the way it should.
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting this. Check the [open issues](https://github.com/scottwmacleod/planning-poker/issues) first in case someone has already raised it.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected to see instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Create a room
+        2. Join from a second browser
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: e.g. Safari 19 on iPhone, Chrome 142 on Windows
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, console errors, or how many people were in the room.

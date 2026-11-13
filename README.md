@@ -53,12 +53,16 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 | `npm run build` | Production build of the Next.js app |
 | `npm run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
-CI runs `typecheck`, `lint` and `test` on every pull request; all three must pass before a PR can merge.
+CI runs `typecheck`, `lint`, `test` and `build`, plus a dry run of the room server bundle, on every pull request. All of them must pass before a PR can merge.
 
 ## Deployment
 
 - **Frontend:** Vercel builds and deploys `main` automatically, and builds a preview for each pull request. `NEXT_PUBLIC_ROOM_SERVER_HOST` is set in the Vercel project's environment variables.
 - **Room server:** the `deploy-worker` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `wrangler deploy` on every push to `main`, after CI passes. It needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. The Worker is served at https://planning-poker.square-poetry-83d1.workers.dev.
+
+## Contributing
+
+Bug reports, feature requests and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to raise them, and [SECURITY.md](SECURITY.md) for reporting a vulnerability privately.
 
 ## Licence
 
