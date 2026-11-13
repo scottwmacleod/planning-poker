@@ -1,4 +1,4 @@
-# M-2: turn on squash auto-merge for every non-draft PR. Merges once required checks pass.
+# M-2: turn on squash auto-merge for every non-draft PR from a branch in this repo. Fork PRs are merged by hand. Merges once required checks pass.
 name: Auto-merge
 
 on:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   auto-merge:
-    if: github.event.pull_request.draft == false && github.event.pull_request.user.login != 'dependabot[bot]'
+    if: github.event.pull_request.draft == false && github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

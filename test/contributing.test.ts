@@ -34,3 +34,11 @@ describe('outside contributions', () => {
     expect(read('SECURITY.md')).toContain('https://github.com/scottwmacleod/planning-poker/security/advisories/new')
   })
 })
+
+describe('auto-merge workflow', () => {
+  it('only arms auto-merge on PRs from branches in this repo, not forks', () => {
+    expect(read('.github/workflows/auto-merge.yml')).toContain(
+      'github.event.pull_request.head.repo.full_name == github.repository',
+    )
+  })
+})
