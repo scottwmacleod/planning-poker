@@ -39,8 +39,8 @@ describe('Home page', () => {
     render(<Home />)
     const join = screen.getByRole('button', { name: 'join room' })
     expect(join).toBeDisabled()
-    expect(join).not.toHaveClass('bg-signal')
-    expect(join).toHaveClass('border-control-line')
+    // A disabled signal button drops its lime for the control outline.
+    expect(join).toHaveClass('disabled:bg-transparent', 'disabled:border-control-line')
   })
 
   it('turns join room lime and enabled once an ID is typed, then joins', async () => {
@@ -58,7 +58,6 @@ describe('Home page', () => {
     await userEvent.type(screen.getByLabelText('room id'), '   ')
     const join = screen.getByRole('button', { name: 'join room' })
     expect(join).toBeDisabled()
-    expect(join).not.toHaveClass('bg-signal')
   })
 
   it('styles the room ID input with the surface fill, hairline border and shared focus ring', () => {

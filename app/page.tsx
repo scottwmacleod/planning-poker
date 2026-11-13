@@ -3,11 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { nanoid } from 'nanoid'
-
-const buttonBase =
-  'focus-ring w-full rounded-1 border px-space-4 font-mono font-medium transition-colors'
-const limeButton =
-  'border-signal-ink bg-signal text-on-signal hover:bg-signal-ink hover:text-ground'
+import Button from '../components/ui/Button'
+import Field from '../components/ui/Field'
 
 export default function Home() {
   const router = useRouter()
@@ -40,9 +37,9 @@ export default function Home() {
         </div>
 
         <div className="flex w-full max-w-sm flex-col gap-space-5">
-          <button onClick={createRoom} className={`${buttonBase} ${limeButton} press py-space-4 text-lg`}>
+          <Button variant="signal" size="lg" onClick={createRoom} className="w-full">
             create room <span aria-hidden="true">→</span>
-          </button>
+          </Button>
 
           <div className="flex items-center gap-space-4">
             <div className="h-px flex-1 bg-line" />
@@ -51,28 +48,16 @@ export default function Home() {
           </div>
 
           <form onSubmit={joinRoom} className="flex flex-col gap-space-3">
-            <label htmlFor="room-id" className="font-mono text-sm text-ink-muted">
-              room id
-            </label>
-            <input
+            <Field
               id="room-id"
-              type="text"
+              label="room id"
               value={joinId}
               onChange={e => setJoinId(e.target.value)}
               placeholder="e.g. abc12345"
-              className="focus-ring w-full rounded-1 border border-control-line bg-surface px-space-4 py-space-3 text-ink placeholder:text-ink-muted"
             />
-            <button
-              type="submit"
-              disabled={!canJoin}
-              className={`${buttonBase} py-space-3 ${
-                canJoin
-                  ? limeButton
-                  : 'cursor-not-allowed border-control-line bg-transparent text-ink-muted'
-              }`}
-            >
+            <Button type="submit" variant="signal" size="md" disabled={!canJoin} className="w-full">
               join room
-            </button>
+            </Button>
           </form>
         </div>
       </main>

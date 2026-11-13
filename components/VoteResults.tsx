@@ -1,6 +1,7 @@
 'use client'
 
 import { DECKS, Deck, Participant } from '../lib/types'
+import Button from './ui/Button'
 
 interface VoteResultsProps {
   participants: Record<string, Participant>
@@ -97,12 +98,9 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
 
       <p className="text-sm text-ink-muted">{facts}</p>
 
-      <button
-        onClick={onNewRound}
-        className="focus-ring press px-8 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
-      >
+      <Button variant="signal" size="md" onClick={onNewRound}>
         new round
-      </button>
+      </Button>
     </div>
   )
 }

@@ -6,6 +6,10 @@ import PartySocket from 'partysocket'
 import CardDeck from '../../../components/CardDeck'
 import ParticipantList from '../../../components/ParticipantList'
 import VoteResults from '../../../components/VoteResults'
+import Button from '../../../components/ui/Button'
+import Checkbox from '../../../components/ui/Checkbox'
+import Field from '../../../components/ui/Field'
+import Input from '../../../components/ui/Input'
 import { ROOM_FULL_CODE, type ClientMessage, type Participant, type RoomState, type ServerMessage } from '../../../lib/types'
 
 // Read when connecting rather than at import, so tests can stub the env per case.
@@ -15,9 +19,6 @@ function roomServerHost() {
   return process.env.NEXT_PUBLIC_ROOM_SERVER_HOST ?? process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? 'localhost:1999'
 }
 
-const outlineButtonClass = 'focus-ring border border-control-line px-3 py-1 font-mono text-sm text-ink hover:border-ink touch-manipulation'
-const primaryButtonClass = 'focus-ring w-full bg-signal px-4 py-4 font-mono text-base font-semibold text-on-signal hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation'
-const inputClass = 'focus-ring w-full border border-control-line bg-surface px-4 py-3 text-base text-ink placeholder:text-ink-muted'
 
 const COPY_LABELS = { idle: 'copy link', copied: 'copied', failed: 'copy failed' }
 const COPY_ANNOUNCEMENTS = {
@@ -53,7 +54,7 @@ function NameEditor({
     return (
       <form onSubmit={e => { e.preventDefault(); onCommit() }}>
         <label htmlFor="rename-input" className="sr-only">Your name</label>
-        <input
+        <Input
           id="rename-input"
           ref={inputRef}
           autoFocus
@@ -61,17 +62,18 @@ function NameEditor({
           onBlur={onCommit}
           onKeyDown={e => { if (e.key === 'Escape') onCancel() }}
           maxLength={24}
-          className="focus-ring w-28 border border-control-line bg-surface px-2 py-1 text-sm text-ink"
+          size="sm"
+          className="w-28"
         />
       </form>
     )
   }
 
   return (
-    <button onClick={onStartEdit} className={outlineButtonClass}>
+    <Button onClick={onStartEdit}>
       {participant.name} <span aria-hidden="true">✎</span>
       <span className="sr-only">Edit your name</span>
-    </button>
+    </Button>
   )
 }
 
@@ -81,10 +83,10 @@ function SpectatorToggle({ participant, onToggle }: { participant: Participant; 
     : { text: 'playing', action: 'switch to observing' }
 
   return (
-    <button onClick={onToggle} aria-pressed={participant.isSpectator} className={outlineButtonClass}>
+    <Button onClick={onToggle} aria-pressed={participant.isSpectator}>
       {label.text}
       <span className="sr-only"> — click to {label.action}</span>
-    </button>
+    </Button>
   )
 }
 
@@ -200,37 +202,25 @@ export default function RoomPage() {
   if (!name) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-ground p-6 text-ink">
-        <h1 className="font-mono text-2xl font-semibold">Join room</h1>
-        <form onSubmit={handleJoin} className="flex flex-col gap-4 w-full max-w-sm">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="player-name" className="text-sm text-ink-muted">Your name</label>
-            <input
-              id="player-name"
-              autoFocus
-              type="text"
-              value={nameInput}
-              onChange={e => setNameInput(e.target.value)}
-              placeholder="e.g. Alice"
-              maxLength={24}
-              className={inputClass}
-            />
-          </div>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isSpectator}
-              onChange={e => setIsSpectator(e.target.checked)}
-              className="focus-ring h-4 w-4 accent-signal-ink"
-            />
-            <span className="text-ink-body">I&apos;m just observing</span>
-          </label>
-          <button
-            type="submit"
-            disabled={!nameInput.trim()}
-            className={primaryButtonClass}
-          >
+        <h1 className="font-mono text-2xl font-semibold">join room</h1>
+        <form onSubmit={handleJoin} className="flex flex-col gap-space-4 w-full max-w-sm">
+          <Field
+            id="player-name"
+            label="your name"
+            autoFocus
+            value={nameInput}
+            onChange={e => setNameInput(e.target.value)}
+            placeholder="e.g. Alice"
+            maxLength={24}
+          />
+          <Checkbox
+            label="i'm just observing"
+            checked={isSpectator}
+            onChange={e => setIsSpectator(e.target.checked)}
+          />
+          <Button type="submit" variant="signal" size="md" disabled={!nameInput.trim()} className="w-full">
             enter room
-          </button>
+          </Button>
         </form>
       </main>
     )
@@ -286,9 +276,9 @@ export default function RoomPage() {
           )}
         </div>
         <div>
-          <button onClick={copyLink} className={outlineButtonClass}>
+          <Button onClick={copyLink}>
             {COPY_LABELS[copyStatus]}
-          </button>
+          </Button>
           <div aria-live="polite" aria-atomic="true" className="sr-only">
             {COPY_ANNOUNCEMENTS[copyStatus]}
           </div>
@@ -339,12 +329,9 @@ export default function RoomPage() {
                 />
               )}
 
-              <button
-                onClick={() => send({ type: 'reveal' })}
-                className="focus-ring press px-6 py-3 bg-signal text-on-signal rounded-1 font-mono font-semibold touch-manipulation"
-              >
+              <Button variant="signal" size="md" onClick={() => send({ type: 'reveal' })}>
                 flip cards
-              </button>
+              </Button>
             </>
           ) : (
             <VoteResults
