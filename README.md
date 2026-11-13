@@ -2,7 +2,7 @@
 
 Real-time planning poker for agile teams. Create a room, share the link, and everyone votes on an estimate at the same time. Votes stay hidden until everyone has voted (or someone reveals them), then everyone sees the cards, a tally of each value, and any outlier votes highlighted. Supports Fibonacci and T-shirt-size decks, spectators, and renaming yourself mid-session. There are no accounts and nothing to install for players.
 
-Live site: https://planning-poker-eta-neon.vercel.app
+Live site: https://planning-poker.scottmacleod.co
 
 ## How it fits together
 
