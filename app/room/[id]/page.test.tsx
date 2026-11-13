@@ -133,7 +133,7 @@ describe('RoomPage', () => {
   describe('joining', () => {
     it('shows the join form when no name is stored', () => {
       render(<RoomPage />)
-      expect(screen.getByRole('heading', { name: 'Join room' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'join room' })).toBeInTheDocument()
       expect(sockets).toHaveLength(0)
     })
 
@@ -141,7 +141,7 @@ describe('RoomPage', () => {
       const user = userEvent.setup()
       render(<RoomPage />)
 
-      await user.type(screen.getByLabelText('Your name'), '  Bob  ')
+      await user.type(screen.getByLabelText('your name'), '  Bob  ')
       await user.click(screen.getByRole('checkbox', { name: /just observing/i }))
       await user.click(screen.getByRole('button', { name: 'enter room' }))
 
@@ -158,7 +158,7 @@ describe('RoomPage', () => {
       const user = userEvent.setup()
       render(<RoomPage />)
 
-      await user.type(screen.getByLabelText('Your name'), '   ')
+      await user.type(screen.getByLabelText('your name'), '   ')
 
       expect(screen.getByRole('button', { name: 'enter room' })).toBeDisabled()
       expect(sockets).toHaveLength(0)
@@ -169,7 +169,7 @@ describe('RoomPage', () => {
       localStorage.setItem('poker-spectator', 'true')
       render(<RoomPage />)
 
-      expect(screen.queryByRole('heading', { name: 'Join room' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'join room' })).not.toBeInTheDocument()
       expect(screen.getByRole('status')).toHaveTextContent('Connecting…')
 
       act(() => socket().open())
