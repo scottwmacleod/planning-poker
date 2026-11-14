@@ -164,22 +164,22 @@ describe('RoomPage', () => {
       expect(sockets).toHaveLength(0)
     })
 
-    it('connects straight away with a stored name and shows Connecting… until the first state', async () => {
+    it('connects straight away with a stored name and shows connecting… until the first state', async () => {
       localStorage.setItem('poker-name', 'Alice')
       localStorage.setItem('poker-spectator', 'true')
       render(<RoomPage />)
 
       expect(screen.queryByRole('heading', { name: 'join room' })).not.toBeInTheDocument()
-      expect(screen.getByRole('status')).toHaveTextContent('Connecting…')
+      expect(screen.getByRole('status')).toHaveTextContent('connecting…')
 
       act(() => socket().open())
       expect(socket().sent).toEqual([
         { type: 'join', name: 'Alice', isSpectator: true },
       ])
-      expect(screen.getByRole('status')).toHaveTextContent('Connecting…')
+      expect(screen.getByRole('status')).toHaveTextContent('connecting…')
 
       act(() => socket().receive(observerState()))
-      expect(screen.queryByText('Connecting…')).not.toBeInTheDocument()
+      expect(screen.queryByText('connecting…')).not.toBeInTheDocument()
       expect(screen.getByText('abc123')).toBeInTheDocument()
     })
   })
@@ -295,7 +295,7 @@ describe('RoomPage', () => {
       await act(async () => s.serverClose(4000))
 
       expect(s.closed).toBe(true)
-      expect(screen.getByRole('status')).toHaveTextContent(/room is full/i)
+      expect(screen.getByRole('status')).toHaveTextContent('this room is full. try again later, or start a new room.')
     })
 
     it('keeps reconnecting after an ordinary disconnect', async () => {
@@ -334,6 +334,7 @@ describe('RoomPage', () => {
 
       expect(screen.queryByRole('group', { name: 'Card deck' })).not.toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'flip cards' })).toBeInTheDocument()
+      expect(screen.getByText('observing', { selector: 'section p' })).toBeInTheDocument()
     })
 
     it('revealed phase shows results and new round instead of the deck', async () => {

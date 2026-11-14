@@ -229,7 +229,7 @@ export default function RoomPage() {
   if (roomFull) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-ground p-6 text-ink">
-        <p role="status" className="text-center text-ink-muted">This room is full. Try again later, or start a new room.</p>
+        <p role="status" className="text-center font-mono text-ink-muted">this room is full. try again later, or start a new room.</p>
       </main>
     )
   }
@@ -237,7 +237,7 @@ export default function RoomPage() {
   if (!roomState) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-ground text-ink">
-        <p role="status" className="text-ink-muted">Connecting…</p>
+        <p role="status" className="font-mono text-ink-muted">connecting…</p>
       </main>
     )
   }
@@ -315,7 +315,7 @@ export default function RoomPage() {
                   <span className="text-ink">{votedCount}</span> of {players.length} voted
                 </p>
                 {myParticipant?.isSpectator && (
-                  <p className="font-mono text-ink-muted text-sm mt-1">Observing</p>
+                  <p className="font-mono text-ink-muted text-sm mt-1">observing</p>
                 )}
               </div>
 
