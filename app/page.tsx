@@ -64,10 +64,18 @@ export default function Home() {
 
       <footer className="p-space-5 text-center font-mono text-sm">
         <a
-          href="https://scottmacleod.co"
-          className="focus-ring text-ink-muted underline underline-offset-4 hover:text-signal-ink"
+          href="https://www.scottmacleod.co"
+          aria-label="shipped by sm"
+          className="focus-ring group inline-flex items-baseline gap-space-2 rounded-1 border border-control-line px-space-3 py-space-2 text-ink-muted transition-colors hover:border-signal-ink hover:text-ink-body"
         >
-          by scottmacleod.co
+          shipped by
+          <span className="inline-flex items-baseline font-semibold tracking-[-0.06em] text-ink">
+            sm
+            <span
+              aria-hidden="true"
+              className="cursor-blink ml-[0.06em] inline-block h-[0.11em] w-[0.46em] bg-signal"
+            />
+          </span>
         </a>
       </footer>
     </div>
