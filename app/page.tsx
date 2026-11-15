@@ -68,7 +68,7 @@ export default function Home() {
           aria-label="shipped by sm"
           className="focus-ring group inline-flex items-baseline gap-space-2 rounded-1 border border-control-line px-space-3 py-space-2 text-ink-muted transition-colors hover:border-signal-ink hover:text-ink-body"
         >
-          shipped by
+          <span>shipped by </span>
           <span className="inline-flex items-baseline font-semibold tracking-[-0.06em] text-ink">
             sm
             <span
