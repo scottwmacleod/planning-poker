@@ -69,7 +69,7 @@ describe('Home page', () => {
   it('credits "shipped by sm_" in the footer, linking to scottmacleod.co', () => {
     render(<Home />)
     const link = screen.getByRole('link', { name: 'shipped by sm' })
-    expect(link).toHaveAttribute('href', 'https://www.scottmacleod.co')
+    expect(link).toHaveAttribute('href', 'https://scottmacleod.co')
     expect(link.closest('footer')).not.toBeNull()
   })
 
