@@ -64,7 +64,7 @@ export default function Home() {
 
       <footer className="p-space-5 text-center font-mono text-sm">
         <a
-          href="https://www.scottmacleod.co"
+          href="https://scottmacleod.co"
           aria-label="shipped by sm"
           className="focus-ring group inline-flex items-baseline gap-space-2 rounded-1 border border-control-line px-space-3 py-space-2 text-ink-muted transition-colors hover:border-signal-ink hover:text-ink-body"
         >
