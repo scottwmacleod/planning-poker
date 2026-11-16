@@ -13,6 +13,12 @@ describe("site icons", () => {
     expect(svg).toContain("#0b0c0b");
   });
 
+  it("icon.svg is a square prompt-and-cursor mark, not the old joker card", () => {
+    expect(svg).toContain('viewBox="0 0 32 32"');
+    expect(svg).toContain("<polyline");
+    expect(svg).not.toContain("<path");
+  });
+
   it("ships a 180x180 PNG apple-icon", () => {
     const file = path.join(__dirname, "apple-icon.png");
     expect(existsSync(file)).toBe(true);
