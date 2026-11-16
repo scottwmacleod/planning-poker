@@ -66,11 +66,18 @@ describe('Home page', () => {
     expect(input).toHaveClass('bg-surface', 'border-control-line', 'rounded-1', 'focus-ring')
   })
 
-  it('links to scottmacleod.co from the footer', () => {
+  it('credits "shipped by sm_" in the footer, linking to scottmacleod.co', () => {
     render(<Home />)
-    const link = screen.getByRole('link', { name: 'by scottmacleod.co' })
-    expect(link).toHaveAttribute('href', 'https://scottmacleod.co')
+    const link = screen.getByRole('link', { name: 'shipped by sm' })
+    expect(link).toHaveAttribute('href', 'https://www.scottmacleod.co')
     expect(link.closest('footer')).not.toBeNull()
+  })
+
+  it('blinks the credit underscore like the home title cursor, and hides it from assistive tech', () => {
+    render(<Home />)
+    const link = screen.getByRole('link', { name: 'shipped by sm' })
+    const underscore = link.querySelector('[aria-hidden="true"]')
+    expect(underscore).toHaveClass('cursor-blink', 'bg-signal')
   })
 
   it('uses no indigo, gray, shadow or large-radius utilities', () => {
