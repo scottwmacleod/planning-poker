@@ -12,7 +12,8 @@ vi.mock("partyserver", () => ({
   routePartykitRequest,
 }));
 
-import worker, { MAX_CONNECTIONS_PER_ROOM, PokerRoom } from "./server";
+import { MAX_CONNECTIONS_PER_ROOM } from "../lib/types";
+import worker, { PokerRoom } from "./server";
 
 function makeConn(id: string): Connection {
   return { id, send: vi.fn(), close: vi.fn() } as unknown as Connection;
@@ -470,5 +471,19 @@ describe("worker fetch", () => {
     routePartykitRequest.mockResolvedValueOnce(null);
     const res = await worker.fetch(requestFrom("http://localhost:3000"), env);
     expect(res.status).toBe(404);
+  });
+});
+
+describe("worker entry", () => {
+  // workerd refuses to start when the entry module exports anything other than
+  // handlers and Durable Object classes, so `wrangler dev` and deploys fail.
+  it("exports only the fetch handler and Durable Object classes", async () => {
+    const entry = await import("./server");
+    for (const [name, value] of Object.entries(entry)) {
+      expect(
+        typeof value === "function" || (name === "default" && typeof value === "object"),
+        name,
+      ).toBe(true);
+    }
   });
 });
