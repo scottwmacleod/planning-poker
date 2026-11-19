@@ -25,6 +25,8 @@
   "dependencies": {
     "@fontsource/geist": "5.3.0",
     "@fontsource/geist-mono": "5.3.0",
+    "@ui-sdk/core": "0.1.0-beta.2",
+    "@ui-sdk/react": "0.1.0-beta.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "2.1.0",
     "nanoid": "^6.0.2",
@@ -43,6 +45,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "axe-core": "4.14.0",
     "concurrently": "^10.0.7",
     "jsdom": "^31.0.0",
     "tailwindcss": "^4.3.4",

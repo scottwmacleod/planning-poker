@@ -2,6 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClientMessage, Participant, RoomState } from "../../lib/types";
+import { expectNoAxeViolations } from "../../test/axe";
 import RoomPage from "./Room";
 
 // A stand-in for PartySocket: no network, just records what the page sends
@@ -394,6 +395,30 @@ describe("RoomPage", () => {
 
       expect(screen.queryByText("copied")).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "copy failed" })).toBeInTheDocument();
+    });
+  });
+
+  describe("accessibility", () => {
+    it("has no axe violations on the join form", async () => {
+      const { container } = render(<RoomPage id="abc123" />);
+      await expectNoAxeViolations(container);
+    });
+
+    it("has no axe violations while voting, with a card picked", async () => {
+      await renderInRoom(
+        state({ participants: { me: me({ vote: "5" }), bob: me({ id: "bob", name: "Bob" }) } }),
+      );
+      await expectNoAxeViolations(document.body);
+    });
+
+    it("has no axe violations once the cards are flipped", async () => {
+      await renderInRoom(
+        state({
+          phase: "revealed",
+          participants: { me: me({ vote: "5" }), bob: me({ id: "bob", name: "Bob", vote: "8" }) },
+        }),
+      );
+      await expectNoAxeViolations(document.body);
     });
   });
 });

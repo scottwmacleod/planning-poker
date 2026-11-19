@@ -12,6 +12,17 @@ describe("Checkbox", () => {
     expect(box).toBeChecked();
   });
 
+  it("checks and unchecks with Space", async () => {
+    render(<Checkbox label="observe" />);
+    await userEvent.tab();
+    const box = screen.getByRole("checkbox", { name: "observe" });
+    expect(box).toHaveFocus();
+    await userEvent.keyboard(" ");
+    expect(box).toBeChecked();
+    await userEvent.keyboard(" ");
+    expect(box).not.toBeChecked();
+  });
+
   it("drops the OS look for a square box that matches a selected card", () => {
     render(<Checkbox label="observe" />);
     expect(screen.getByRole("checkbox")).toHaveClass(

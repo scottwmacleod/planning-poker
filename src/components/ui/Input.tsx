@@ -1,4 +1,5 @@
-import type { InputHTMLAttributes, Ref } from "react";
+import { Input as UiInput } from "@ui-sdk/react/input";
+import type { ComponentProps } from "react";
 
 const BASE =
   "focus-ring rounded-1 border border-control-line bg-surface text-ink placeholder:text-ink-muted";
@@ -8,16 +9,17 @@ const SIZES = {
   md: "w-full px-space-4 py-space-3 text-base",
 };
 
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+interface InputProps extends Omit<ComponentProps<typeof UiInput>, "size" | "className"> {
   size?: keyof typeof SIZES;
-  ref?: Ref<HTMLInputElement>;
+  className?: string;
 }
 
+// ui-sdk's input part: a native <input> that wires itself to the Field around it.
 export default function Input({
   size = "md",
   type = "text",
   className = "",
   ...props
 }: InputProps) {
-  return <input type={type} className={`${BASE} ${SIZES[size]} ${className}`} {...props} />;
+  return <UiInput type={type} className={`${BASE} ${SIZES[size]} ${className}`} {...props} />;
 }

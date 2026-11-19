@@ -69,6 +69,40 @@ describe("Button", () => {
     );
   });
 
+  it("is ui-sdk's button part", () => {
+    render(<Button>copy link</Button>);
+    expect(screen.getByRole("button", { name: "copy link" })).toHaveAttribute(
+      "data-slot",
+      "button",
+    );
+  });
+
+  it("presses with Enter and Space from the keyboard", async () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick}>reveal</Button>);
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: "reveal" })).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard(" ");
+    expect(onClick).toHaveBeenCalledTimes(2);
+  });
+
+  it("leaves the tab order and ignores presses while disabled", async () => {
+    const onClick = vi.fn();
+    render(
+      <>
+        <Button disabled onClick={onClick}>
+          join room
+        </Button>
+        <Button>copy link</Button>
+      </>,
+    );
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: "copy link" })).toHaveFocus();
+    await userEvent.click(screen.getByRole("button", { name: "join room" }));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
   it("adds layout classes from the caller and passes other props through", async () => {
     const onClick = vi.fn();
     render(

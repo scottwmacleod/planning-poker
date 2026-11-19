@@ -9,10 +9,7 @@ import {
 } from "../../lib/types";
 import CardDeck from "../components/CardDeck";
 import ParticipantList from "../components/ParticipantList";
-import Button from "../components/ui/Button";
-import Checkbox from "../components/ui/Checkbox";
-import Field from "../components/ui/Field";
-import Input from "../components/ui/Input";
+import { Button, Checkbox, Field, Input } from "../components/ui";
 import VoteResults from "../components/VoteResults";
 
 // Read when connecting rather than at import, so tests can stub the env per case.

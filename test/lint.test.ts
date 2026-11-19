@@ -9,10 +9,14 @@ const biome = path.join(root, "node_modules/.bin/biome");
 
 // Biome's stdin mode always exits 0 with --write and 1 without, so plant real files.
 const dir = mkdtempSync(path.join(root, "test/.planted-"));
-afterAll(() => rmSync(dir, { recursive: true, force: true }));
+const uiDir = mkdtempSync(path.join(root, "src/components/ui/.planted-"));
+afterAll(() => {
+  rmSync(dir, { recursive: true, force: true });
+  rmSync(uiDir, { recursive: true, force: true });
+});
 
-function lint(source: string, name = "planted.ts") {
-  const file = path.join(dir, name);
+function lint(source: string, name = "planted.ts", into = dir) {
+  const file = path.join(into, name);
   writeFileSync(file, source);
   return spawnSync(biome, ["lint", file], { cwd: root, encoding: "utf8" });
 }
@@ -26,6 +30,18 @@ describe("Biome lint", () => {
     const source =
       'import { useState } from "react";\nexport function C({ on }: { on: boolean }) {\n  if (on) useState(0);\n  return null;\n}\n';
     expect(lint(source, "planted.tsx").status).not.toBe(0);
+  });
+
+  const uiSdkImport = 'export { Button } from "@ui-sdk/react/button";\n';
+
+  it("fails on a ui-sdk import outside src/components/ui", () => {
+    const result = lint(uiSdkImport);
+    expect(result.status).not.toBe(0);
+    expect(result.stdout + result.stderr).toContain("noRestrictedImports");
+  });
+
+  it("allows ui-sdk imports inside src/components/ui", () => {
+    expect(lint(uiSdkImport, "planted.ts", uiDir).status).toBe(0);
   });
 
   it("passes clean code", () => {
