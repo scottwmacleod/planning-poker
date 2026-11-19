@@ -1,0 +1,19 @@
+name: audit
+
+# npm audit, from sm-core. Not a required check: a new advisory can turn it
+# red on an unrelated PR.
+
+on:
+  pull_request:
+    paths: ["**/package.json", "**/package-lock.json"]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "43 5 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    uses: scottwmacleod/sm-core/.github/workflows/audit.yml@v26.11.3

@@ -1,9 +1,13 @@
-# M-2: turn on squash auto-merge for every non-draft PR from a branch in this repo. Fork PRs are merged by hand. Merges once required checks pass.
-name: Auto-merge
+name: auto-merge
+
+# Squash auto-merge for every PR from this repo's own branches, from sm-core's
+# shared workflow. A PR labelled `hold` never gets auto-merge, so it waits for
+# Scott. Dependabot PRs go through dependabot-automerge.yml instead.
 
 on:
   pull_request:
-    types: [opened, ready_for_review, reopened]
+    branches: [main]
+    types: [opened, ready_for_review, reopened, labeled, unlabeled]
 
 permissions:
   contents: write
@@ -11,11 +15,6 @@ permissions:
 
 jobs:
   auto-merge:
-    if: github.event.pull_request.draft == false && github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    uses: scottwmacleod/sm-core/.github/workflows/auto-merge.yml@v26.11.3
+    with:
+      hold-label: hold

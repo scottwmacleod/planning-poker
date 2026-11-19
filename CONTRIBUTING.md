@@ -39,7 +39,7 @@ Read [GLOSSARY.md](GLOSSARY.md) before naming anything, and use its terms in cod
 - Your change is done when this passes:
 
   ```bash
-  npm run typecheck && npm run lint && npm test && npm run build
+  npm run check
   ```
 
 ## Opening the pull request

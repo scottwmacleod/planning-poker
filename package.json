@@ -7,12 +7,15 @@
     "node": ">=26"
   },
   "scripts": {
+    "prepare": "node vendor/sm-core/tooling/hooks/install.mjs",
     "dev": "concurrently \"vite\" \"wrangler dev\"",
     "dev:app": "vite",
     "dev:room-server": "wrangler dev",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit && tsc -p room-server",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build && node vendor/sm-core/verify.mjs",
+    "typecheck": "bun check --no-script && bun check --no-script -p room-server",
+    "typecheck:tsc": "tsc --noEmit && tsc -p room-server",
     "lint": "biome check .",
     "format": "biome format --write .",
     "test": "vitest run",

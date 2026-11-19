@@ -73,7 +73,7 @@ function state(overrides: Partial<RoomState> = {}): RoomState & { type: "state" 
 function socket() {
   const live = sockets.filter((s) => !s.closed);
   expect(live).toHaveLength(1);
-  return live[0];
+  return live[0]!;
 }
 
 function sentOf(type: ClientMessage["type"]) {

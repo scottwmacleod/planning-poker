@@ -22,6 +22,6 @@ export function roomPath(id: string) {
 
 /** The room id from `/room/:id`, or null for any other path. */
 export function roomIdFrom(pathname: string) {
-  const match = /^\/room\/([^/]+)\/?$/.exec(pathname);
-  return match ? decodeURIComponent(match[1]) : null;
+  const id = /^\/room\/([^/]+)\/?$/.exec(pathname)?.[1];
+  return id === undefined ? null : decodeURIComponent(id);
 }

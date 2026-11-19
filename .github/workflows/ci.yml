@@ -1,64 +1,79 @@
-name: CI
+name: ci
+
+# planning-poker's gates, from sm-core's shared workflows, plus the room server
+# bundle. `ci` is the only required check: it passes when every web-ci job,
+# the budgets and the room server bundle passed. Merging to main deploys the
+# room server. The daily run on main seeds the node_modules cache and main's
+# bundle sizes, because PRs merged by auto-merge.yml start no push runs.
 
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  pull-requests: read # web-ci lists a PR's files for skip-paths
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
+  web:
+    uses: scottwmacleod/sm-core/.github/workflows/web-ci.yml@v26.11.3
+    with:
+      typecheck-command: bun run typecheck
+      skip-paths: '^(docs/|\.claude/|\.github/workflows/(auto-merge|audit|behind|dependabot-automerge)\.yml$|skills-lock\.json$|LICENSE$|[^/]+\.md$)'
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
+  budgets:
+    uses: scottwmacleod/sm-core/.github/workflows/budgets.yml@v26.11.3
+    permissions:
+      contents: read
+      pull-requests: write # one bundle-size comment per PR
+    with:
+      dist-dir: dist
+      js-kb: 100
+      css-kb: 10
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Test
-        run: npm test
-
-      - name: Build app
-        run: npm run build
-
-      - name: Bundle room server (dry run, no deploy)
-        run: npx wrangler deploy --dry-run
-
-  deploy-worker:
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  room-server:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Bundle room server (dry run, no deploy)
+        run: npx wrangler deploy --dry-run
 
-      - name: Install dependencies
-        run: npm ci
+  # The check branch protection requires.
+  ci:
+    needs: [web, budgets, room-server]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: >-
+          test "${{ needs.web.result }}" = success &&
+          test "${{ needs.budgets.result }}" = success &&
+          test "${{ needs.room-server.result }}" = success
 
+  deploy-worker:
+    needs: ci
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency: deploy-room-server
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
       - name: Deploy room server to Cloudflare
         run: npx wrangler deploy
         env:
