@@ -30,23 +30,42 @@ describe("Button", () => {
     }
   });
 
-  it("signal buttons are lime, press down and go quiet when disabled", () => {
+  it("signal buttons are lime, darken to signal-hover, press down and are never lime when disabled", () => {
     render(
       <Button variant="signal" disabled>
         join room
       </Button>,
     );
     const btn = screen.getByRole("button", { name: "join room" });
-    expect(btn).toHaveClass("bg-signal", "text-on-signal", "press", "enabled:hover:bg-signal-ink");
-    expect(btn).toHaveClass("disabled:bg-transparent", "disabled:text-ink-muted");
+    expect(btn).toHaveClass(
+      "bg-signal",
+      "text-on-signal",
+      "press",
+      "enabled:hover:bg-signal-hover",
+    );
+    expect(btn.className).not.toMatch(/hover:bg-signal-ink|hover:text-ground/);
+    expect(btn).toHaveClass(
+      "disabled:border-control-line",
+      "disabled:bg-transparent",
+      "disabled:text-ink-muted",
+      "disabled:cursor-not-allowed",
+    );
     expect(btn).toBeDisabled();
   });
 
-  it("outline buttons use the control outline", () => {
+  it("signal buttons are at least 44px tall", () => {
+    render(<Button variant="signal">create room</Button>);
+    expect(screen.getByRole("button", { name: "create room" })).toHaveClass("min-h-11");
+  });
+
+  it("outline buttons use the control outline and fill with surface-hover on hover", () => {
     render(<Button>copy link</Button>);
     expect(screen.getByRole("button", { name: "copy link" })).toHaveClass(
       "border-control-line",
-      "hover:border-ink",
+      "text-ink",
+      "enabled:hover:border-ink",
+      "enabled:hover:bg-surface-hover",
+      "disabled:text-ink-muted",
     );
   });
 

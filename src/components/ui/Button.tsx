@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 
-// Shared button in the scottmacleod.co style: 2px corners, mono type, lime
-// `signal` for the main action on a screen and `outline` for everything else.
+// Shared button, per the sm_ core component table: 2px corners, mono type,
+// lime `signal` for the one main action on a screen and `outline` for the rest.
 // Variants are a plain class map; callers add layout classes only (width, margin).
 
 const BASE =
@@ -9,8 +9,9 @@ const BASE =
 
 const VARIANTS = {
   signal:
-    "press border-signal-ink bg-signal font-semibold text-on-signal enabled:hover:bg-signal-ink enabled:hover:text-ground disabled:border-control-line disabled:bg-transparent disabled:text-ink-muted",
-  outline: "border-control-line text-ink hover:border-ink",
+    "press min-h-11 border-signal-ink bg-signal font-semibold text-on-signal enabled:hover:bg-signal-hover disabled:border-control-line disabled:bg-transparent disabled:text-ink-muted",
+  outline:
+    "border-control-line text-ink enabled:hover:border-ink enabled:hover:bg-surface-hover disabled:text-ink-muted",
 };
 
 const SIZES = {
