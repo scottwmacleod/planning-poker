@@ -1,3 +1,4 @@
+import { FieldLabel, Field as UiField } from "@ui-sdk/react/field";
 import type { ComponentProps } from "react";
 import Input from "./Input";
 
@@ -7,13 +8,14 @@ interface FieldProps extends ComponentProps<typeof Input> {
 }
 
 // A visible label above an input, in the lowercase mono voice.
+// ui-sdk's field ties the label (and any later error text) to the input.
 export default function Field({ id, label, ...props }: FieldProps) {
   return (
-    <div className="flex flex-col gap-space-2">
-      <label htmlFor={id} className="font-mono text-sm text-ink-muted">
+    <UiField className="flex flex-col gap-space-2">
+      <FieldLabel htmlFor={id} className="font-mono text-sm text-ink-muted">
         {label}
-      </label>
+      </FieldLabel>
       <Input id={id} {...props} />
-    </div>
+    </UiField>
   );
 }

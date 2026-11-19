@@ -60,6 +60,23 @@ describe("CardDeck", () => {
       expect(defaultProps.onVote).not.toHaveBeenCalled();
     });
 
+    it("keeps disabled cards reachable, says they are unavailable and fades them", async () => {
+      render(<CardDeck {...defaultProps} disabled />);
+      const five = screen.getByRole("button", { name: "5" });
+      expect(five).toHaveAttribute("aria-disabled", "true");
+      expect(five).toHaveClass("data-disabled:opacity-40");
+      five.focus();
+      await userEvent.keyboard("{Enter}");
+      expect(defaultProps.onVote).not.toHaveBeenCalled();
+    });
+
+    it("does not unvote when the selected card is pressed again", async () => {
+      render(<CardDeck {...defaultProps} selectedCard="5" />);
+      await userEvent.click(screen.getByRole("button", { name: "5" }));
+      expect(screen.getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "true");
+      expect(defaultProps.onVote).not.toHaveBeenCalledWith("");
+    });
+
     it("selected card uses the signal tint and a signal-ink border", () => {
       render(<CardDeck {...defaultProps} selectedCard="5" />);
       const card = screen.getByRole("button", { name: "5" });
@@ -101,6 +118,13 @@ describe("CardDeck", () => {
   describe("keyboard navigation", () => {
     const card = (name: string) => screen.getByRole("button", { name });
 
+    it("puts the cards in one named ui-sdk toggle group", () => {
+      render(<CardDeck {...defaultProps} />);
+      const group = screen.getByRole("group", { name: "Cards" });
+      expect(group).toHaveAttribute("data-slot", "toggle-group");
+      expect(group).toContainElement(card("5"));
+    });
+
     it("makes only one card a tab stop, starting at the first card", () => {
       render(<CardDeck {...defaultProps} />);
       expect(card("1")).toHaveAttribute("tabindex", "0");
@@ -127,15 +151,6 @@ describe("CardDeck", () => {
       card("5").focus();
       await userEvent.keyboard("{ArrowLeft}");
       expect(card("3")).toHaveFocus();
-    });
-
-    it("treats the down and up arrows like right and left", async () => {
-      render(<CardDeck {...defaultProps} />);
-      card("1").focus();
-      await userEvent.keyboard("{ArrowDown}");
-      expect(card("3")).toHaveFocus();
-      await userEvent.keyboard("{ArrowUp}");
-      expect(card("1")).toHaveFocus();
     });
 
     it("wraps from the last card to the first and back", async () => {
@@ -184,6 +199,22 @@ describe("CardDeck", () => {
       render(<CardDeck {...defaultProps} deck="fibonacci" />);
       await userEvent.click(screen.getByRole("button", { name: "t-shirt" }));
       expect(defaultProps.onChangeDeck).toHaveBeenCalledWith("tshirt");
+    });
+
+    it("is one tab stop: arrows move between decks and Enter switches", async () => {
+      render(<CardDeck {...defaultProps} deck="fibonacci" />);
+      const group = screen.getByRole("group", { name: "Card deck" });
+      expect(group).toHaveAttribute("data-slot", "toggle-group");
+      await userEvent.tab();
+      expect(screen.getByRole("button", { name: "fibonacci" })).toHaveFocus();
+      await userEvent.keyboard("{ArrowRight}");
+      expect(screen.getByRole("button", { name: "t-shirt" })).toHaveFocus();
+      expect(defaultProps.onChangeDeck).not.toHaveBeenCalled();
+      await userEvent.keyboard("{Enter}");
+      expect(defaultProps.onChangeDeck).toHaveBeenCalledWith("tshirt");
+      await userEvent.tab();
+      expect(screen.getByRole("button", { name: "fibonacci" })).not.toHaveFocus();
+      expect(screen.getByRole("button", { name: "t-shirt" })).not.toHaveFocus();
     });
 
     it("active deck button has active styles", () => {

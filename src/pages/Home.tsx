@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid";
 import { useState } from "react";
-import Button from "../components/ui/Button";
-import Field from "../components/ui/Field";
+import { Button, Field } from "../components/ui";
 import { navigate, roomPath } from "../navigation";
 
 export default function Home() {

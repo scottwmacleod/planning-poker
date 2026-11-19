@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it } from "vitest";
 import Input from "./Input";
@@ -23,6 +24,16 @@ describe("Input", () => {
   it("uses 16px text at the default size", () => {
     render(<Input aria-label="name" />);
     expect(screen.getByRole("textbox", { name: "name" })).toHaveClass("text-base");
+  });
+
+  it("is ui-sdk's input part and takes typing from the keyboard", async () => {
+    render(<Input aria-label="name" />);
+    const input = screen.getByRole("textbox", { name: "name" });
+    expect(input).toHaveAttribute("data-slot", "input");
+    await userEvent.tab();
+    expect(input).toHaveFocus();
+    await userEvent.keyboard("Alice");
+    expect(input).toHaveValue("Alice");
   });
 
   it("forwards its ref", () => {

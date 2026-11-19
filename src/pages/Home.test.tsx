@@ -9,11 +9,17 @@ vi.mock("../navigation", async (original) => ({
 }));
 vi.mock("nanoid", () => ({ nanoid: () => "newroom1" }));
 
+import { expectNoAxeViolations } from "../../test/axe";
 import Home from "./Home";
 
 beforeEach(() => push.mockClear());
 
 describe("Home page", () => {
+  it("has no axe violations", async () => {
+    const { container } = render(<Home />);
+    await expectNoAxeViolations(container);
+  });
+
   it("titles the page planning-poker with a decorative cursor block", () => {
     const { container } = render(<Home />);
     const h1 = screen.getByRole("heading", { level: 1 });

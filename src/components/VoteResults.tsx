@@ -1,5 +1,5 @@
 import { DECKS, type Deck, type Participant } from "../../lib/types";
-import Button from "./ui/Button";
+import { Button } from "./ui";
 
 interface VoteResultsProps {
   participants: Record<string, Participant>;

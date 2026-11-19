@@ -8,6 +8,19 @@
       "correctness": {
         "noUnusedVariables": "error",
         "noUnusedImports": "error"
+      },
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["@ui-sdk/**"],
+                "message": "Import controls from src/components/ui. Only that folder may import ui-sdk."
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -22,6 +35,16 @@
     ]
   },
   "overrides": [
+    {
+      "includes": ["src/components/ui/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
+          }
+        }
+      }
+    },
     {
       "includes": ["**/*.test.ts", "**/*.test.tsx"],
       "linter": {
