@@ -7,13 +7,14 @@ import { describe, expect, it } from "vitest";
 const css = readFileSync(path.resolve(__dirname, "..", "src/index.css"), "utf8");
 
 describe("motion styles in index.css", () => {
-  it("defines the shared ease-out token", () => {
-    expect(css).toContain("--ease-out: cubic-bezier(0.23, 1, 0.32, 1)");
+  it("eases with sm-core's ease-out, not a copy", () => {
+    expect(css).not.toMatch(/--ease-out:/);
+    expect(css).toContain("var(--sm-ease-out)");
   });
 
   it("gives .press a 160ms scale-down on :active", () => {
     expect(css).toMatch(/\.press:active:not\(:disabled\)\s*{[^}]*transform:\s*scale\(0\.97\)/);
-    expect(css).toMatch(/\.press\s*{[^}]*transition:[^;}]*transform 160ms var\(--ease-out\)/);
+    expect(css).toMatch(/\.press\s*{[^}]*transition:[^;}]*transform 160ms var\(--sm-ease-out\)/);
   });
 
   it("grows distribution bars with scaleX from the left, not width", () => {
