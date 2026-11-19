@@ -355,6 +355,34 @@ describe("RoomPage", () => {
     });
   });
 
+  describe("join and leave notices", () => {
+    const bob: Participant = { id: "bob", name: "Bob", isSpectator: false, vote: null };
+    const notices = () => screen.getByRole("log", { name: "Who joined or left" });
+
+    afterEach(() => vi.useRealTimers());
+
+    it("does not announce the people already in the room when you arrive", async () => {
+      await renderInRoom(state({ participants: { me: me(), bob } }));
+      expect(notices()).toBeEmptyDOMElement();
+    });
+
+    it("says who joined and who left, then clears after four seconds", async () => {
+      await renderInRoom();
+      vi.useFakeTimers();
+      act(() => socket().receive(state({ participants: { me: me(), bob } })));
+      expect(notices()).toHaveTextContent("Bob joined");
+
+      act(() => vi.advanceTimersByTime(2000));
+      act(() => socket().receive(state()));
+      expect(notices()).toHaveTextContent("Bob joinedBob left");
+
+      act(() => vi.advanceTimersByTime(2000));
+      expect(notices()).toHaveTextContent(/^Bob left$/);
+      act(() => vi.advanceTimersByTime(2000));
+      expect(notices()).toBeEmptyDOMElement();
+    });
+  });
+
   describe("copy link", () => {
     // userEvent.setup() installs its own clipboard stub, so these run after it.
     function mockClipboard(writeText: () => Promise<void>) {
