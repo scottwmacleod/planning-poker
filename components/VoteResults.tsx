@@ -21,7 +21,7 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
     .sort((a, b) => {
       // Non-voters go last; everyone else is low to high in deck order.
       if ((a.vote === null) !== (b.vote === null)) return a.vote === null ? 1 : -1;
-      return a.vote === null ? 0 : rank(a.vote) - rank(b.vote!);
+      return a.vote === null || b.vote === null ? 0 : rank(a.vote) - rank(b.vote);
     });
 
   const votes = players.flatMap((p) => (p.vote === null ? [] : [p.vote]));
@@ -129,10 +129,10 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
 }
 
 function outlierDirection(vote: string, allVotes: string[]): "high" | "low" | null {
-  const numeric = allVotes.map(Number).filter((n) => !isNaN(n));
+  const numeric = allVotes.map(Number).filter((n) => !Number.isNaN(n));
   if (numeric.length < 2) return null;
   const v = Number(vote);
-  if (isNaN(v)) return null;
+  if (Number.isNaN(v)) return null;
   const min = Math.min(...numeric);
   const max = Math.max(...numeric);
   if (min === max) return null;

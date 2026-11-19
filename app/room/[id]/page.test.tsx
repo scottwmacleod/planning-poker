@@ -20,7 +20,8 @@ const { FakeSocket, sockets } = vi.hoisted(() => {
     }
 
     addEventListener(type: string, fn: (e: unknown) => void) {
-      (this.listeners[type] ??= []).push(fn);
+      this.listeners[type] ??= [];
+      this.listeners[type].push(fn);
     }
 
     send(raw: string) {
@@ -32,15 +33,21 @@ const { FakeSocket, sockets } = vi.hoisted(() => {
     }
 
     open() {
-      this.listeners.open?.forEach((fn) => fn({}));
+      this.listeners.open?.forEach((fn) => {
+        fn({});
+      });
     }
 
     serverClose(code: number) {
-      this.listeners.close?.forEach((fn) => fn({ code }));
+      this.listeners.close?.forEach((fn) => {
+        fn({ code });
+      });
     }
 
     receive(data: unknown) {
-      this.listeners.message?.forEach((fn) => fn({ data: JSON.stringify(data) }));
+      this.listeners.message?.forEach((fn) => {
+        fn({ data: JSON.stringify(data) });
+      });
     }
   }
 

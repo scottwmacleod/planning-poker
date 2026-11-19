@@ -59,8 +59,8 @@ describe("globals.css design tokens", () => {
   });
 
   it("defines the control-line token with the agreed values", () => {
-    expect(css).toContain("#6B716A");
-    expect(css).toContain("#7C8178");
+    expect(css).toContain("#6b716a");
+    expect(css).toContain("#7c8178");
   });
 
   it("uses a 2px radius and a light theme under prefers-color-scheme", () => {

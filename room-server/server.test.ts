@@ -382,27 +382,27 @@ describe("bad messages", () => {
     ])("rejects %s", (_label, msg) => {
       const bob = makeConn("bob");
       joinRaw(bob, msg);
-      expect(room.state.participants["bob"]).toBeUndefined();
+      expect(room.state.participants.bob).toBeUndefined();
       expect(room.broadcast).not.toHaveBeenCalled();
     });
 
     it("trims the name", () => {
       const bob = makeConn("bob");
       joinRaw(bob, { name: "  Bob  " });
-      expect(room.state.participants["bob"].name).toBe("Bob");
+      expect(room.state.participants.bob.name).toBe("Bob");
     });
 
     it("caps the name at 24 characters", () => {
       const bob = makeConn("bob");
       joinRaw(bob, { name: "B".repeat(100) });
-      expect(room.state.participants["bob"].name).toBe("B".repeat(24));
+      expect(room.state.participants.bob.name).toBe("B".repeat(24));
     });
   });
 
   describe("rename", () => {
     it("caps the name at 24 characters", () => {
-      send(room, alice, { type: "rename", name: "  " + "A".repeat(100) });
-      expect(room.state.participants["alice"].name).toBe("A".repeat(24));
+      send(room, alice, { type: "rename", name: `  ${"A".repeat(100)}` });
+      expect(room.state.participants.alice.name).toBe("A".repeat(24));
     });
   });
 
@@ -410,7 +410,7 @@ describe("bad messages", () => {
     it("accepts a card from the current deck after a deck change", () => {
       send(room, alice, { type: "changeDeck", deck: "tshirt" });
       send(room, alice, { type: "vote", value: "XL" });
-      expect(room.state.participants["alice"].vote).toBe("XL");
+      expect(room.state.participants.alice.vote).toBe("XL");
     });
 
     it("rejects a card from the other deck", () => {
@@ -421,7 +421,7 @@ describe("bad messages", () => {
 
     it('accepts "?"', () => {
       send(room, alice, { type: "vote", value: "?" });
-      expect(room.state.participants["alice"].vote).toBe("?");
+      expect(room.state.participants.alice.vote).toBe("?");
     });
   });
 });

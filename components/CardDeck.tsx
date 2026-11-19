@@ -58,9 +58,11 @@ export default function CardDeck({
 
   return (
     <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
+      {/* biome-ignore lint/a11y/useSemanticElements: a fieldset's min-inline-size breaks the segmented control's flex row */}
       <div role="group" aria-label="Card deck" className="flex font-mono text-sm">
         {DECK_BUTTONS.map(({ deck: d, label }, i) => (
           <button
+            type="button"
             key={d}
             onClick={() => onChangeDeck(d)}
             aria-pressed={deck === d}
@@ -79,6 +81,7 @@ export default function CardDeck({
           const isSelected = selectedCard === val;
           return (
             <button
+              type="button"
               key={val}
               ref={(el) => {
                 cardRefs.current[i] = el;

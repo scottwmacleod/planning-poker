@@ -95,7 +95,7 @@ describe("VoteResults", () => {
     it("cards are staggered 80ms apart", () => {
       renderResults({ a: player("a", "3"), b: player("b", "5"), c: player("c", "8") });
       expect(cards().map((c) => c.style.getPropertyValue("--i"))).toEqual(["0", "1", "2"]);
-      cards().forEach((c) => expect(c).toHaveClass("deal-in"));
+      for (const c of cards()) expect(c).toHaveClass("deal-in");
     });
   });
 
@@ -132,13 +132,13 @@ describe("VoteResults", () => {
 
     it("no outliers when every numeric vote is the same", () => {
       renderResults({ a: player("a", "5"), b: player("b", "5") });
-      cards().forEach((card) => expect(card).not.toHaveClass("border-wip"));
+      for (const card of cards()) expect(card).not.toHaveClass("border-wip");
       expect(screen.queryByText(/↑|↓/)).not.toBeInTheDocument();
     });
 
     it("no outliers when all non-numeric", () => {
       renderResults({ a: player("a", "?"), b: player("b", "?") });
-      cards().forEach((card) => expect(card).not.toHaveClass("border-wip"));
+      for (const card of cards()) expect(card).not.toHaveClass("border-wip");
     });
   });
 
