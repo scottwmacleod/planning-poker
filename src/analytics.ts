@@ -1,4 +1,5 @@
-import { startPostHog } from "../vendor/sm-core/tooling/analytics/sm-posthog.js";
+import type { Deck } from "../lib/types";
+import { capture, startPostHog } from "../vendor/sm-core/tooling/analytics/sm-posthog.js";
 
 // Public by design: a PostHog project token can only write events.
 const TOKEN = "phc_rKDLfEFrPFjYd4botU7tS9oy4MsNPHbjwsGqTSr4GLB5";
@@ -42,4 +43,25 @@ export function startAnalytics() {
       before_send: beforeSend,
     },
   });
+}
+
+// Goal events for experiments. They never carry a room id, a name or a vote value.
+// Rooms this tab created, kept in memory only, so `room_joined` can say who made the room.
+const createdRooms = new Set<string>();
+
+export function trackRoomCreated(roomId: string) {
+  createdRooms.add(roomId);
+  capture("room_created");
+}
+
+export function trackRoomJoined(roomId: string) {
+  capture("room_joined", { is_creator: createdRooms.has(roomId) });
+}
+
+export function trackVoteCast(deck: Deck) {
+  capture("vote_cast", { deck });
+}
+
+export function trackVotesRevealed(voters: number) {
+  capture("votes_revealed", { voters });
 }

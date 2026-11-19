@@ -1,5 +1,47 @@
-import { describe, expect, it } from "vitest";
-import { beforeSend, scrubRoomIds } from "./analytics";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  beforeSend,
+  scrubRoomIds,
+  trackRoomCreated,
+  trackRoomJoined,
+  trackVoteCast,
+  trackVotesRevealed,
+} from "./analytics";
+
+const { capture } = vi.hoisted(() => ({ capture: vi.fn() }));
+vi.mock("../vendor/sm-core/tooling/analytics/sm-posthog.js", () => ({
+  capture,
+  startPostHog: vi.fn(),
+}));
+
+beforeEach(() => capture.mockClear());
+
+describe("goal events", () => {
+  it("sends room_created with no properties", () => {
+    trackRoomCreated("abc12345");
+    expect(capture).toHaveBeenCalledExactlyOnceWith("room_created");
+  });
+
+  it("marks the creator on room_joined, and nobody else", () => {
+    trackRoomCreated("mine1234");
+    capture.mockClear();
+    trackRoomJoined("mine1234");
+    trackRoomJoined("other999");
+    expect(capture.mock.calls).toEqual([
+      ["room_joined", { is_creator: true }],
+      ["room_joined", { is_creator: false }],
+    ]);
+  });
+
+  it("sends only the deck with a vote and only the count on reveal", () => {
+    trackVoteCast("tshirt");
+    trackVotesRevealed(3);
+    expect(capture.mock.calls).toEqual([
+      ["vote_cast", { deck: "tshirt" }],
+      ["votes_revealed", { voters: 3 }],
+    ]);
+  });
+});
 
 describe("scrubRoomIds", () => {
   it("replaces the room id in a path and a full URL", () => {
