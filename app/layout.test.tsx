@@ -1,7 +1,7 @@
-import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, it, expect, vi } from "vitest";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/font/google", () => ({
   Geist: () => ({ variable: "geist-sans-var" }),
@@ -37,9 +37,23 @@ const css = readFileSync(path.join(__dirname, "globals.css"), "utf8");
 
 describe("globals.css design tokens", () => {
   it.each([
-    "ground", "surface", "surface-sunken", "code-bg", "line", "line-strong",
-    "control-line", "ink", "ink-body", "ink-muted", "signal", "on-signal",
-    "signal-ink", "signal-tint", "wip", "wip-tint", "removed",
+    "ground",
+    "surface",
+    "surface-sunken",
+    "code-bg",
+    "line",
+    "line-strong",
+    "control-line",
+    "ink",
+    "ink-body",
+    "ink-muted",
+    "signal",
+    "on-signal",
+    "signal-ink",
+    "signal-tint",
+    "wip",
+    "wip-tint",
+    "removed",
   ])("defines the %s colour token", (name) => {
     expect(css).toMatch(new RegExp(`--color-${name}:`));
   });

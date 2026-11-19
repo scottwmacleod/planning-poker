@@ -35,22 +35,22 @@ To run the two servers in separate terminals, use `npm run dev:next` and `npm ru
 
 The only setting is where the frontend finds the room server. Copy [`.env.example`](.env.example) to `.env.local` if you need to change it.
 
-| Variable | Default | What it does |
-| --- | --- | --- |
+| Variable                       | Default          | What it does                                                                                                                                    |
+| ------------------------------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_ROOM_SERVER_HOST` | `localhost:1999` | Host of the room server, with no `https://`. In production this is the Cloudflare Worker host, `planning-poker.square-poetry-83d1.workers.dev`. |
 
 `NEXT_PUBLIC_*` values are baked into the frontend at build time, so after changing one in Vercel you must redeploy.
 
 ## Scripts
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Start the app and the room server together |
-| `npm test` | Run the test suite once (Vitest) |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run typecheck` | Type-check the app and the room server |
-| `npm run lint` | Lint with ESLint |
-| `npm run build` | Production build of the Next.js app |
+| Command              | What it does                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `npm run dev`        | Start the app and the room server together                                         |
+| `npm test`           | Run the test suite once (Vitest)                                                   |
+| `npm run test:watch` | Run tests in watch mode                                                            |
+| `npm run typecheck`  | Type-check the app and the room server                                             |
+| `npm run lint`       | Lint with ESLint                                                                   |
+| `npm run build`      | Production build of the Next.js app                                                |
 | `npm run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
 CI runs `typecheck`, `lint`, `test` and `build`, plus a dry run of the room server bundle, on every pull request. All of them must pass before a PR can merge.

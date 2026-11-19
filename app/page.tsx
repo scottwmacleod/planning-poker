@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { nanoid } from 'nanoid'
-import Button from '../components/ui/Button'
-import Field from '../components/ui/Field'
+import { nanoid } from "nanoid";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Button from "../components/ui/Button";
+import Field from "../components/ui/Field";
 
 export default function Home() {
-  const router = useRouter()
-  const [joinId, setJoinId] = useState('')
-  const canJoin = joinId.trim() !== ''
+  const router = useRouter();
+  const [joinId, setJoinId] = useState("");
+  const canJoin = joinId.trim() !== "";
 
   function createRoom() {
-    const id = nanoid(8)
-    router.push(`/room/${id}`)
+    const id = nanoid(8);
+    router.push(`/room/${id}`);
   }
 
   function joinRoom(e: React.FormEvent) {
-    e.preventDefault()
-    const id = joinId.trim()
-    if (id) router.push(`/room/${id}`)
+    e.preventDefault();
+    const id = joinId.trim();
+    if (id) router.push(`/room/${id}`);
   }
 
   return (
@@ -52,7 +52,7 @@ export default function Home() {
               id="room-id"
               label="room id"
               value={joinId}
-              onChange={e => setJoinId(e.target.value)}
+              onChange={(e) => setJoinId(e.target.value)}
               placeholder="e.g. abc12345"
             />
             <Button type="submit" variant="signal" size="md" disabled={!canJoin} className="w-full">
@@ -79,5 +79,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )
+  );
 }
