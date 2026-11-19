@@ -14,7 +14,7 @@ const SIGN: Record<Status, { sign: string; classes: string }> = {
   voted: { sign: "+", classes: "text-signal-ink bg-signal-tint" },
   thinking: { sign: "~", classes: "text-wip bg-wip-tint" },
   observing: { sign: "·", classes: "text-ink-muted" },
-  "no-vote": { sign: "−", classes: "text-removed" },
+  "no-vote": { sign: "−", classes: "text-danger" },
 };
 
 function statusOf(p: Participant, phase: Phase): Status {
