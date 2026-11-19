@@ -13,10 +13,11 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit --incremental false && tsc -p room-server",
-    "lint": "eslint",
+    "lint": "biome check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cf-typegen": "wrangler types room-server/worker-configuration.d.ts"
+    "cf-typegen": "wrangler types room-server/worker-configuration.d.ts",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -28,6 +29,7 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.7",
     "@tailwindcss/postcss": "^4.3.5",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -37,11 +39,9 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
     "concurrently": "^10.0.7",
-    "eslint": "^10.14.0",
-    "eslint-config-next": "16.4.6",
     "jsdom": "^31.0.0",
     "tailwindcss": "^4.3.4",
-    "typescript": "~6.0.3",
+    "typescript": "^7.0.2",
     "vitest": "^5.1.0",
     "wrangler": "^4.160.0"
   }
