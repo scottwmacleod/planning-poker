@@ -1,37 +1,40 @@
-export type Deck = 'fibonacci' | 'tshirt'
+export type Deck = "fibonacci" | "tshirt";
 
 export const DECKS: Record<Deck, (string | number)[]> = {
-  fibonacci: [1, 3, 5, 8, 13, 21, '?'],
-  tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?'],
-}
+  fibonacci: [1, 3, 5, 8, 13, 21, "?"],
+  tshirt: ["XS", "S", "M", "L", "XL", "XXL", "?"],
+};
 
 export type Participant = {
-  id: string
-  name: string
-  isSpectator: boolean
-  vote: string | null
-}
+  id: string;
+  name: string;
+  isSpectator: boolean;
+  vote: string | null;
+};
 
-export type Phase = 'voting' | 'revealed'
+export type Phase = "voting" | "revealed";
 
 export type RoomState = {
-  participants: Record<string, Participant>
-  phase: Phase
-  deck: Deck
-}
+  participants: Record<string, Participant>;
+  phase: Phase;
+  deck: Deck;
+};
 
 // Client → Server messages
 export type ClientMessage =
-  | { type: 'join'; name: string; isSpectator: boolean }
-  | { type: 'vote'; value: string }
-  | { type: 'rename'; name: string }
-  | { type: 'setSpectator'; isSpectator: boolean }
-  | { type: 'reveal' }
-  | { type: 'newRound' }
-  | { type: 'changeDeck'; deck: Deck }
+  | { type: "join"; name: string; isSpectator: boolean }
+  | { type: "vote"; value: string }
+  | { type: "rename"; name: string }
+  | { type: "setSpectator"; isSpectator: boolean }
+  | { type: "reveal" }
+  | { type: "newRound" }
+  | { type: "changeDeck"; deck: Deck };
 
 // Server → Client messages
-export type ServerMessage = { type: 'state' } & RoomState
+export type ServerMessage = { type: "state" } & RoomState;
 
 // WebSocket close code the server uses when a room is at its size limit.
-export const ROOM_FULL_CODE = 4000
+export const ROOM_FULL_CODE = 4000;
+
+/** Connections a room accepts before turning new ones away with ROOM_FULL_CODE. */
+export const MAX_CONNECTIONS_PER_ROOM = 50;

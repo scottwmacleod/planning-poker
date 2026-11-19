@@ -1,8 +1,16 @@
-import { routePartykitRequest, Server, type Connection } from 'partyserver'
-import { DECKS, ROOM_FULL_CODE, type ClientMessage, type Deck, type Participant, type RoomState, type ServerMessage } from '../lib/types'
+import { type Connection, routePartykitRequest, Server } from "partyserver";
+import {
+  type ClientMessage,
+  DECKS,
+  type Deck,
+  MAX_CONNECTIONS_PER_ROOM,
+  type Participant,
+  ROOM_FULL_CODE,
+  type RoomState,
+  type ServerMessage,
+} from "../lib/types";
 
-const MAX_NAME_LENGTH = 24
-export const MAX_CONNECTIONS_PER_ROOM = 50
+const MAX_NAME_LENGTH = 24;
 
 // Browsers always send Origin, so this stops other websites using the server.
 // It doesn't stop scripts, which can send any Origin they like.
@@ -12,170 +20,172 @@ const ALLOWED_ORIGINS = [
   // Vercel preview and branch deployments, e.g. planning-poker-git-<branch>-scottwmacleods-projects.vercel.app
   /^https:\/\/planning-poker-[a-z0-9-]+-scottwmacleods-projects\.vercel\.app$/,
   /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
-]
+];
 
 function isAllowedOrigin(origin: string | null): boolean {
-  return origin !== null && ALLOWED_ORIGINS.some(re => re.test(origin))
+  return origin !== null && ALLOWED_ORIGINS.some((re) => re.test(origin));
 }
 
-const isDeck = (v: unknown): v is Deck => typeof v === 'string' && Object.hasOwn(DECKS, v)
+const isDeck = (v: unknown): v is Deck => typeof v === "string" && Object.hasOwn(DECKS, v);
 
 // Trimmed and capped, or null if nothing is left.
 function cleanName(v: unknown): string | null {
-  if (typeof v !== 'string') return null
-  return v.trim().slice(0, MAX_NAME_LENGTH) || null
+  if (typeof v !== "string") return null;
+  return v.trim().slice(0, MAX_NAME_LENGTH) || null;
 }
 
 // Returns a well-formed message, or null for anything the protocol doesn't allow.
 function parseClientMessage(raw: string): ClientMessage | null {
-  let data: unknown
+  let data: unknown;
   try {
-    data = JSON.parse(raw)
+    data = JSON.parse(raw);
   } catch {
-    return null
+    return null;
   }
-  if (typeof data !== 'object' || data === null) return null
-  const msg = data as Record<string, unknown>
+  if (typeof data !== "object" || data === null) return null;
+  const msg = data as Record<string, unknown>;
 
   switch (msg.type) {
-    case 'join': {
-      const name = cleanName(msg.name)
-      if (!name || typeof msg.isSpectator !== 'boolean') return null
-      return { type: 'join', name, isSpectator: msg.isSpectator }
+    case "join": {
+      const name = cleanName(msg.name);
+      if (!name || typeof msg.isSpectator !== "boolean") return null;
+      return { type: "join", name, isSpectator: msg.isSpectator };
     }
-    case 'rename': {
-      if (typeof msg.name !== 'string') return null
-      return { type: 'rename', name: msg.name }
+    case "rename": {
+      if (typeof msg.name !== "string") return null;
+      return { type: "rename", name: msg.name };
     }
-    case 'vote':
-      return typeof msg.value === 'string' ? { type: 'vote', value: msg.value } : null
-    case 'setSpectator':
-      return typeof msg.isSpectator === 'boolean' ? { type: 'setSpectator', isSpectator: msg.isSpectator } : null
-    case 'changeDeck':
-      return isDeck(msg.deck) ? { type: 'changeDeck', deck: msg.deck } : null
-    case 'reveal':
-    case 'newRound':
-      return { type: msg.type }
+    case "vote":
+      return typeof msg.value === "string" ? { type: "vote", value: msg.value } : null;
+    case "setSpectator":
+      return typeof msg.isSpectator === "boolean"
+        ? { type: "setSpectator", isSpectator: msg.isSpectator }
+        : null;
+    case "changeDeck":
+      return isDeck(msg.deck) ? { type: "changeDeck", deck: msg.deck } : null;
+    case "reveal":
+    case "newRound":
+      return { type: msg.type };
     default:
-      return null
+      return null;
   }
 }
 
 export class PokerRoom extends Server {
   state: RoomState = {
     participants: {},
-    phase: 'voting',
-    deck: 'fibonacci',
-  }
+    phase: "voting",
+    deck: "fibonacci",
+  };
 
   onConnect(conn: Connection) {
     if ([...this.getConnections()].length > MAX_CONNECTIONS_PER_ROOM) {
-      conn.close(ROOM_FULL_CODE, 'Room is full')
-      return
+      conn.close(ROOM_FULL_CODE, "Room is full");
+      return;
     }
-    conn.send(this.stateMessage())
+    conn.send(this.stateMessage());
   }
 
   onClose(conn: Connection) {
-    delete this.state.participants[conn.id]
-    this.checkAutoReveal()
-    this.broadcastState()
+    delete this.state.participants[conn.id];
+    this.checkAutoReveal();
+    this.broadcastState();
   }
 
   onMessage(sender: Connection, message: string) {
-    const data = parseClientMessage(message)
-    if (!data) return
+    const data = parseClientMessage(message);
+    if (!data) return;
 
     switch (data.type) {
-      case 'join': {
+      case "join": {
         this.state.participants[sender.id] = {
           id: sender.id,
           name: data.name,
           isSpectator: data.isSpectator,
           vote: null,
-        }
-        break
+        };
+        break;
       }
-      case 'rename': {
-        const p = this.getSelf(sender)
-        const name = cleanName(data.name)
+      case "rename": {
+        const p = this.getSelf(sender);
+        const name = cleanName(data.name);
         if (p && name) {
-          p.name = name
+          p.name = name;
         }
-        break
+        break;
       }
-      case 'setSpectator': {
-        const p = this.getSelf(sender)
+      case "setSpectator": {
+        const p = this.getSelf(sender);
         if (p) {
-          p.isSpectator = data.isSpectator
+          p.isSpectator = data.isSpectator;
           if (p.isSpectator) {
-            p.vote = null
-            this.checkAutoReveal()
+            p.vote = null;
+            this.checkAutoReveal();
           }
         }
-        break
+        break;
       }
-      case 'vote': {
-        if (!DECKS[this.state.deck].map(String).includes(data.value)) return
-        const p = this.getSelf(sender)
-        if (p && !p.isSpectator && this.state.phase === 'voting') {
-          p.vote = data.value
-          this.checkAutoReveal()
+      case "vote": {
+        if (!DECKS[this.state.deck].map(String).includes(data.value)) return;
+        const p = this.getSelf(sender);
+        if (p && !p.isSpectator && this.state.phase === "voting") {
+          p.vote = data.value;
+          this.checkAutoReveal();
         }
-        break
+        break;
       }
-      case 'reveal': {
-        this.state.phase = 'revealed'
-        break
+      case "reveal": {
+        this.state.phase = "revealed";
+        break;
       }
-      case 'newRound': {
-        this.state.phase = 'voting'
+      case "newRound": {
+        this.state.phase = "voting";
         for (const p of Object.values(this.state.participants)) {
-          p.vote = null
+          p.vote = null;
         }
-        break
+        break;
       }
-      case 'changeDeck': {
-        this.state.deck = data.deck
-        this.state.phase = 'voting'
+      case "changeDeck": {
+        this.state.deck = data.deck;
+        this.state.phase = "voting";
         for (const p of Object.values(this.state.participants)) {
-          p.vote = null
+          p.vote = null;
         }
-        break
+        break;
       }
     }
 
-    this.broadcastState()
+    this.broadcastState();
   }
 
   private getSelf(conn: Connection): Participant | undefined {
-    return this.state.participants[conn.id]
+    return this.state.participants[conn.id];
   }
 
   private checkAutoReveal() {
-    if (this.state.phase === 'revealed') return
-    const players = Object.values(this.state.participants).filter(p => !p.isSpectator)
-    if (players.length > 0 && players.every(p => p.vote !== null)) {
-      this.state.phase = 'revealed'
+    if (this.state.phase === "revealed") return;
+    const players = Object.values(this.state.participants).filter((p) => !p.isSpectator);
+    if (players.length > 0 && players.every((p) => p.vote !== null)) {
+      this.state.phase = "revealed";
     }
   }
 
   private stateMessage() {
-    const msg: ServerMessage = { type: 'state', ...this.state }
-    return JSON.stringify(msg)
+    const msg: ServerMessage = { type: "state", ...this.state };
+    return JSON.stringify(msg);
   }
 
   private broadcastState() {
-    this.broadcast(this.stateMessage())
+    this.broadcast(this.stateMessage());
   }
 }
 
 // Routes /parties/main/:room to the PokerRoom Durable Object bound as `Main`.
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    if (!isAllowedOrigin(request.headers.get('Origin'))) {
-      return new Response('Forbidden', { status: 403 })
+    if (!isAllowedOrigin(request.headers.get("Origin"))) {
+      return new Response("Forbidden", { status: 403 });
     }
-    return (await routePartykitRequest(request, env)) ?? new Response('Not found', { status: 404 })
+    return (await routePartykitRequest(request, env)) ?? new Response("Not found", { status: 404 });
   },
-} satisfies ExportedHandler<Env>
+} satisfies ExportedHandler<Env>;

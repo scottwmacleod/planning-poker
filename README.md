@@ -6,10 +6,10 @@ Live site: https://planning-poker.scottmacleod.co
 
 ## How it fits together
 
-- **Frontend:** a Next.js app (`app/`, `components/`, `lib/`).
+- **Frontend:** a React app built with Vite (`src/`). Two routes, `/` and `/room/:id`, on the History API with no router library. `lib/types.ts` holds the message types the app and the room server share.
 - **Room server:** a [PartyServer](https://github.com/cloudflare/partykit/tree/main/packages/partyserver) Durable Object on Cloudflare Workers (`room-server/server.ts`, configured in `wrangler.jsonc`). Each room is one Durable Object; browsers connect to it over a WebSocket on the path `/parties/main/<room id>`, and it keeps the room's state and broadcasts every change to everyone in the room.
 
-See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cloudflare.md) for why the room server runs on Cloudflare.
+See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cloudflare.md) for why the room server runs on Cloudflare, and [docs/adr/0002-vite-instead-of-nextjs.md](docs/adr/0002-vite-instead-of-nextjs.md) for why the app uses Vite.
 
 ## Local setup
 
@@ -24,33 +24,35 @@ npm run dev
 
 `npm run dev` starts two servers side by side:
 
-- the Next.js app on [http://localhost:3000](http://localhost:3000)
+- the app on [http://localhost:5173](http://localhost:5173), served by Vite
 - the room server on `localhost:1999`, run locally by `wrangler dev`
 
-To check it works, open http://localhost:3000, click **Create Room**, enter your name and click **Enter Room**, then paste the room URL into a second browser window (or a private window) and join with another name. Votes in one window show up in the other.
+To check it works, open http://localhost:5173, click **Create Room**, enter your name and click **Enter Room**, then paste the room URL into a second browser window (or a private window) and join with another name. Votes in one window show up in the other.
 
-To run the two servers in separate terminals, use `npm run dev:next` and `npm run dev:room-server`.
+To run the two servers in separate terminals, use `npm run dev:app` and `npm run dev:room-server`.
 
 ## Configuration
 
 The only setting is where the frontend finds the room server. Copy [`.env.example`](.env.example) to `.env.local` if you need to change it.
 
-| Variable | Default | What it does |
-| --- | --- | --- |
+| Variable                       | Default          | What it does                                                                                                                                    |
+| ------------------------------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_ROOM_SERVER_HOST` | `localhost:1999` | Host of the room server, with no `https://`. In production this is the Cloudflare Worker host, `planning-poker.square-poetry-83d1.workers.dev`. |
 
-`NEXT_PUBLIC_*` values are baked into the frontend at build time, so after changing one in Vercel you must redeploy.
+`NEXT_PUBLIC_*` values are baked into the frontend at build time, so after changing one in Vercel you must redeploy. The prefix dates from Next.js; `vite.config.ts` exposes it so the Vercel variable didn't need renaming.
 
 ## Scripts
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Start the app and the room server together |
-| `npm test` | Run the test suite once (Vitest) |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run typecheck` | Type-check the app and the room server |
-| `npm run lint` | Lint with ESLint |
-| `npm run build` | Production build of the Next.js app |
+| Command              | What it does                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `npm run dev`        | Start the app and the room server together                                         |
+| `npm test`           | Run the test suite once (Vitest)                                                   |
+| `npm run test:watch` | Run tests in watch mode                                                            |
+| `npm run typecheck`  | Type-check the app and the room server                                             |
+| `npm run lint`       | Lint and check formatting with Biome                                               |
+| `npm run format`     | Format every file with Biome                                                       |
+| `npm run build`      | Production build of the app into `dist/`                                           |
+| `npm run preview`    | Serve the production build locally                                                 |
 | `npm run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
 CI runs `typecheck`, `lint`, `test` and `build`, plus a dry run of the room server bundle, on every pull request. All of them must pass before a PR can merge.
