@@ -1,8 +1,8 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ClientMessage, Participant, RoomState } from "../../../lib/types";
-import RoomPage from "./page";
+import type { ClientMessage, Participant, RoomState } from "../../lib/types";
+import RoomPage from "./Room";
 
 // A stand-in for PartySocket: no network, just records what the page sends
 // and lets the test fire 'open' / 'message' events by hand.
@@ -56,10 +56,6 @@ const { FakeSocket, sockets } = vi.hoisted(() => {
 
 vi.mock("partysocket", () => ({ default: FakeSocket }));
 
-vi.mock("next/navigation", () => ({
-  useParams: () => ({ id: "abc123" }),
-}));
-
 function me(overrides: Partial<Participant> = {}): Participant {
   return { id: "me", name: "Alice", isSpectator: false, vote: null, ...overrides };
 }
@@ -96,7 +92,7 @@ async function renameTo(user: ReturnType<typeof userEvent.setup>, keys: string) 
 // Render with a stored name, open the socket and deliver the first state.
 async function renderInRoom(roomState = state()) {
   localStorage.setItem("poker-name", "Alice");
-  render(<RoomPage />);
+  render(<RoomPage id="abc123" />);
   await act(async () => {
     socket().open();
     socket().receive(roomState);
@@ -114,7 +110,7 @@ describe("RoomPage", () => {
 
     function connectedHost() {
       localStorage.setItem("poker-name", "Alice");
-      render(<RoomPage />);
+      render(<RoomPage id="abc123" />);
       return socket().options.host;
     }
 
@@ -139,14 +135,14 @@ describe("RoomPage", () => {
 
   describe("joining", () => {
     it("shows the join form when no name is stored", () => {
-      render(<RoomPage />);
+      render(<RoomPage id="abc123" />);
       expect(screen.getByRole("heading", { name: "join room" })).toBeInTheDocument();
       expect(sockets).toHaveLength(0);
     });
 
     it("saves the name and observer choice, then sends join", async () => {
       const user = userEvent.setup();
-      render(<RoomPage />);
+      render(<RoomPage id="abc123" />);
 
       await user.type(screen.getByLabelText("your name"), "  Bob  ");
       await user.click(screen.getByRole("checkbox", { name: /just observing/i }));
@@ -161,7 +157,7 @@ describe("RoomPage", () => {
 
     it("does not let you join with a blank name", async () => {
       const user = userEvent.setup();
-      render(<RoomPage />);
+      render(<RoomPage id="abc123" />);
 
       await user.type(screen.getByLabelText("your name"), "   ");
 
@@ -172,7 +168,7 @@ describe("RoomPage", () => {
     it("connects straight away with a stored name and shows connecting… until the first state", async () => {
       localStorage.setItem("poker-name", "Alice");
       localStorage.setItem("poker-spectator", "true");
-      render(<RoomPage />);
+      render(<RoomPage id="abc123" />);
 
       expect(screen.queryByRole("heading", { name: "join room" })).not.toBeInTheDocument();
       expect(screen.getByRole("status")).toHaveTextContent("connecting…");
@@ -293,7 +289,7 @@ describe("RoomPage", () => {
   describe("full room", () => {
     it("stops reconnecting and says the room is full", async () => {
       localStorage.setItem("poker-name", "Alice");
-      render(<RoomPage />);
+      render(<RoomPage id="abc123" />);
       const s = socket();
       await act(async () => s.serverClose(4000));
 

@@ -4,9 +4,9 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-const css = readFileSync(path.resolve(__dirname, "..", "app/globals.css"), "utf8");
+const css = readFileSync(path.resolve(__dirname, "..", "src/index.css"), "utf8");
 
-describe("motion styles in globals.css", () => {
+describe("motion styles in index.css", () => {
   it("defines the shared ease-out token", () => {
     expect(css).toContain("--ease-out: cubic-bezier(0.23, 1, 0.32, 1)");
   });

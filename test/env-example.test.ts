@@ -6,7 +6,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = path.resolve(__dirname, "..");
-const sourceDirs = ["app", "components", "lib"];
+const sourceDirs = ["src", "lib"];
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
@@ -33,7 +33,9 @@ describe(".env.example", () => {
     const used = new Set(
       sourceDirs
         .flatMap((d) => sourceFiles(path.join(root, d)))
-        .flatMap((f) => [...readFileSync(f, "utf8").matchAll(/process\.env\.(NEXT_PUBLIC_\w+)/g)])
+        .flatMap((f) => [
+          ...readFileSync(f, "utf8").matchAll(/import\.meta\.env\.(NEXT_PUBLIC_\w+)/g),
+        ])
         .map((m) => m[1]),
     );
     expect(used.size).toBeGreaterThan(0);

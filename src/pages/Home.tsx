@@ -1,25 +1,22 @@
-"use client";
-
 import { nanoid } from "nanoid";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "../components/ui/Button";
 import Field from "../components/ui/Field";
+import { navigate } from "../navigation";
 
 export default function Home() {
-  const router = useRouter();
   const [joinId, setJoinId] = useState("");
   const canJoin = joinId.trim() !== "";
 
   function createRoom() {
     const id = nanoid(8);
-    router.push(`/room/${id}`);
+    navigate(`/room/${id}`);
   }
 
   function joinRoom(e: React.FormEvent) {
     e.preventDefault();
     const id = joinId.trim();
-    if (id) router.push(`/room/${id}`);
+    if (id) navigate(`/room/${id}`);
   }
 
   return (

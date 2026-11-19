@@ -1,6 +1,4 @@
-"use client";
-
-import { DECKS, type Deck, type Participant } from "../lib/types";
+import { DECKS, type Deck, type Participant } from "../../lib/types";
 import Button from "./ui/Button";
 
 interface VoteResultsProps {

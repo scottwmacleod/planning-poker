@@ -2,11 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const push = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
+const push = vi.hoisted(() => vi.fn());
+vi.mock("../navigation", () => ({ navigate: push }));
 vi.mock("nanoid", () => ({ nanoid: () => "newroom1" }));
 
-import Home from "./page";
+import Home from "./Home";
 
 beforeEach(() => push.mockClear());
 

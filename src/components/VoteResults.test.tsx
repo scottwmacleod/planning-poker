@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { Participant } from "../lib/types";
+import type { Participant } from "../../lib/types";
 import VoteResults from "./VoteResults";
 
 function player(id: string, vote: string | null, name = `Player ${id}`): Participant {

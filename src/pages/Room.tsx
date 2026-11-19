@@ -1,30 +1,28 @@
-"use client";
-
-import { useParams } from "next/navigation";
 import PartySocket from "partysocket";
 import { type RefObject, useEffect, useRef, useState } from "react";
-import CardDeck from "../../../components/CardDeck";
-import ParticipantList from "../../../components/ParticipantList";
-import Button from "../../../components/ui/Button";
-import Checkbox from "../../../components/ui/Checkbox";
-import Field from "../../../components/ui/Field";
-import Input from "../../../components/ui/Input";
-import VoteResults from "../../../components/VoteResults";
 import {
   type ClientMessage,
   type Participant,
   ROOM_FULL_CODE,
   type RoomState,
   type ServerMessage,
-} from "../../../lib/types";
+} from "../../lib/types";
+import CardDeck from "../components/CardDeck";
+import ParticipantList from "../components/ParticipantList";
+import Button from "../components/ui/Button";
+import Checkbox from "../components/ui/Checkbox";
+import Field from "../components/ui/Field";
+import Input from "../components/ui/Input";
+import VoteResults from "../components/VoteResults";
 
 // Read when connecting rather than at import, so tests can stub the env per case.
-// Keep each variable as a literal `process.env.NEXT_PUBLIC_*` so Next can inline it.
-// The old NEXT_PUBLIC_PARTYKIT_HOST is only a fallback until it is removed from Vercel.
+// Vite exposes NEXT_PUBLIC_* too (see envPrefix in vite.config.ts), so the Vercel
+// variable keeps working. The old NEXT_PUBLIC_PARTYKIT_HOST is only a fallback
+// until it is removed from Vercel.
 function roomServerHost() {
   return (
-    process.env.NEXT_PUBLIC_ROOM_SERVER_HOST ??
-    process.env.NEXT_PUBLIC_PARTYKIT_HOST ??
+    import.meta.env.NEXT_PUBLIC_ROOM_SERVER_HOST ??
+    import.meta.env.NEXT_PUBLIC_PARTYKIT_HOST ??
     "localhost:1999"
   );
 }
@@ -114,8 +112,7 @@ function SpectatorToggle({
   );
 }
 
-export default function RoomPage() {
-  const { id } = useParams<{ id: string }>();
+export default function RoomPage({ id }: { id: string }) {
   const [name, setName] = useState<string | null>(null);
   const [isSpectator, setIsSpectator] = useState(false);
   const [nameInput, setNameInput] = useState("");

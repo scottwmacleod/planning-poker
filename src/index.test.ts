@@ -1,41 +1,10 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-vi.mock("next/font/google", () => ({
-  Geist: () => ({ variable: "geist-sans-var" }),
-  Geist_Mono: () => ({ variable: "geist-mono-var" }),
-}));
-vi.mock("@vercel/analytics/next", () => ({ Analytics: () => null }));
+const css = readFileSync(path.join(__dirname, "index.css"), "utf8");
 
-import RootLayout from "./layout";
-
-function renderLayout() {
-  return renderToStaticMarkup(
-    <RootLayout>
-      <main>content</main>
-    </RootLayout>,
-  );
-}
-
-describe("RootLayout", () => {
-  it("sets both the Geist and Geist Mono font variables on <html>", () => {
-    const html = renderLayout();
-    expect(html).toContain("geist-sans-var");
-    expect(html).toContain("geist-mono-var");
-  });
-
-  it("paints the page with the ground token, not a gray utility", () => {
-    const html = renderLayout();
-    expect(html).toContain("bg-ground");
-    expect(html).not.toContain("bg-gray-950");
-  });
-});
-
-const css = readFileSync(path.join(__dirname, "globals.css"), "utf8");
-
-describe("globals.css design tokens", () => {
+describe("index.css design tokens", () => {
   it.each([
     "ground",
     "surface",

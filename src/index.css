@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "@fontsource/geist/latin-400.css";
+@import "@fontsource/geist/latin-600.css";
+@import "@fontsource/geist-mono/latin-400.css";
+@import "@fontsource/geist-mono/latin-600.css";
 
 /*
  * Design tokens copied once from the scottmacleod.co design system
@@ -82,9 +86,8 @@
   --radius-0: 0px;
   --radius-1: 2px;
 
-  --font-sans:
-    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 body {

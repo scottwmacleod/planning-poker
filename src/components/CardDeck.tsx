@@ -1,7 +1,5 @@
-"use client";
-
 import { type KeyboardEvent, useRef, useState } from "react";
-import { DECKS, type Deck } from "../lib/types";
+import { DECKS, type Deck } from "../../lib/types";
 
 interface CardDeckProps {
   deck: Deck;

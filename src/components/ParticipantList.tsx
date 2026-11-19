@@ -1,7 +1,5 @@
-"use client";
-
 import type { ReactNode } from "react";
-import type { Participant, Phase } from "../lib/types";
+import type { Participant, Phase } from "../../lib/types";
 
 interface ParticipantListProps {
   participants: Record<string, Participant>;
