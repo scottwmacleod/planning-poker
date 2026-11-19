@@ -135,7 +135,6 @@ export default function RoomPage() {
   useEffect(() => {
     const storedName = localStorage.getItem("poker-name");
     const storedSpectator = localStorage.getItem("poker-spectator");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (storedName) setName(storedName);
     if (storedSpectator !== null) setIsSpectator(storedSpectator === "true");
   }, []);

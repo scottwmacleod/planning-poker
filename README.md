@@ -49,7 +49,8 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 | `npm test`           | Run the test suite once (Vitest)                                                   |
 | `npm run test:watch` | Run tests in watch mode                                                            |
 | `npm run typecheck`  | Type-check the app and the room server                                             |
-| `npm run lint`       | Lint with ESLint                                                                   |
+| `npm run lint`       | Lint and check formatting with Biome                                               |
+| `npm run format`     | Format every file with Biome                                                       |
 | `npm run build`      | Production build of the Next.js app                                                |
 | `npm run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
