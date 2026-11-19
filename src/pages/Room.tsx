@@ -7,6 +7,7 @@ import {
   type RoomState,
   type ServerMessage,
 } from "../../lib/types";
+import { trackRoomJoined, trackVoteCast, trackVotesRevealed } from "../analytics";
 import CardDeck from "../components/CardDeck";
 import ParticipantList from "../components/ParticipantList";
 import { Button, Checkbox, Field, Input } from "../components/ui";
@@ -125,6 +126,7 @@ export default function RoomPage({ id }: { id: string }) {
   // instead of the stale ones `name`/`isSpectator` were initialized to.
   const liveNameRef = useRef<string | null>(null);
   const liveSpectatorRef = useRef(false);
+  const joinedRef = useRef(false); // `room_joined` fires once per visit, not per reconnect
 
   useEffect(() => {
     const storedName = localStorage.getItem("poker-name");
@@ -166,6 +168,10 @@ export default function RoomPage({ id }: { id: string }) {
     socket.addEventListener("message", (e: MessageEvent) => {
       const data: ServerMessage = JSON.parse(e.data);
       if (data.type === "state") {
+        if (!joinedRef.current) {
+          joinedRef.current = true;
+          trackRoomJoined(id);
+        }
         setRoomState({ participants: data.participants, phase: data.phase, deck: data.deck });
       }
     });
@@ -351,13 +357,23 @@ export default function RoomPage({ id }: { id: string }) {
                 <CardDeck
                   deck={roomState.deck}
                   selectedCard={myVote}
-                  onVote={(val) => send({ type: "vote", value: val })}
+                  onVote={(val) => {
+                    send({ type: "vote", value: val });
+                    trackVoteCast(roomState.deck);
+                  }}
                   onChangeDeck={(deck) => send({ type: "changeDeck", deck })}
                   disabled={false}
                 />
               )}
 
-              <Button variant="signal" size="md" onClick={() => send({ type: "reveal" })}>
+              <Button
+                variant="signal"
+                size="md"
+                onClick={() => {
+                  send({ type: "reveal" });
+                  trackVotesRevealed(votedCount);
+                }}
+              >
                 flip cards
               </Button>
             </>
