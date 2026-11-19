@@ -4,7 +4,7 @@ const BASE =
   "focus-ring rounded-1 border border-control-line bg-surface text-ink placeholder:text-ink-muted";
 
 const SIZES = {
-  sm: "px-2 py-1 text-sm",
+  sm: "px-2 py-1 text-base sm:text-sm",
   md: "w-full px-space-4 py-space-3 text-base",
 };
 
