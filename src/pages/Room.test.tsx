@@ -232,7 +232,9 @@ describe("RoomPage", () => {
     it("titles the page planning-poker and shows the room code", async () => {
       await renderInRoom();
 
-      expect(screen.getByRole("heading", { level: 1, name: "planning-poker" })).toBeInTheDocument();
+      const h1 = screen.getByRole("heading", { level: 1, name: "planning-poker" });
+      expect(h1.querySelector('.sm-mark .sm-cursor[aria-hidden="true"]')).not.toBeNull();
+      expect(h1).not.toHaveTextContent("_");
       expect(screen.getByText("abc123")).toBeInTheDocument();
     });
 

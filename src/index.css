@@ -62,21 +62,6 @@ body {
   animation-delay: calc(var(--n, 0) * 80ms);
 }
 
-/* Terminal-style cursor on the home title. */
-@keyframes blink {
-  from,
-  50% {
-    opacity: 1;
-  }
-  50.01%,
-  to {
-    opacity: 0;
-  }
-}
-.cursor-blink {
-  animation: blink 1.1s step-end infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .deal-in {
     animation: none;
@@ -85,9 +70,6 @@ body {
     transform: none;
   }
   .bar-grow {
-    animation: none;
-  }
-  .cursor-blink {
     animation: none;
   }
 }
