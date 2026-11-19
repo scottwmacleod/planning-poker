@@ -13,7 +13,7 @@ The replacement must keep one authoritative room per room id, the message protoc
 
 ## Decision
 
-Move the room server to [PartyServer](https://docs.partykit.io/guides/migrate-to-partyserver/), deployed with Wrangler as a Cloudflare Worker backed by Durable Objects, on Cloudflare's free plan. Keep `partysocket` on the client. The Next.js frontend stays on Vercel.
+Move the room server to [PartyServer](https://docs.partykit.io/guides/migrate-to-partyserver/), deployed with Wrangler as a Cloudflare Worker backed by Durable Objects, on Cloudflare's free plan. Keep `partysocket` on the client. The Next.js frontend stays on Vercel. (It has since moved to Vite, still on Vercel: see ADR-0002.)
 
 Scott approved the changes this needs under CLAUDE.md: adding `partyserver` and `wrangler`, removing `partykit`, replacing `partykit.json` with `wrangler.jsonc`, and changing the CI deploy job to `wrangler deploy`.
 

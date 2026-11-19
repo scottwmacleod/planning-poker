@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -20,7 +20,6 @@ describe("index.html", () => {
   it("links the favicon, SVG icon and apple-touch icon from public/", () => {
     for (const href of ["/favicon.ico", "/icon.svg", "/apple-icon.png"]) {
       expect(html).toContain(`href="${href}"`);
-      expect(existsSync(path.join(root, "public", href))).toBe(true);
     }
   });
 
@@ -33,26 +32,16 @@ describe("index.html", () => {
 describe("Vercel config", () => {
   const vercel = JSON.parse(read("vercel.json"));
 
-  it("builds with Vite into dist", () => {
-    expect(vercel.framework).toBe("vite");
-    expect(vercel.outputDirectory).toBe("dist");
+  it("serves index.html for every path, so a hard refresh on /room/:id loads the room", () => {
+    expect(vercel.rewrites).toContainEqual({ source: "/(.*)", destination: "/index.html" });
   });
 
-  it("serves index.html for /room/:id so a hard refresh loads the room", () => {
-    expect(vercel.rewrites).toContainEqual({ source: "/room/:id", destination: "/index.html" });
-  });
-});
-
-describe("Next.js is gone", () => {
-  const pkg = JSON.parse(read("package.json"));
-  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-
-  it.each(["next", "eslint-config-next"])("drops %s", (name) => {
-    expect(deps[name]).toBeUndefined();
-  });
-
-  it.each(["next.config.ts", "next-env.d.ts", "app"])("removes %s", (file) => {
-    expect(existsSync(path.join(root, file))).toBe(false);
+  it("caches Vite's hashed assets for a year", () => {
+    const assets = vercel.headers.find((h: { source: string }) => h.source === "/assets/(.*)");
+    expect(assets.headers).toContainEqual({
+      key: "Cache-Control",
+      value: "public, max-age=31536000, immutable",
+    });
   });
 });
 

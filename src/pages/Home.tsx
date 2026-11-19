@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import { useState } from "react";
 import Button from "../components/ui/Button";
 import Field from "../components/ui/Field";
-import { navigate } from "../navigation";
+import { navigate, roomPath } from "../navigation";
 
 export default function Home() {
   const [joinId, setJoinId] = useState("");
@@ -10,13 +10,13 @@ export default function Home() {
 
   function createRoom() {
     const id = nanoid(8);
-    navigate(`/room/${id}`);
+    navigate(roomPath(id));
   }
 
   function joinRoom(e: React.FormEvent) {
     e.preventDefault();
     const id = joinId.trim();
-    if (id) navigate(`/room/${id}`);
+    if (id) navigate(roomPath(id));
   }
 
   return (

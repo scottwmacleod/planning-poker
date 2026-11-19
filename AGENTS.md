@@ -1,12 +1,6 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
-
 # planning-poker
 
-Real-time planning poker for agile teams. A Next.js frontend on Vercel, plus a PartyServer room server on Cloudflare Workers (`room-server/`, configured in `wrangler.jsonc`). Merging to `main` deploys the room server.
+Real-time planning poker for agile teams. A React and Vite frontend on Vercel (`src/`, two routes on the History API), plus a PartyServer room server on Cloudflare Workers (`room-server/`, configured in `wrangler.jsonc`). Merging to `main` deploys the room server.
 
 ## Role
 

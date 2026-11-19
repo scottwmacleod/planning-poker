@@ -3,7 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const push = vi.hoisted(() => vi.fn());
-vi.mock("../navigation", () => ({ navigate: push }));
+vi.mock("../navigation", async (original) => ({
+  ...(await original<typeof import("../navigation")>()),
+  navigate: push,
+}));
 vi.mock("nanoid", () => ({ nanoid: () => "newroom1" }));
 
 import Home from "./Home";

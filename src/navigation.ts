@@ -16,6 +16,10 @@ export function usePathname() {
   return useSyncExternalStore(subscribe, () => window.location.pathname);
 }
 
+export function roomPath(id: string) {
+  return `/room/${encodeURIComponent(id)}`;
+}
+
 /** The room id from `/room/:id`, or null for any other path. */
 export function roomIdFrom(pathname: string) {
   const match = /^\/room\/([^/]+)\/?$/.exec(pathname);

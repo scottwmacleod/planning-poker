@@ -2,7 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-const read = (f: string) => readFileSync(path.join(__dirname, "../public", f));
+const publicDir = path.join(__dirname, "../public");
+const read = (f: string) => readFileSync(path.join(publicDir, f));
 
 describe("site icons", () => {
   const svg = read("icon.svg").toString("utf8");
@@ -20,7 +21,7 @@ describe("site icons", () => {
   });
 
   it("ships a 180x180 PNG apple-icon", () => {
-    const file = path.join(__dirname, "../public/apple-icon.png");
+    const file = path.join(publicDir, "apple-icon.png");
     expect(existsSync(file)).toBe(true);
     const png = readFileSync(file);
     expect(png.subarray(1, 4).toString()).toBe("PNG");

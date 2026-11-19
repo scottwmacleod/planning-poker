@@ -23,7 +23,7 @@
   "files": {
     "includes": [
       "**",
-      "!**/.next",
+      "!**/dist",
       "!**/node_modules",
       "!**/.wrangler",
       "!room-server/worker-configuration.d.ts"
