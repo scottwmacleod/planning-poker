@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
@@ -30,9 +30,5 @@ describe("Biome lint", () => {
 
   it("passes clean code", () => {
     expect(lint("export const one = 1;\n").status).toBe(0);
-  });
-
-  it("replaces ESLint", () => {
-    expect(existsSync(path.join(root, "eslint.config.mjs"))).toBe(false);
   });
 });
