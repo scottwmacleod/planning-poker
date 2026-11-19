@@ -22,12 +22,11 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-ground text-ink">
       <main className="flex flex-1 flex-col items-center justify-center gap-space-7 p-space-6">
         <div className="text-center">
-          <h1 className="mb-space-2 font-mono text-4xl font-semibold">
-            planning-poker
-            <span
-              aria-hidden="true"
-              className="cursor-blink ml-space-1 inline-block h-[0.9em] w-[0.5em] translate-y-[0.1em] bg-signal"
-            />
+          <h1 className="mb-space-2 text-4xl">
+            <span className="sm-mark">
+              planning-poker
+              <span className="sm-cursor" aria-hidden="true" />
+            </span>
           </h1>
           <p className="font-mono text-ink-muted">estimate together, in real time</p>
         </div>
@@ -58,19 +57,18 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="p-space-5 text-center font-mono text-sm">
+      <footer className="p-space-5 text-center">
         <a
+          className="sm-credit"
           href="https://scottmacleod.co"
-          aria-label="shipped by sm"
-          className="focus-ring group inline-flex items-baseline gap-space-2 rounded-1 border border-control-line px-space-3 py-space-2 text-ink-muted transition-colors hover:border-signal-ink hover:text-ink-body"
+          target="_blank"
+          rel="noopener"
+          aria-label="Shipped by sm_, scottmacleod.co (opens in a new tab)"
         >
-          <span>shipped by </span>
-          <span className="inline-flex items-baseline font-semibold tracking-[-0.06em] text-ink">
+          shipped by{" "}
+          <span className="sm-mark">
             sm
-            <span
-              aria-hidden="true"
-              className="cursor-blink ml-[0.06em] inline-block h-[0.11em] w-[0.46em] bg-signal"
-            />
+            <span className="sm-cursor" aria-hidden="true" />
           </span>
         </a>
       </footer>

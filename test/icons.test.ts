@@ -2,35 +2,22 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-const publicDir = path.join(__dirname, "../public");
-const read = (f: string) => readFileSync(path.join(publicDir, f));
+const root = path.join(__dirname, "..");
+const read = (f: string) => readFileSync(path.join(root, f));
 
+// The icons are byte-for-byte copies of the sm-core logos, so they can't drift.
 describe("site icons", () => {
-  const svg = read("icon.svg").toString("utf8");
-
-  it("icon.svg uses the lime and ground palette", () => {
-    expect(svg).toContain("#c5f04a");
-    expect(svg).toContain("#0b0c0b");
+  it.each([
+    ["public/favicon.svg", "vendor/sm-core/logos/planning-poker-favicon.svg"],
+    ["public/favicon-32.png", "vendor/sm-core/logos/planning-poker-favicon-32.png"],
+    ["public/apple-touch-icon.png", "vendor/sm-core/logos/planning-poker-apple-touch-icon.png"],
+  ])("%s is the sm-core copy", (icon, source) => {
+    expect(read(icon).equals(read(source))).toBe(true);
   });
 
-  it("icon.svg is a square prompt-and-cursor mark", () => {
-    expect(svg).toContain('viewBox="0 0 32 32"');
-    expect(svg).toContain("<polyline");
-  });
-
-  it("ships a 180x180 PNG apple-icon", () => {
-    const file = path.join(publicDir, "apple-icon.png");
-    expect(existsSync(file)).toBe(true);
-    const png = readFileSync(file);
-    expect(png.subarray(1, 4).toString()).toBe("PNG");
-    expect(png.readUInt32BE(16)).toBe(180);
-    expect(png.readUInt32BE(20)).toBe(180);
-  });
-
-  it("favicon.ico holds 16, 32 and 48 px frames", () => {
-    const ico = read("favicon.ico");
-    const count = ico.readUInt16LE(4);
-    const sizes = Array.from({ length: count }, (_, i) => ico[6 + i * 16]);
-    expect(sizes).toEqual(expect.arrayContaining([16, 32, 48]));
+  it("drops the old >_ icons", () => {
+    for (const old of ["icon.svg", "apple-icon.png", "favicon.ico"]) {
+      expect(existsSync(path.join(root, "public", old))).toBe(false);
+    }
   });
 });
