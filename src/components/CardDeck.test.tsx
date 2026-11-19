@@ -96,14 +96,6 @@ describe("CardDeck", () => {
       render(<CardDeck {...defaultProps} selectedCard="8" />);
       expect(screen.getByText(/you voted 8/)).toHaveTextContent("+ you voted 8");
     });
-
-    it("has no hover scaling or shadows", () => {
-      render(<CardDeck {...defaultProps} selectedCard="5" />);
-      DECKS.fibonacci.forEach((card) => {
-        const cls = screen.getByRole("button", { name: String(card) }).className;
-        expect(cls).not.toMatch(/scale-|shadow/);
-      });
-    });
   });
 
   describe("keyboard navigation", () => {

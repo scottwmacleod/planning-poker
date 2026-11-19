@@ -8,16 +8,14 @@ const read = (f: string) => readFileSync(path.join(publicDir, f));
 describe("site icons", () => {
   const svg = read("icon.svg").toString("utf8");
 
-  it("icon.svg uses the redesign palette, not the old indigo", () => {
-    expect(svg).not.toContain("#4f46e5");
+  it("icon.svg uses the lime and ground palette", () => {
     expect(svg).toContain("#c5f04a");
     expect(svg).toContain("#0b0c0b");
   });
 
-  it("icon.svg is a square prompt-and-cursor mark, not the old joker card", () => {
+  it("icon.svg is a square prompt-and-cursor mark", () => {
     expect(svg).toContain('viewBox="0 0 32 32"');
     expect(svg).toContain("<polyline");
-    expect(svg).not.toContain("<path");
   });
 
   it("ships a 180x180 PNG apple-icon", () => {

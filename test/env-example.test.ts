@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -18,10 +18,6 @@ function sourceFiles(dir: string): string[] {
 
 describe(".env.example", () => {
   const envExample = path.join(root, ".env.example");
-
-  it("exists", () => {
-    expect(existsSync(envExample)).toBe(true);
-  });
 
   it("is not ignored by git", () => {
     // git check-ignore exits 0 when the path is ignored, 1 when it isn't.

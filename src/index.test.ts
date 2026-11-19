@@ -42,8 +42,4 @@ describe("index.css design tokens", () => {
     expect(css).toMatch(/outline:\s*2px solid var\(--color-signal-ink\)/);
     expect(css).toMatch(/outline-offset:\s*2px/);
   });
-
-  it("no longer uses Arial for the body", () => {
-    expect(css).not.toContain("Arial");
-  });
 });

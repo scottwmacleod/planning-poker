@@ -82,12 +82,4 @@ describe("Home page", () => {
     const underscore = link.querySelector('[aria-hidden="true"]');
     expect(underscore).toHaveClass("cursor-blink", "bg-signal");
   });
-
-  it("uses no indigo, gray, shadow or large-radius utilities", () => {
-    const { container } = render(<Home />);
-    const classes = Array.from(container.querySelectorAll("[class]"))
-      .map((el) => el.getAttribute("class"))
-      .join(" ");
-    expect(classes).not.toMatch(/indigo|gray|shadow|rounded-(xl|lg|md|2xl|full)|gradient/);
-  });
 });

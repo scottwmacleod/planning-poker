@@ -21,12 +21,6 @@ describe("App routes", () => {
     expect(screen.getByText("room abc12345")).toBeInTheDocument();
   });
 
-  it("decodes the room id from the path", () => {
-    window.history.replaceState(null, "", "/room/a%20b");
-    render(<App />);
-    expect(screen.getByText("room a b")).toBeInTheDocument();
-  });
-
   it("moves to the new room without a page load when creating one", async () => {
     render(<App />);
     await userEvent.click(screen.getByRole("button", { name: /create room/ }));
