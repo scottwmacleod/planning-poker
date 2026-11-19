@@ -12,7 +12,7 @@ Typecheck runs `bun check --no-script` on the app and on `room-server` (Bun 1.4.
 
 ## Rules
 
-- Merging to `main` deploys the room server (`deploy-worker` in `ci.yml`). The daily run on `main` deploys it too.
+- Merging to `main` deploys the room server (`deploy-worker` in `ci.yml`). Auto-merge merges with the `SM_MERGE_TOKEN` secret, because a merge made with `GITHUB_TOKEN` starts no workflows; the daily run on `main` deploys too, which covers Dependabot merges.
 - Ask Scott before changing `wrangler.jsonc` or `.github/workflows/`, as well as the shared list in `sm-conventions.md`.
 - `room-server/server.ts` is the worker's entry module: it may export only the fetch handler and Durable Object classes. Shared constants go in `lib/types.ts`.
 - A PR body follows `/pr`, plus the template's browser test checklist below the product marker.
