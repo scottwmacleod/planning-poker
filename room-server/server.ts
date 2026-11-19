@@ -3,6 +3,7 @@ import {
   type ClientMessage,
   DECKS,
   type Deck,
+  MAX_CONNECTIONS_PER_ROOM,
   type Participant,
   ROOM_FULL_CODE,
   type RoomState,
@@ -10,7 +11,6 @@ import {
 } from "../lib/types";
 
 const MAX_NAME_LENGTH = 24;
-export const MAX_CONNECTIONS_PER_ROOM = 50;
 
 // Browsers always send Origin, so this stops other websites using the server.
 // It doesn't stop scripts, which can send any Origin they like.
