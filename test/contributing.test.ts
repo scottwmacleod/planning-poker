@@ -18,10 +18,10 @@ describe("outside contributions", () => {
   it.each(issueForms)("%s files the issue as needs-triage, one of our triage labels", (form) => {
     const labels = read(form)
       .match(/^labels: \[(.*)\]$/m)?.[1]
-      .split(",")
+      ?.split(",")
       .map((l) => l.trim().replace(/"/g, ""));
-    expect(labels).toEqual(["needs-triage"]);
-    expect(triageLabels).toEqual(expect.arrayContaining(labels!));
+    expect(labels).toContain("needs-triage");
+    expect(triageLabels).toContain("needs-triage");
   });
 
   it("turns off blank issues so reporters pick a form", () => {
@@ -33,7 +33,7 @@ describe("outside contributions", () => {
   });
 
   it("CONTRIBUTING.md states the same definition of done as AGENTS.md", () => {
-    const done = "npm run typecheck && npm run lint && npm test && npm run build";
+    const done = "npm run check";
     expect(read("AGENTS.md")).toContain(done);
     expect(read("CONTRIBUTING.md")).toContain(done);
   });
@@ -46,9 +46,10 @@ describe("outside contributions", () => {
 });
 
 describe("auto-merge workflow", () => {
-  it("only arms auto-merge on PRs from branches in this repo, not forks", () => {
-    expect(read(".github/workflows/auto-merge.yml")).toContain(
-      "github.event.pull_request.head.repo.full_name == github.repository",
-    );
+  // sm-core's auto-merge.yml only arms PRs from branches in this repo, not forks.
+  it("uses sm-core's shared auto-merge, which skips forks and held PRs", () => {
+    const caller = read(".github/workflows/auto-merge.yml");
+    expect(caller).toContain("uses: scottwmacleod/sm-core/.github/workflows/auto-merge.yml@");
+    expect(caller).toContain("hold-label: hold");
   });
 });

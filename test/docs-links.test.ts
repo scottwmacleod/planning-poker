@@ -23,10 +23,10 @@ describe("docs links", () => {
   it.each(docs)("%s only links to files that exist", (doc) => {
     const text = readFileSync(path.join(root, doc), "utf8");
     const targets = [...text.matchAll(/\]\(([^)\s]+)\)/g)]
-      .map((m) => m[1])
+      .map((m) => m[1]!)
       .filter((t) => !/^(https?:|mailto:|#)/.test(t));
     for (const target of targets) {
-      const file = decodeURIComponent(target.split("#")[0]);
+      const file = decodeURIComponent(target.split("#")[0]!);
       expect(existsSync(path.resolve(root, path.dirname(doc), file)), `${doc} -> ${target}`).toBe(
         true,
       );

@@ -1,14 +1,8 @@
 {
+  "extends": "../vendor/sm-core/tooling/tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
     "lib": ["ES2022"],
-    "types": [],
-    "strict": true,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "isolatedModules": true
+    "types": []
   },
   "include": ["**/*.ts", "../lib/types.ts"]
 }

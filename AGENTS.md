@@ -1,21 +1,21 @@
 # planning-poker
 
-Real-time planning poker for agile teams. A React and Vite frontend on Vercel (`src/`, two routes on the History API), plus a PartyServer room server on Cloudflare Workers (`room-server/`, configured in `wrangler.jsonc`). Merging to `main` deploys the room server.
+Real-time planning poker for agile teams. A React and Vite frontend on Vercel (`src/`, two routes on the History API), plus a PartyServer room server on Cloudflare Workers (`room-server/`, configured in `wrangler.jsonc`). `lib/types.ts` holds the messages both sides share. Domain terms are in `GLOSSARY.md`.
 
-## Role
-
-You are the implementer. Make technical decisions yourself and explain outcomes to Scott in plain English. Scott decides product questions, not technical trade-offs.
+The rules every sm_ repo shares are in [`docs/agents/sm-conventions.md`](docs/agents/sm-conventions.md): definition of done, workflow, what to ask Scott first, the sm-core copy, CI, tests, writing and agent skills. This file adds what only applies to planning-poker, and wins where the two differ.
 
 ## Definition of done
 
-`npm run typecheck && npm run lint && npm test && npm run build` pass. CI also dry-runs the room server bundle (`npx wrangler deploy --dry-run`).
+`npm run check` passes: typecheck, Biome, Vitest, the build and `verify.mjs`. CI runs the same gates in the required `ci` check, plus a dry run of the room server bundle (`npx wrangler deploy --dry-run`).
+
+Typecheck runs `bun check --no-script` on the app and on `room-server` (Bun 1.4.4). `npm run typecheck:tsc` is the `tsc` fallback. If `bun check` misbehaves, switch `typecheck` back to it.
 
 ## Rules
 
-- Every change uses `/tdd`: a failing test comes first.
-- Work on a branch, open a PR, and let it auto-merge once CI passes.
-- These need Scott's explicit approval first: adding a third-party dependency, changing `wrangler.jsonc`, or changing `.github/workflows/`.
-- A PR body follows `/pr`, plus the template's browser test checklist.
+- Merging to `main` deploys the room server (`deploy-worker` in `ci.yml`). The daily run on `main` deploys it too.
+- Ask Scott before changing `wrangler.jsonc` or `.github/workflows/`, as well as the shared list in `sm-conventions.md`.
+- `room-server/server.ts` is the worker's entry module: it may export only the fetch handler and Durable Object classes. Shared constants go in `lib/types.ts`.
+- A PR body follows `/pr`, plus the template's browser test checklist below the product marker.
 
 ## Claude Code
 
@@ -35,6 +35,8 @@ The five default labels. See `docs/agents/triage-labels.md`.
 
 Single-context: `GLOSSARY.md` plus `docs/adr/` at the root. See `docs/agents/domain.md`.
 
-### UI skills
+### Shared skills
 
-Emil Kowalski's UI and animation skills ([emilkowalski/skills](https://github.com/emilkowalski/skills)) live in `.claude/skills/`, with versions in `skills-lock.json`. Use them for UI and motion work. Update them with `npx skills update -p -y`.
+The UI skills, Modern Web Guidance (agent-browser) and prune-tests live in `.claude/skills/`, with versions in `skills-lock.json`. When to use each, the pinned versions and the setup are in `sm-conventions.md`. Update them with `npx skills update -p -y`.
+
+For browser checks, `npm run build && npm run preview` serves the built app on port 4173. Run `npm run dev:room-server` beside it so rooms connect.

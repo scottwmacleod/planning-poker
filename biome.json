@@ -1,10 +1,6 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
-  "formatter": {
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 100
-  },
+  "extends": ["./vendor/sm-core/tooling/biome.base.json"],
   "linter": {
     "enabled": true,
     "rules": {
@@ -15,18 +11,14 @@
       }
     }
   },
-  "css": {
-    "parser": {
-      "tailwindDirectives": true
-    }
-  },
   "files": {
     "includes": [
       "**",
       "!**/dist",
       "!**/node_modules",
       "!**/.wrangler",
-      "!room-server/worker-configuration.d.ts"
+      "!room-server/worker-configuration.d.ts",
+      "!vendor"
     ]
   },
   "overrides": [

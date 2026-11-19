@@ -1,19 +1,19 @@
 name: Feature request
-description: Suggest something planning-poker should do.
-labels: ["needs-triage"]
+description: Suggest something new, or a change to how something works.
+labels: ["enhancement", "needs-triage"]
 body:
   - type: markdown
     attributes:
-      value: For open-ended ideas or questions, start a [discussion](https://github.com/scottwmacleod/planning-poker/discussions) instead. Use this form when you have a specific change in mind.
+      value: Check the open issues first in case someone has asked already. For a half-formed idea or a question, start a discussion instead.
   - type: textarea
     id: problem
     attributes:
-      label: What problem would this solve?
-      description: Describe what your team is trying to do and what gets in the way today.
+      label: What are you trying to do?
+      description: Describe the situation, and what gets in the way today.
     validations:
       required: true
   - type: textarea
-    id: idea
+    id: proposal
     attributes:
       label: What would you like to happen?
     validations:

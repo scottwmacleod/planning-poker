@@ -61,14 +61,14 @@ describe("PokerRoom", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice");
       send(room, conn, { type: "vote", value: "5" });
-      expect(room.state.participants["conn-1"].vote).toBe("5");
+      expect(room.state.participants["conn-1"]!.vote).toBe("5");
     });
 
     it("spectators cannot vote", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice", true);
       send(room, conn, { type: "vote", value: "5" });
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
 
     it("votes blocked after reveal", () => {
@@ -76,7 +76,7 @@ describe("PokerRoom", () => {
       join(room, conn, "Alice");
       send(room, conn, { type: "reveal" });
       send(room, conn, { type: "vote", value: "5" });
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
   });
 
@@ -119,7 +119,7 @@ describe("PokerRoom", () => {
       send(room, conn, { type: "reveal" });
       send(room, conn, { type: "newRound" });
       expect(room.state.phase).toBe("voting");
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
   });
 
@@ -132,7 +132,7 @@ describe("PokerRoom", () => {
       send(room, conn, { type: "changeDeck", deck: "tshirt" });
       expect(room.state.deck).toBe("tshirt");
       expect(room.state.phase).toBe("voting");
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
   });
 
@@ -141,21 +141,21 @@ describe("PokerRoom", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice");
       send(room, conn, { type: "rename", name: "Alicia" });
-      expect(room.state.participants["conn-1"].name).toBe("Alicia");
+      expect(room.state.participants["conn-1"]!.name).toBe("Alicia");
     });
 
     it("trims whitespace", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice");
       send(room, conn, { type: "rename", name: "  Bob  " });
-      expect(room.state.participants["conn-1"].name).toBe("Bob");
+      expect(room.state.participants["conn-1"]!.name).toBe("Bob");
     });
 
     it("ignores blank name", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice");
       send(room, conn, { type: "rename", name: "   " });
-      expect(room.state.participants["conn-1"].name).toBe("Alice");
+      expect(room.state.participants["conn-1"]!.name).toBe("Alice");
     });
 
     it("ignores rename from unknown connection", () => {
@@ -182,14 +182,14 @@ describe("PokerRoom", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice");
       send(room, conn, { type: "setSpectator", isSpectator: true });
-      expect(room.state.participants["conn-1"].isSpectator).toBe(true);
+      expect(room.state.participants["conn-1"]!.isSpectator).toBe(true);
     });
 
     it("switches a spectator to a player", () => {
       const conn = makeConn("conn-1");
       join(room, conn, "Alice", true);
       send(room, conn, { type: "setSpectator", isSpectator: false });
-      expect(room.state.participants["conn-1"].isSpectator).toBe(false);
+      expect(room.state.participants["conn-1"]!.isSpectator).toBe(false);
     });
 
     it("clears vote when switching to spectator", () => {
@@ -199,7 +199,7 @@ describe("PokerRoom", () => {
       join(room, conn2, "Bob");
       send(room, conn, { type: "vote", value: "5" });
       send(room, conn, { type: "setSpectator", isSpectator: true });
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
 
     it("triggers auto-reveal if remaining players already voted", () => {
@@ -287,7 +287,7 @@ describe("PokerRoom", () => {
       join(room, conn, "Alice");
       send(room, conn, { type: "newRound" });
       expect(room.state.phase).toBe("voting");
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
 
     it("unknown message type is silently ignored", () => {
@@ -307,7 +307,7 @@ describe("PokerRoom", () => {
       send(room, conn1, { type: "changeDeck", deck: "tshirt" });
       expect(room.state.deck).toBe("tshirt");
       expect(room.state.phase).toBe("voting");
-      expect(room.state.participants["conn-1"].vote).toBeNull();
+      expect(room.state.participants["conn-1"]!.vote).toBeNull();
     });
 
     it("auto-reveal does not fire on empty room", () => {
@@ -390,20 +390,20 @@ describe("bad messages", () => {
     it("trims the name", () => {
       const bob = makeConn("bob");
       joinRaw(bob, { name: "  Bob  " });
-      expect(room.state.participants.bob.name).toBe("Bob");
+      expect(room.state.participants.bob!.name).toBe("Bob");
     });
 
     it("caps the name at 24 characters", () => {
       const bob = makeConn("bob");
       joinRaw(bob, { name: "B".repeat(100) });
-      expect(room.state.participants.bob.name).toBe("B".repeat(24));
+      expect(room.state.participants.bob!.name).toBe("B".repeat(24));
     });
   });
 
   describe("rename", () => {
     it("caps the name at 24 characters", () => {
       send(room, alice, { type: "rename", name: `  ${"A".repeat(100)}` });
-      expect(room.state.participants.alice.name).toBe("A".repeat(24));
+      expect(room.state.participants.alice!.name).toBe("A".repeat(24));
     });
   });
 
@@ -411,7 +411,7 @@ describe("bad messages", () => {
     it("accepts a card from the current deck after a deck change", () => {
       send(room, alice, { type: "changeDeck", deck: "tshirt" });
       send(room, alice, { type: "vote", value: "XL" });
-      expect(room.state.participants.alice.vote).toBe("XL");
+      expect(room.state.participants.alice!.vote).toBe("XL");
     });
 
     it("rejects a card from the other deck", () => {
@@ -422,7 +422,7 @@ describe("bad messages", () => {
 
     it('accepts "?"', () => {
       send(room, alice, { type: "vote", value: "?" });
-      expect(room.state.participants.alice.vote).toBe("?");
+      expect(room.state.participants.alice!.vote).toBe("?");
     });
   });
 });
