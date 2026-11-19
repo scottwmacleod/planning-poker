@@ -10,6 +10,7 @@ import {
 import { trackRoomJoined, trackVoteCast, trackVotesRevealed } from "../analytics";
 import CardDeck from "../components/CardDeck";
 import ParticipantList from "../components/ParticipantList";
+import PresenceNotices from "../components/PresenceNotices";
 import { Button, Checkbox, Field, Input } from "../components/ui";
 import VoteResults from "../components/VoteResults";
 
@@ -330,7 +331,9 @@ export default function RoomPage({ id }: { id: string }) {
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden">
+        <PresenceNotices participants={roomState.participants} selfId={myId} />
+
         {/* Desktop: sidebar */}
         <aside className="hidden md:block w-64 shrink-0 p-6 border-r border-line overflow-y-auto">
           <ParticipantList

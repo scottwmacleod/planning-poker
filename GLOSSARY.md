@@ -20,6 +20,8 @@ The domain terms of planning-poker, as the code and UI use them. Where the two d
 
 **Connection**: one open WebSocket from one browser tab. A participant is identified by their connection id, so a second tab is a second participant. A dropped connection removes the participant; a reconnect of the same socket rejoins under the same id with the latest name and observer setting.
 
+**Join and leave notices**: the short "Bob joined" and "Alice left" lines that show under the room header for about 4 seconds. The browser works them out by comparing participants between state updates, so any closed connection counts as leaving, and a dropped connection that comes back shows as left, then joined. There is no leave button: closing the tab or going back leaves the room.
+
 ## Cards and voting
 
 **Deck**: the set of card values available in a room. There are two: _fibonacci_ (1, 3, 5, 8, 13, 21, ?) and _t-shirt_ (XS, S, M, L, XL, XXL, ?). Changing the deck discards all votes and returns the room to the voting phase.

@@ -65,7 +65,20 @@ body {
   animation-delay: calc(var(--n, 0) * 80ms);
 }
 
+/* Join/leave notices fade out over the last 300ms of the --notice-ms they stay up (set by PresenceNotices.tsx). */
+@keyframes notice-out {
+  to {
+    opacity: 0;
+  }
+}
+.notice-out {
+  animation: notice-out 300ms var(--sm-ease-out) calc(var(--notice-ms) - 300ms) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .notice-out {
+    animation: none;
+  }
   .deal-in {
     animation: none;
   }
