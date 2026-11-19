@@ -35,6 +35,31 @@ describe("beforeSend", () => {
     });
   });
 
+  it("strips room ids from nested exception frames", () => {
+    const event = beforeSend({
+      properties: {
+        $exception_list: [
+          {
+            type: "Error",
+            value: "boom at /room/abc12345",
+            stacktrace: {
+              frames: [{ filename: "https://x.test/room/abc12345/app.js", lineno: 3 }],
+            },
+          },
+        ],
+      },
+    });
+    expect(event.properties).toEqual({
+      $exception_list: [
+        {
+          type: "Error",
+          value: "boom at /room/:id",
+          stacktrace: { frames: [{ filename: "https://x.test/room/:id/app.js", lineno: 3 }] },
+        },
+      ],
+    });
+  });
+
   it("passes a dropped event through", () => {
     expect(beforeSend(null)).toBeNull();
   });

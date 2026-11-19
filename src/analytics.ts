@@ -10,18 +10,24 @@ export function scrubRoomIds(value: string) {
   return value.replace(ROOM_ID, "/room/:id");
 }
 
+function scrubDeep(value: unknown): unknown {
+  if (typeof value === "string") return value.includes("/room/") ? scrubRoomIds(value) : value;
+  if (Array.isArray(value)) return value.map(scrubDeep);
+  if (value && typeof value === "object")
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, scrubDeep(v)]));
+  return value;
+}
+
 interface CaptureResult {
   properties?: Record<string, unknown>;
 }
 
-/** PostHog's before_send hook: strips room ids from every URL and path an event carries. */
+/**
+ * PostHog's before_send hook: strips room ids from every URL and path an event carries,
+ * including the nested stack frames of `$exception` events.
+ */
 export function beforeSend<T extends CaptureResult | null>(event: T): T {
-  const properties = event?.properties;
-  if (!properties) return event;
-  for (const [key, value] of Object.entries(properties)) {
-    if (typeof value === "string" && value.includes("/room/"))
-      properties[key] = scrubRoomIds(value);
-  }
+  if (event?.properties) event.properties = scrubDeep(event.properties) as Record<string, unknown>;
   return event;
 }
 
