@@ -11,9 +11,18 @@ describe("Input", () => {
     expect(input).toHaveClass("rounded-1", "border-control-line", "bg-surface", "focus-ring");
   });
 
-  it("has a compact size for inline editing", () => {
+  it("has a compact size for inline editing, still 16px on phones so iOS doesn't zoom", () => {
     render(<Input aria-label="name" size="sm" className="w-28" />);
-    expect(screen.getByRole("textbox", { name: "name" })).toHaveClass("text-sm", "w-28");
+    expect(screen.getByRole("textbox", { name: "name" })).toHaveClass(
+      "text-base",
+      "sm:text-sm",
+      "w-28",
+    );
+  });
+
+  it("uses 16px text at the default size", () => {
+    render(<Input aria-label="name" />);
+    expect(screen.getByRole("textbox", { name: "name" })).toHaveClass("text-base");
   });
 
   it("forwards its ref", () => {
