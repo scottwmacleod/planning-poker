@@ -44,3 +44,12 @@ describe("App routes", () => {
     expect(screen.getByRole("button", { name: /create room/ })).toBeInTheDocument();
   });
 });
+
+describe("Vercel insights", () => {
+  it("loads Web Analytics and Speed Insights", () => {
+    render(<App />);
+    const scripts = [...document.querySelectorAll("script")].map((s) => s.src);
+    expect(scripts.some((src) => src.includes("insights/script"))).toBe(true);
+    expect(scripts.some((src) => src.includes("speed-insights/script"))).toBe(true);
+  });
+});
