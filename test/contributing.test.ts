@@ -56,8 +56,8 @@ describe("auto-merge workflow", () => {
   // A merge made with GITHUB_TOKEN starts no workflows on main, so the room
   // server wouldn't deploy. The merge token makes the merge start them.
   it("passes the merge token so a merge deploys the room server", () => {
-    expect(read(".github/workflows/auto-merge.yml")).toContain(
-      "merge-token: ${{ secrets.SM_MERGE_TOKEN }}",
+    expect(read(".github/workflows/auto-merge.yml")).toMatch(
+      /merge-token: \$\{\{ secrets\.SM_MERGE_TOKEN \}\}/,
     );
   });
 });
