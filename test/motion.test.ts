@@ -22,15 +22,13 @@ describe("motion styles in index.css", () => {
     expect(css).toMatch(/\.bar-grow\s*{[^}]*transform-origin:\s*left/);
   });
 
-  it("blinks the home cursor with a stepped animation", () => {
-    expect(css).toMatch(/@keyframes blink/);
-    expect(css).toMatch(/\.cursor-blink\s*{[^}]*step-end infinite/);
+  it("leaves the cursor blink to sm-core's .sm-cursor", () => {
+    expect(css).not.toMatch(/cursor-blink|@keyframes blink/);
   });
 
-  it("turns off the scale, bar growth and blink under reduced motion", () => {
+  it("turns off the scale and bar growth under reduced motion", () => {
     const block = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
     expect(block).toMatch(/\.press:active\s*{\s*transform:\s*none/);
     expect(block).toMatch(/\.bar-grow\s*{\s*animation:\s*none/);
-    expect(block).toMatch(/\.cursor-blink\s*{\s*animation:\s*none/);
   });
 });

@@ -287,10 +287,10 @@ export default function RoomPage({ id }: { id: string }) {
       {/* Header */}
       <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-line shrink-0">
         <div className="flex items-center gap-3">
-          <h1 className="font-mono text-sm font-semibold">
-            planning-poker
-            <span aria-hidden="true" className="text-signal-ink">
-              _
+          <h1 className="text-sm">
+            <span className="sm-mark">
+              planning-poker
+              <span className="sm-cursor" aria-hidden="true" />
             </span>
           </h1>
           <span className="font-mono text-sm text-ink-muted">{id}</span>

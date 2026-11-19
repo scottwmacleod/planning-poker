@@ -14,18 +14,16 @@ import Home from "./Home";
 beforeEach(() => push.mockClear());
 
 describe("Home page", () => {
-  it("titles the page planning-poker with a decorative cursor block", () => {
-    const { container } = render(<Home />);
-    const h1 = screen.getByRole("heading", { level: 1 });
-    expect(h1).toHaveTextContent("planning-poker");
-    expect(h1).toHaveClass("font-mono");
-    const cursor = container.querySelector('h1 [aria-hidden="true"]');
-    expect(cursor).toHaveClass("bg-signal");
+  it("titles the page with the planning-poker mark and its sm-core cursor", () => {
+    render(<Home />);
+    const h1 = screen.getByRole("heading", { level: 1, name: "planning-poker" });
+    const mark = h1.querySelector(".sm-mark");
+    expect(mark).toHaveTextContent("planning-poker");
+    expect(mark?.querySelector('.sm-cursor[aria-hidden="true"]')).not.toBeNull();
   });
 
-  it("blinks the cursor block and gives create room press feedback", () => {
-    const { container } = render(<Home />);
-    expect(container.querySelector('h1 [aria-hidden="true"]')).toHaveClass("cursor-blink");
+  it("gives create room press feedback", () => {
+    render(<Home />);
     expect(screen.getByRole("button", { name: "create room" })).toHaveClass("press");
   });
 
@@ -69,17 +67,17 @@ describe("Home page", () => {
     expect(input).toHaveClass("bg-surface", "border-control-line", "rounded-1", "focus-ring");
   });
 
-  it('credits "shipped by sm_" in the footer, linking to scottmacleod.co', () => {
+  it("puts the sm-core credit in the footer, opening scottmacleod.co in a new tab", () => {
     render(<Home />);
-    const link = screen.getByRole("link", { name: "shipped by sm" });
+    const link = screen.getByRole("link", {
+      name: "Shipped by sm_, scottmacleod.co (opens in a new tab)",
+    });
+    expect(link).toHaveClass("sm-credit");
     expect(link).toHaveAttribute("href", "https://scottmacleod.co");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener");
+    expect(link).toHaveTextContent("shipped by sm");
+    expect(link.querySelector('.sm-mark .sm-cursor[aria-hidden="true"]')).not.toBeNull();
     expect(link.closest("footer")).not.toBeNull();
-  });
-
-  it("blinks the credit underscore like the home title cursor, and hides it from assistive tech", () => {
-    render(<Home />);
-    const link = screen.getByRole("link", { name: "shipped by sm" });
-    const underscore = link.querySelector('[aria-hidden="true"]');
-    expect(underscore).toHaveClass("cursor-blink", "bg-signal");
   });
 });
