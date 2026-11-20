@@ -247,7 +247,7 @@ export default function RoomPage({ id }: { id: string }) {
 
   if (!name) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-ground p-6 text-ink">
+      <main className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-ground p-6 text-ink">
         <h1 className="font-mono text-2xl font-semibold">join room</h1>
         <form onSubmit={handleJoin} className="flex flex-col gap-space-4 w-full max-w-sm">
           <Field
@@ -282,7 +282,7 @@ export default function RoomPage({ id }: { id: string }) {
 
   if (roomFull) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-ground p-6 text-ink">
+      <main className="flex min-h-dvh items-center justify-center bg-ground p-6 text-ink">
         <p role="status" className="text-center font-mono text-ink-muted">
           this room is full. try again later, or start a new room.
         </p>
@@ -292,7 +292,7 @@ export default function RoomPage({ id }: { id: string }) {
 
   if (!roomState) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-ground text-ink">
+      <main className="flex min-h-dvh items-center justify-center bg-ground text-ink">
         <p role="status" className="font-mono text-ink-muted">
           connecting…
         </p>
@@ -306,7 +306,7 @@ export default function RoomPage({ id }: { id: string }) {
   const votedCount = players.filter((p) => p.vote !== null).length;
 
   return (
-    <main className="flex min-h-screen flex-col bg-ground text-ink">
+    <main className="flex min-h-dvh flex-col bg-ground text-ink">
       {/* Screen reader phase announcer */}
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {roomState.phase === "voting" ? "Voting in progress" : "Cards revealed"}

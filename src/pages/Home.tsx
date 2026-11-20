@@ -21,7 +21,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-ground text-ink">
+    <div className="flex min-h-dvh flex-col bg-ground text-ink">
       <main className="flex flex-1 flex-col items-center justify-center gap-space-7 p-space-6">
         <div className="text-center">
           <h1 className="mb-space-2 text-4xl">
