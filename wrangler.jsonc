@@ -9,5 +9,19 @@
   },
   // Port the client expects by default (NEXT_PUBLIC_ROOM_SERVER_HOST falls back to localhost:1999).
   "dev": { "port": 1999 },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PokerRoom"] }]
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PokerRoom"] }],
+  // Workers Logs go to PostHog Logs through the `posthog-logs` OpenTelemetry destination
+  // (Cloudflare dashboard: Observability > Destinations). Cloudflare exports them outside
+  // the worker, so they add no latency. Invocation logs are off because they carry the
+  // request URL, which holds the room id; the worker logs its own lines without it.
+  // `persist: false` keeps no second copy in Cloudflare. Errors go to PostHog error
+  // tracking from the worker itself (room-server/telemetry.ts).
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false,
+      "destinations": ["posthog-logs"],
+      "persist": false
+    }
+  }
 }
