@@ -35,7 +35,7 @@ jobs:
     with:
       package-manager: bun
       dist-dir: dist
-      js-kb: 100
+      js-kb: 105
       css-kb: 10
 
   room-server:

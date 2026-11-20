@@ -15,17 +15,17 @@ describe("App routes", () => {
     expect(screen.getByRole("button", { name: /create room/ })).toBeInTheDocument();
   });
 
-  it("shows the room for /room/:id on a direct load", () => {
+  it("shows the room for /room/:id on a direct load", async () => {
     window.history.replaceState(null, "", "/room/abc12345");
     render(<App />);
-    expect(screen.getByText("room abc12345")).toBeInTheDocument();
+    expect(await screen.findByText("room abc12345")).toBeInTheDocument();
   });
 
   it("moves to the new room without a page load when creating one", async () => {
     render(<App />);
     await userEvent.click(screen.getByRole("button", { name: /create room/ }));
     expect(window.location.pathname).toBe("/room/newroom1");
-    expect(screen.getByText("room newroom1")).toBeInTheDocument();
+    expect(await screen.findByText("room newroom1")).toBeInTheDocument();
   });
 
   it("follows the back button", async () => {
