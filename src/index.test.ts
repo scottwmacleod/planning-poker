@@ -27,3 +27,23 @@ describe("index.css design tokens", () => {
     expect(css).toMatch(/outline-offset:\s*2px/);
   });
 });
+
+describe("index.css motion", () => {
+  // Modern Web Guidance `motion`: default to static and opt in to movement,
+  // rather than declaring it and cancelling it under `reduce` (#111).
+  const optIn = css.split("@media (prefers-reduced-motion: no-preference)")[1] ?? "";
+
+  it("never cancels motion under reduced motion, so a stronger selector can't slip past", () => {
+    expect(css).not.toMatch(/prefers-reduced-motion:\s*reduce/);
+  });
+
+  it("only scales, grows or animates inside the no-preference block", () => {
+    const outside = css.replace(optIn, "");
+    expect(outside).not.toMatch(/scale\(0\.97\)/);
+    expect(outside).not.toMatch(/animation:/);
+    expect(outside).not.toMatch(/transition:[^;]*transform/);
+    for (const rule of [".deal-in", ".bar-grow", ".notice-out", ".press:active:not(:disabled)"]) {
+      expect(optIn).toContain(rule);
+    }
+  });
+});
