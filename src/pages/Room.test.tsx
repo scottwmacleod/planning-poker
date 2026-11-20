@@ -464,6 +464,15 @@ describe("RoomPage", () => {
   });
 
   describe("accessibility", () => {
+    it("announces the phase politely, without cutting off the screen reader", async () => {
+      await renderInRoom();
+      const announcer = screen.getByText("Voting in progress");
+      expect(announcer).toHaveAttribute("aria-live", "polite");
+
+      act(() => socket().receive(state({ phase: "revealed" })));
+      expect(announcer).toHaveTextContent("Cards revealed");
+    });
+
     it("has no axe violations on the join form", async () => {
       const { container } = render(<RoomPage id="abc123" />);
       await expectNoAxeViolations(container);

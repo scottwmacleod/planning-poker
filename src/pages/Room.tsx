@@ -308,7 +308,7 @@ export default function RoomPage({ id }: { id: string }) {
   return (
     <main className="flex min-h-screen flex-col bg-ground text-ink">
       {/* Screen reader phase announcer */}
-      <p className="sr-only" aria-live="assertive" aria-atomic="true">
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
         {roomState.phase === "voting" ? "Voting in progress" : "Cards revealed"}
       </p>
 
