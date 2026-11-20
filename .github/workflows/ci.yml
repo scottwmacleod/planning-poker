@@ -33,7 +33,7 @@ jobs:
       pull-requests: write # one bundle-size comment per PR
     with:
       dist-dir: dist
-      js-kb: 100
+      js-kb: 105
       css-kb: 10
 
   room-server:

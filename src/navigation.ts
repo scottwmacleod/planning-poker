@@ -20,8 +20,11 @@ export function roomPath(id: string) {
   return `/room/${encodeURIComponent(id)}`;
 }
 
+/** `/room/:id`. vite.config.ts reuses it in the inline script that preloads the room chunk. */
+export const ROOM_PATH = /^\/room\/([^/]+)\/?$/;
+
 /** The room id from `/room/:id`, or null for any other path. */
 export function roomIdFrom(pathname: string) {
-  const id = /^\/room\/([^/]+)\/?$/.exec(pathname)?.[1];
+  const id = ROOM_PATH.exec(pathname)?.[1];
   return id === undefined ? null : decodeURIComponent(id);
 }

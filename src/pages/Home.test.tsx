@@ -8,11 +8,16 @@ vi.mock("../navigation", async (original) => ({
   navigate: push,
 }));
 vi.mock("nanoid", () => ({ nanoid: () => "newroom1" }));
+const prefetchRoom = vi.hoisted(() => vi.fn());
+vi.mock("../roomChunk", () => ({ prefetchRoom }));
 
 import { expectNoAxeViolations } from "../../test/axe";
 import Home from "./Home";
 
-beforeEach(() => push.mockClear());
+beforeEach(() => {
+  push.mockClear();
+  prefetchRoom.mockClear();
+});
 
 describe("Home page", () => {
   it("has no axe violations", async () => {
@@ -95,5 +100,19 @@ describe("Home page", () => {
     expect(link).toHaveTextContent("shipped by sm");
     expect(link.querySelector('.sm-mark .sm-cursor[aria-hidden="true"]')).not.toBeNull();
     expect(link.closest("footer")).not.toBeNull();
+  });
+
+  it("fetches the room chunk once the browser is idle", async () => {
+    render(<Home />);
+    await vi.waitFor(() => expect(prefetchRoom).toHaveBeenCalled(), { timeout: 4000 });
+  });
+
+  it("fetches the room chunk when someone points at create or focuses the room id", async () => {
+    render(<Home />);
+    await userEvent.hover(screen.getByRole("button", { name: /create room/ }));
+    expect(prefetchRoom).toHaveBeenCalled();
+    prefetchRoom.mockClear();
+    screen.getByRole("textbox", { name: "room id" }).focus();
+    expect(prefetchRoom).toHaveBeenCalled();
   });
 });
