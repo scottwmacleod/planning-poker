@@ -18,13 +18,13 @@ describe("CI workflows", () => {
   it("requires the room server bundle in the ci check", () => {
     const ci = read("ci.yml");
     expect(ci).toMatch(/needs: \[web, budgets, room-server\]/);
-    expect(ci).toContain("npx wrangler deploy --dry-run");
+    expect(ci).toContain("bun --bun x wrangler deploy --dry-run");
   });
 
   it("deploys the room server from main only, after ci passes", () => {
     const deploy = read("ci.yml").split("deploy-worker:")[1];
     expect(deploy).toContain("needs: ci");
     expect(deploy).toContain("github.ref == 'refs/heads/main'");
-    expect(deploy).toContain("npx wrangler deploy\n");
+    expect(deploy).toContain("bun --bun x wrangler deploy\n");
   });
 });

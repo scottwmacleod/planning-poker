@@ -3,24 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "packageManager": "bun@1.4.4",
   "engines": {
-    "node": ">=26"
+    "bun": ">=1.4.4"
   },
   "scripts": {
-    "prepare": "node vendor/sm-core/tooling/hooks/install.mjs",
-    "dev": "concurrently \"vite\" \"wrangler dev\"",
-    "dev:app": "vite",
-    "dev:room-server": "wrangler dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build && node vendor/sm-core/verify.mjs",
+    "prepare": "bun vendor/sm-core/tooling/hooks/install.mjs",
+    "dev": "bun --bun x concurrently \"bun --bun x vite\" \"bun --bun x wrangler dev\"",
+    "dev:app": "bun --bun x vite",
+    "dev:room-server": "bun --bun x wrangler dev",
+    "build": "bun --bun x vite build",
+    "preview": "bun --bun x vite preview",
+    "check": "bun run typecheck && bun run lint && bun run test && bun run build && node vendor/sm-core/verify.mjs",
     "typecheck": "bun check --no-script && bun check --no-script -p room-server",
-    "typecheck:tsc": "tsc --noEmit && tsc -p room-server",
+    "typecheck:tsc": "bun --bun x tsc --noEmit && bun --bun x tsc -p room-server",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "cf-typegen": "wrangler types room-server/worker-configuration.d.ts"
+    "test": "bun --bun x vitest run",
+    "test:watch": "bun --bun x vitest",
+    "cf-typegen": "bun --bun x wrangler types room-server/worker-configuration.d.ts"
   },
   "dependencies": {
     "@fontsource/geist": "5.3.0",

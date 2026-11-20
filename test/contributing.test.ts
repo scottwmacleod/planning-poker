@@ -33,7 +33,7 @@ describe("outside contributions", () => {
   });
 
   it("CONTRIBUTING.md states the same definition of done as AGENTS.md", () => {
-    const done = "npm run check";
+    const done = "bun run check";
     expect(read("AGENTS.md")).toContain(done);
     expect(read("CONTRIBUTING.md")).toContain(done);
   });
