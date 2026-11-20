@@ -1,5 +1,5 @@
 import PartySocket from "partysocket";
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type MouseEvent, type RefObject, useEffect, useRef, useState } from "react";
 import {
   type ClientMessage,
   type Participant,
@@ -13,6 +13,7 @@ import ParticipantList from "../components/ParticipantList";
 import PresenceNotices from "../components/PresenceNotices";
 import { Button, Checkbox, Field, Input } from "../components/ui";
 import VoteResults from "../components/VoteResults";
+import { navigate } from "../navigation";
 
 // Read when connecting rather than at import, so tests can stub the env per case.
 // Vite exposes NEXT_PUBLIC_* too (see envPrefix in vite.config.ts), so the Vercel
@@ -300,6 +301,14 @@ export default function RoomPage({ id }: { id: string }) {
     );
   }
 
+  // Plain clicks stay in the app; modified clicks keep the browser's open-in-new-tab behaviour.
+  // Leaving unmounts the room, which closes the socket so others see the leave notice.
+  function goHome(e: MouseEvent<HTMLAnchorElement>) {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    navigate("/");
+  }
+
   const myParticipant = roomState.participants[myId];
   const myVote = myParticipant?.vote ?? null;
   const players = Object.values(roomState.participants).filter((p) => !p.isSpectator);
@@ -316,10 +325,15 @@ export default function RoomPage({ id }: { id: string }) {
       <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-line shrink-0">
         <div className="flex items-center gap-3">
           <h1 className="text-sm">
-            <span className="sm-mark">
+            <a
+              href="/"
+              aria-label="planning-poker, leave room and go to the homepage"
+              onClick={goHome}
+              className="sm-mark focus-ring"
+            >
               planning-poker
               <span className="sm-cursor" aria-hidden="true" />
-            </span>
+            </a>
           </h1>
           <span className="font-mono text-sm text-ink-muted">{id}</span>
           {myParticipant && (
