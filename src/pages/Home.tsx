@@ -51,6 +51,12 @@ export default function Home() {
               value={joinId}
               onChange={(e) => setJoinId(e.target.value)}
               placeholder="e.g. abc12345"
+              // Ids are case-sensitive: stop phones capitalising or correcting them.
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="off"
+              enterKeyHint="go"
             />
             <Button type="submit" variant="signal" size="md" disabled={!canJoin} className="w-full">
               join room

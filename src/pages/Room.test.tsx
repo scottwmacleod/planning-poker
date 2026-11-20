@@ -141,6 +141,13 @@ describe("RoomPage", () => {
       expect(sockets).toHaveLength(0);
     });
 
+    it("lets the browser fill the name as a nickname", () => {
+      render(<RoomPage id="abc123" />);
+      const field = screen.getByLabelText("your name");
+      expect(field).toHaveAttribute("autocomplete", "nickname");
+      expect(field).toHaveAttribute("enterkeyhint", "go");
+    });
+
     it("saves the name and observer choice, then sends join", async () => {
       const user = userEvent.setup();
       render(<RoomPage id="abc123" />);

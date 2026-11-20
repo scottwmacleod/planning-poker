@@ -77,6 +77,8 @@ function NameEditor({
             if (e.key === "Escape") onCancel();
           }}
           maxLength={24}
+          autoComplete="nickname"
+          enterKeyHint="done"
           size="sm"
           className="w-28"
         />
@@ -236,6 +238,8 @@ export default function RoomPage({ id }: { id: string }) {
             onChange={(e) => setNameInput(e.target.value)}
             placeholder="e.g. Alice"
             maxLength={24}
+            autoComplete="nickname"
+            enterKeyHint="go"
           />
           <Checkbox
             label="i'm just observing"
