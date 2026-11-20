@@ -8,13 +8,12 @@
   },
   "permissions": {
     "allow": [
-      "Bash(npm ci)",
-      "Bash(npm run *)",
-      "Bash(npm test *)",
-      "Bash(npx tsc *)",
-      "Bash(npx biome *)",
-      "Bash(npx vitest *)",
-      "Bash(npx wrangler deploy --dry-run*)",
+      "Bash(bun install --frozen-lockfile)",
+      "Bash(bun run *)",
+      "Bash(bun --bun x tsc *)",
+      "Bash(bunx biome *)",
+      "Bash(bun --bun x vitest *)",
+      "Bash(bun --bun x wrangler deploy --dry-run*)",
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
@@ -60,7 +59,11 @@
       "Bash(gh api *--method*)",
       "Bash(rm -rf *)",
       "Bash(npx wrangler deploy)",
-      "Bash(npx wrangler deploy --env*)"
+      "Bash(npx wrangler deploy --env*)",
+      "Bash(bun --bun x wrangler deploy)",
+      "Bash(bun --bun x wrangler deploy --env*)",
+      "Bash(bunx wrangler deploy)",
+      "Bash(bunx wrangler deploy --env*)"
     ]
   }
 }

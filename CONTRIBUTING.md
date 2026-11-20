@@ -19,13 +19,13 @@ Don't add a new dependency, change `wrangler.jsonc`, or change anything in `.git
 
 ## Running it locally
 
-You need Node.js 26 (see `.nvmrc`) and npm. No Cloudflare or Vercel account is needed.
+You need Bun 1.4.4 (see `packageManager` in `package.json`) and Node.js 26 (see `.nvmrc`), which runs only the sm-core copy check. No Cloudflare or Vercel account is needed.
 
 ```bash
 git clone https://github.com/<your-username>/planning-poker.git
 cd planning-poker
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 The [README](README.md#local-setup) explains how to check it works with two browser windows.
@@ -39,7 +39,7 @@ Read [GLOSSARY.md](GLOSSARY.md) before naming anything, and use its terms in cod
 - Your change is done when this passes:
 
   ```bash
-  npm run check
+  bun run check
   ```
 
 ## Opening the pull request

@@ -11,6 +11,7 @@ const docs = [
   "GLOSSARY.md",
   "docs/accessibility-audit.md",
   "docs/adr/0001-partyserver-on-cloudflare.md",
+  "docs/adr/0003-bun.md",
 ];
 
 describe("docs links", () => {
