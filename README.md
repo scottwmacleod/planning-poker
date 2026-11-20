@@ -13,7 +13,7 @@ See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cl
 
 ## Local setup
 
-You need Bun 1.4.4 (the `packageManager` version in `package.json`, which CI and Vercel use) and Node.js 26 (the version in `.nvmrc`), which runs only the sm-core copy check. No Cloudflare or Vercel account is needed.
+You need Bun 1.4.5 (the `packageManager` version in `package.json`, which CI and Vercel use) and Node.js 26 (the version in `.nvmrc`), which runs only the sm-core copy check. No Cloudflare or Vercel account is needed.
 
 ```bash
 git clone https://github.com/scottwmacleod/planning-poker.git
