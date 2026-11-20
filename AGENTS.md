@@ -8,9 +8,9 @@ The rules every sm_ repo shares are in [`docs/agents/sm-conventions.md`](docs/ag
 
 `bun run check` passes: typecheck, Biome, Vitest, the build and `verify.mjs`. CI runs the same gates in the required `ci` check, plus a dry run of the room server bundle (`bun --bun x wrangler deploy --dry-run`).
 
-Bun 1.4.4 is the package manager and the runtime (ADR-0003); the version lives only in `packageManager` in `package.json`. Scripts call `bun run` and `bun --bun x <tool>`, never `npm`, `npx` or `node`, apart from `node vendor/sm-core/verify.mjs`. Run tests with `bun run test`: `bun test` is Bun's own runner and fails the jsdom tests. Vercel bundles an older Bun, so `vercel.json`'s `installCommand` installs 1.4.4 first; drop that once Vercel ships Bun 1.4.
+Bun 1.4.5 is the package manager and the runtime (ADR-0003); the version lives only in `packageManager` in `package.json`. Scripts call `bun run` and `bun --bun x <tool>`, never `npm`, `npx` or `node`, apart from `node vendor/sm-core/verify.mjs`. Run tests with `bun run test`: `bun test` is Bun's own runner and fails the jsdom tests. Vercel bundles an older Bun, so `vercel.json`'s `installCommand` installs 1.4.5 first; drop that once Vercel ships Bun 1.4.
 
-Typecheck runs `bun check --no-script` on the app and on `room-server` (Bun 1.4.4). `bun run typecheck:tsc` is the `tsc` fallback. If `bun check` misbehaves, switch `typecheck` back to it.
+Typecheck runs `bun check --no-script` on the app and on `room-server` (Bun 1.4.5). `bun run typecheck:tsc` is the `tsc` fallback. If `bun check` misbehaves, switch `typecheck` back to it.
 
 ## Rules
 
