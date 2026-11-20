@@ -27,3 +27,17 @@ describe("index.css design tokens", () => {
     expect(css).toMatch(/outline-offset:\s*2px/);
   });
 });
+
+describe("viewport height", () => {
+  // Modern Web Guidance `responsive-design`: 100vh is taller than a phone's
+  // visible area while its toolbars show, so pages size to dvh instead (#116).
+  it("sizes pages to the dynamic viewport, never 100vh", () => {
+    const pages = ["pages/Home.tsx", "pages/Room.tsx"].map((f) =>
+      readFileSync(path.join(__dirname, f), "utf8"),
+    );
+    for (const source of pages) {
+      expect(source).toContain("min-h-dvh");
+      expect(source).not.toMatch(/min-h-screen|h-screen|100vh/);
+    }
+  });
+});

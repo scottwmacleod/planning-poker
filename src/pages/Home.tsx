@@ -21,7 +21,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-ground text-ink">
+    <div className="flex min-h-dvh flex-col bg-ground text-ink">
       <main className="flex flex-1 flex-col items-center justify-center gap-space-7 p-space-6">
         <div className="text-center">
           <h1 className="mb-space-2 text-4xl">
@@ -51,6 +51,12 @@ export default function Home() {
               value={joinId}
               onChange={(e) => setJoinId(e.target.value)}
               placeholder="e.g. abc12345"
+              // Ids are case-sensitive: stop phones capitalising or correcting them.
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="off"
+              enterKeyHint="go"
             />
             <Button type="submit" variant="signal" size="md" disabled={!canJoin} className="w-full">
               join room

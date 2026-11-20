@@ -26,9 +26,21 @@ describe("motion styles in index.css", () => {
     expect(css).not.toMatch(/cursor-blink|@keyframes blink/);
   });
 
-  it("turns off the scale and bar growth under reduced motion", () => {
-    const block = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
-    expect(block).toMatch(/\.press:active\s*{\s*transform:\s*none/);
-    expect(block).toMatch(/\.bar-grow\s*{\s*animation:\s*none/);
+  // Modern Web Guidance `motion`: default to static and opt in to movement,
+  // rather than declaring it and cancelling it under `reduce` (#111).
+  const optIn = css.slice(css.indexOf("@media (prefers-reduced-motion: no-preference)"));
+
+  it("never cancels motion under reduced motion, so a stronger selector can't slip past", () => {
+    expect(css).not.toMatch(/prefers-reduced-motion:\s*reduce/);
+  });
+
+  it("only scales, grows or animates inside the no-preference block", () => {
+    const outside = css.replace(optIn, "");
+    expect(outside).not.toMatch(/scale\(0\.97\)/);
+    expect(outside).not.toMatch(/animation:/);
+    expect(outside).not.toMatch(/transition:[^;]*transform/);
+    for (const rule of [".deal-in", ".bar-grow", ".notice-out", ".press:active:not(:disabled)"]) {
+      expect(optIn).toContain(rule);
+    }
   });
 });

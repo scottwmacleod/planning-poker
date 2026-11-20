@@ -25,6 +25,11 @@ body {
   outline-offset: 2px;
 }
 
+/* Motion is opt-in: every animation and the press scale sit inside
+ * `prefers-reduced-motion: no-preference`, so reduced motion gets the static end
+ * state (cards shown, bars full, notices removed by PresenceNotices.tsx).
+ * Colour transitions stay on for everyone. */
+
 /* Revealed cards appear one by one (80ms stagger, no fade). */
 @keyframes deal-in {
   from {
@@ -34,22 +39,6 @@ body {
     visibility: visible;
   }
 }
-.deal-in {
-  animation: deal-in 0s linear backwards;
-  animation-delay: calc(var(--i, 0) * 80ms);
-}
-/* Press feedback: a subtle scale-down on the main actions (cards, flip, new round, create). */
-.press {
-  transition:
-    transform 160ms var(--sm-ease-out),
-    background-color 120ms var(--sm-ease-out),
-    border-color 120ms var(--sm-ease-out),
-    color 120ms var(--sm-ease-out);
-}
-.press:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
 /* Distribution bars grow after the cards are dealt (--n = bar's slot in the 80ms deal sequence). */
 @keyframes bar-grow {
   from {
@@ -59,33 +48,42 @@ body {
     transform: scaleX(1);
   }
 }
-.bar-grow {
-  transform-origin: left;
-  animation: bar-grow 200ms var(--sm-ease-out) backwards;
-  animation-delay: calc(var(--n, 0) * 80ms);
-}
-
 /* Join/leave notices fade out over the last 300ms of the --notice-ms they stay up (set by PresenceNotices.tsx). */
 @keyframes notice-out {
   to {
     opacity: 0;
   }
 }
-.notice-out {
-  animation: notice-out 300ms var(--sm-ease-out) calc(var(--notice-ms) - 300ms) forwards;
+
+/* Press feedback: a subtle scale-down on the main actions (cards, flip, new round, create). */
+.press {
+  transition:
+    background-color 120ms var(--sm-ease-out),
+    border-color 120ms var(--sm-ease-out),
+    color 120ms var(--sm-ease-out);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .notice-out {
-    animation: none;
-  }
+@media (prefers-reduced-motion: no-preference) {
   .deal-in {
-    animation: none;
-  }
-  .press:active {
-    transform: none;
+    animation: deal-in 0s linear backwards;
+    animation-delay: calc(var(--i, 0) * 80ms);
   }
   .bar-grow {
-    animation: none;
+    transform-origin: left;
+    animation: bar-grow 200ms var(--sm-ease-out) backwards;
+    animation-delay: calc(var(--n, 0) * 80ms);
+  }
+  .notice-out {
+    animation: notice-out 300ms var(--sm-ease-out) calc(var(--notice-ms) - 300ms) forwards;
+  }
+  .press {
+    transition:
+      transform 160ms var(--sm-ease-out),
+      background-color 120ms var(--sm-ease-out),
+      border-color 120ms var(--sm-ease-out),
+      color 120ms var(--sm-ease-out);
+  }
+  .press:active:not(:disabled) {
+    transform: scale(0.97);
   }
 }

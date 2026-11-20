@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClientMessage, Participant, RoomState } from "../../lib/types";
@@ -141,6 +141,13 @@ describe("RoomPage", () => {
       expect(sockets).toHaveLength(0);
     });
 
+    it("lets the browser fill the name as a nickname", () => {
+      render(<RoomPage id="abc123" />);
+      const field = screen.getByLabelText("your name");
+      expect(field).toHaveAttribute("autocomplete", "nickname");
+      expect(field).toHaveAttribute("enterkeyhint", "go");
+    });
+
     it("saves the name and observer choice, then sends join", async () => {
       const user = userEvent.setup();
       render(<RoomPage id="abc123" />);
@@ -198,6 +205,15 @@ describe("RoomPage", () => {
       expect(sentOf("rename")).toEqual([{ type: "rename", name: "Carol" }]);
       expect(localStorage.getItem("poker-name")).toBe("Carol");
       expect(screen.queryByRole("textbox", { name: "Your name" })).not.toBeInTheDocument();
+    });
+
+    it("returns focus to the name button after Enter or Escape", async () => {
+      await renameInRoom("Carol{Enter}");
+      expect(screen.getByRole("button", { name: /edit your name/i })).toHaveFocus();
+
+      const user = userEvent.setup();
+      await renameTo(user, "Dave{Escape}");
+      expect(screen.getByRole("button", { name: /edit your name/i })).toHaveFocus();
     });
 
     it("sends rename on blur", async () => {
@@ -402,6 +418,27 @@ describe("RoomPage", () => {
       expect(screen.getByText("Room link copied to clipboard")).toBeInTheDocument();
     });
 
+    it("restarts the copied window on a second click instead of resetting early", async () => {
+      mockClipboard(() => Promise.resolve());
+      await renderInRoom();
+      vi.useFakeTimers();
+      try {
+        const click = (name: string) =>
+          act(async () => fireEvent.click(screen.getByRole("button", { name })));
+
+        await click("copy link");
+        act(() => vi.advanceTimersByTime(1500));
+        await click("copied");
+        act(() => vi.advanceTimersByTime(1000));
+        expect(screen.getByRole("button", { name: "copied" })).toBeInTheDocument();
+
+        act(() => vi.advanceTimersByTime(1000));
+        expect(screen.getByRole("button", { name: "copy link" })).toBeInTheDocument();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it("says it could not copy when the browser blocks the clipboard", async () => {
       const user = userEvent.setup();
       mockClipboard(() => Promise.reject(new Error("NotAllowedError")));
@@ -427,6 +464,15 @@ describe("RoomPage", () => {
   });
 
   describe("accessibility", () => {
+    it("announces the phase politely, without cutting off the screen reader", async () => {
+      await renderInRoom();
+      const announcer = screen.getByText("Voting in progress");
+      expect(announcer).toHaveAttribute("aria-live", "polite");
+
+      act(() => socket().receive(state({ phase: "revealed" })));
+      expect(announcer).toHaveTextContent("Cards revealed");
+    });
+
     it("has no axe violations on the join form", async () => {
       const { container } = render(<RoomPage id="abc123" />);
       await expectNoAxeViolations(container);

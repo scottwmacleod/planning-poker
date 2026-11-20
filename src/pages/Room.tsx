@@ -56,11 +56,23 @@ function NameEditor({
   onCommit: () => void;
   onCancel: () => void;
 }) {
+  // Saving with Enter or cancelling with Escape unmounts the input, so hand focus
+  // back to the name button. A blur from clicking elsewhere leaves focus there.
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const refocusButton = useRef(false);
+  useEffect(() => {
+    if (!editing && refocusButton.current) {
+      refocusButton.current = false;
+      buttonRef.current?.focus();
+    }
+  }, [editing]);
+
   if (editing) {
     return (
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          refocusButton.current = true;
           onCommit();
         }}
       >
@@ -74,9 +86,14 @@ function NameEditor({
           defaultValue={participant.name}
           onBlur={onCommit}
           onKeyDown={(e) => {
-            if (e.key === "Escape") onCancel();
+            if (e.key === "Escape") {
+              refocusButton.current = true;
+              onCancel();
+            }
           }}
           maxLength={24}
+          autoComplete="nickname"
+          enterKeyHint="done"
           size="sm"
           className="w-28"
         />
@@ -85,7 +102,7 @@ function NameEditor({
   }
 
   return (
-    <Button onClick={onStartEdit}>
+    <Button ref={buttonRef} onClick={onStartEdit}>
       {participant.name} <span aria-hidden="true">✎</span>
       <span className="sr-only">Edit your name</span>
     </Button>
@@ -121,6 +138,7 @@ export default function RoomPage({ id }: { id: string }) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [roomFull, setRoomFull] = useState(false);
   const socketRef = useRef<PartySocket | null>(null);
+  const copyResetRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const nameInputRef = useRef<HTMLInputElement>(null);
   // These track what was actually sent to the server, so a socket reconnect
   // (which re-runs the 'open' handler below) rejoins with the latest values
@@ -180,6 +198,8 @@ export default function RoomPage({ id }: { id: string }) {
     return () => socket.close();
   }, [name, id, isSpectator]);
 
+  useEffect(() => () => clearTimeout(copyResetRef.current), []);
+
   function send(msg: ClientMessage) {
     socketRef.current?.send(JSON.stringify(msg));
   }
@@ -202,7 +222,9 @@ export default function RoomPage({ id }: { id: string }) {
     } catch {
       setCopyStatus("failed");
     }
-    setTimeout(() => setCopyStatus("idle"), 2000);
+    // A second click restarts the 2s window instead of stacking timers.
+    clearTimeout(copyResetRef.current);
+    copyResetRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
   }
 
   function commitRename() {
@@ -225,7 +247,7 @@ export default function RoomPage({ id }: { id: string }) {
 
   if (!name) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-ground p-6 text-ink">
+      <main className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-ground p-6 text-ink">
         <h1 className="font-mono text-2xl font-semibold">join room</h1>
         <form onSubmit={handleJoin} className="flex flex-col gap-space-4 w-full max-w-sm">
           <Field
@@ -236,6 +258,8 @@ export default function RoomPage({ id }: { id: string }) {
             onChange={(e) => setNameInput(e.target.value)}
             placeholder="e.g. Alice"
             maxLength={24}
+            autoComplete="nickname"
+            enterKeyHint="go"
           />
           <Checkbox
             label="i'm just observing"
@@ -258,7 +282,7 @@ export default function RoomPage({ id }: { id: string }) {
 
   if (roomFull) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-ground p-6 text-ink">
+      <main className="flex min-h-dvh items-center justify-center bg-ground p-6 text-ink">
         <p role="status" className="text-center font-mono text-ink-muted">
           this room is full. try again later, or start a new room.
         </p>
@@ -268,7 +292,7 @@ export default function RoomPage({ id }: { id: string }) {
 
   if (!roomState) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-ground text-ink">
+      <main className="flex min-h-dvh items-center justify-center bg-ground text-ink">
         <p role="status" className="font-mono text-ink-muted">
           connecting…
         </p>
@@ -282,9 +306,9 @@ export default function RoomPage({ id }: { id: string }) {
   const votedCount = players.filter((p) => p.vote !== null).length;
 
   return (
-    <main className="flex min-h-screen flex-col bg-ground text-ink">
+    <main className="flex min-h-dvh flex-col bg-ground text-ink">
       {/* Screen reader phase announcer */}
-      <p className="sr-only" aria-live="assertive" aria-atomic="true">
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
         {roomState.phase === "voting" ? "Voting in progress" : "Cards revealed"}
       </p>
 

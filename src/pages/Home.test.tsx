@@ -20,6 +20,16 @@ describe("Home page", () => {
     await expectNoAxeViolations(container);
   });
 
+  it("stops phones capitalising or correcting the case-sensitive room id", () => {
+    render(<Home />);
+    const field = screen.getByRole("textbox", { name: "room id" });
+    expect(field).toHaveAttribute("autocapitalize", "none");
+    expect(field).toHaveAttribute("autocorrect", "off");
+    expect(field).toHaveAttribute("spellcheck", "false");
+    expect(field).toHaveAttribute("autocomplete", "off");
+    expect(field).toHaveAttribute("enterkeyhint", "go");
+  });
+
   it("titles the page with the planning-poker mark and its sm-core cursor", () => {
     render(<Home />);
     const h1 = screen.getByRole("heading", { level: 1, name: "planning-poker" });
