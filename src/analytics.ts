@@ -1,8 +1,5 @@
-import type { Deck } from "../lib/types";
+import { type Deck, POSTHOG_TOKEN } from "../lib/types";
 import { capture, startPostHog } from "../vendor/sm-core/tooling/analytics/sm-posthog.js";
-
-// Public by design: a PostHog project token can only write events.
-const TOKEN = "phc_rKDLfEFrPFjYd4botU7tS9oy4MsNPHbjwsGqTSr4GLB5";
 
 const ROOM_ID = /\/room\/[^/?#]+/g;
 
@@ -34,7 +31,7 @@ export function beforeSend<T extends CaptureResult | null>(event: T): T {
 
 export function startAnalytics() {
   startPostHog({
-    token: TOKEN,
+    token: POSTHOG_TOKEN,
     product: "planning-poker",
     options: {
       // Participant names are on screen and in inputs: mask all text in recordings and autocapture.

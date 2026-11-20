@@ -3,13 +3,21 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // partyserver imports `cloudflare:workers`, which only exists inside the
 // Workers runtime. Swap in a minimal Server so the room logic runs in Node.
-const { routePartykitRequest } = vi.hoisted(() => ({ routePartykitRequest: vi.fn() }));
+const { routePartykitRequest, reportError } = vi.hoisted(() => ({
+  routePartykitRequest: vi.fn(),
+  reportError: vi.fn(),
+}));
 vi.mock("partyserver", () => ({
   Server: class {
     broadcast = vi.fn();
     getConnections = vi.fn((): Connection[] => []);
+    constructor(public ctx: DurableObjectState) {}
   },
   routePartykitRequest,
+}));
+vi.mock("./telemetry", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./telemetry")>()),
+  reportError,
 }));
 
 import { MAX_CONNECTIONS_PER_ROOM } from "../lib/types";
@@ -427,15 +435,63 @@ describe("bad messages", () => {
   });
 });
 
+describe("errors", () => {
+  const waitUntil = vi.fn();
+  let room: PokerRoom;
+
+  beforeEach(() => {
+    reportError.mockReset();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    room = new PokerRoom({ waitUntil } as unknown as DurableObjectState, {} as Env);
+  });
+
+  it("reports a failing message handler and keeps the room up", () => {
+    const boom = new Error("broadcast failed");
+    vi.mocked(room.broadcast).mockImplementationOnce(() => {
+      throw boom;
+    });
+    expect(() => join(room, makeConn("conn-1"), "Alice")).not.toThrow();
+    expect(reportError).toHaveBeenCalledWith(boom, "PokerRoom.onMessage", expect.any(Function));
+
+    // The reporter hands its send to the Durable Object's waitUntil.
+    const send = Promise.resolve();
+    reportError.mock.calls[0]![2](send);
+    expect(waitUntil).toHaveBeenCalledWith(send);
+
+    join(room, makeConn("conn-2"), "Bob");
+    expect(Object.keys(room.state.participants)).toEqual(["conn-1", "conn-2"]);
+  });
+
+  it("closes a connection whose setup fails", () => {
+    const conn = makeConn("conn-1");
+    vi.mocked(conn.send).mockImplementationOnce(() => {
+      throw new Error("socket gone");
+    });
+    room.onConnect(conn);
+    expect(reportError).toHaveBeenCalledWith(
+      expect.any(Error),
+      "PokerRoom.onConnect",
+      expect.any(Function),
+    );
+    expect(conn.close).toHaveBeenCalledWith(1011, "Server error");
+  });
+});
+
 describe("worker fetch", () => {
   const env = {} as Env;
+  const ctx = { waitUntil: vi.fn() } as unknown as ExecutionContext;
   const requestFrom = (origin?: string) =>
     new Request(
       "http://localhost/parties/main/room-1",
       origin ? { headers: { Origin: origin } } : undefined,
     );
 
-  beforeEach(() => routePartykitRequest.mockReset());
+  beforeEach(() => {
+    routePartykitRequest.mockReset();
+    reportError.mockReset();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
 
   it.each([
     "https://planning-poker-eta-neon.vercel.app",
@@ -448,7 +504,7 @@ describe("worker fetch", () => {
     const request = requestFrom(origin);
     const response = new Response("ok");
     routePartykitRequest.mockResolvedValueOnce(response);
-    expect(await worker.fetch(request, env)).toBe(response);
+    expect(await worker.fetch(request, env, ctx)).toBe(response);
     expect(routePartykitRequest).toHaveBeenCalledWith(request, env);
   });
 
@@ -462,15 +518,23 @@ describe("worker fetch", () => {
     ["plain http to production", "http://planning-poker-eta-neon.vercel.app"],
     ["no origin", undefined],
   ])("refuses requests from %s", async (_, origin) => {
-    const res = await worker.fetch(requestFrom(origin), env);
+    const res = await worker.fetch(requestFrom(origin), env, ctx);
     expect(res.status).toBe(403);
     expect(routePartykitRequest).not.toHaveBeenCalled();
   });
 
   it("returns 404 for anything else", async () => {
     routePartykitRequest.mockResolvedValueOnce(null);
-    const res = await worker.fetch(requestFrom("http://localhost:3000"), env);
+    const res = await worker.fetch(requestFrom("http://localhost:3000"), env, ctx);
     expect(res.status).toBe(404);
+  });
+
+  it("reports a failed request and answers 500", async () => {
+    const boom = new Error("room unreachable");
+    routePartykitRequest.mockRejectedValueOnce(boom);
+    const res = await worker.fetch(requestFrom("http://localhost:3000"), env, ctx);
+    expect(res.status).toBe(500);
+    expect(reportError).toHaveBeenCalledWith(boom, "fetch", expect.any(Function));
   });
 });
 

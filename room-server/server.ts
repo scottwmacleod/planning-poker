@@ -9,6 +9,7 @@ import {
   type RoomState,
   type ServerMessage,
 } from "../lib/types";
+import { reportError } from "./telemetry";
 
 const MAX_NAME_LENGTH = 24;
 
@@ -79,20 +80,45 @@ export class PokerRoom extends Server {
   };
 
   onConnect(conn: Connection) {
-    if ([...this.getConnections()].length > MAX_CONNECTIONS_PER_ROOM) {
-      conn.close(ROOM_FULL_CODE, "Room is full");
-      return;
-    }
-    conn.send(this.stateMessage());
+    const ok = this.report("onConnect", () => {
+      if ([...this.getConnections()].length > MAX_CONNECTIONS_PER_ROOM) {
+        console.info({ message: "room full", limit: MAX_CONNECTIONS_PER_ROOM });
+        conn.close(ROOM_FULL_CODE, "Room is full");
+        return;
+      }
+      conn.send(this.stateMessage());
+    });
+    if (!ok) conn.close(1011, "Server error");
   }
 
   onClose(conn: Connection) {
-    delete this.state.participants[conn.id];
-    this.checkAutoReveal();
-    this.broadcastState();
+    this.report("onClose", () => {
+      delete this.state.participants[conn.id];
+      this.checkAutoReveal();
+      this.broadcastState();
+    });
   }
 
   onMessage(sender: Connection, message: string) {
+    this.report("onMessage", () => this.handleMessage(sender, message));
+  }
+
+  /**
+   * Runs a handler and reports anything it throws to PostHog. The error stops
+   * here: partyserver would otherwise log it with the room id, and Workers Logs
+   * go to PostHog too. Returns false if the handler threw.
+   */
+  private report(handler: string, run: () => void): boolean {
+    try {
+      run();
+      return true;
+    } catch (error) {
+      reportError(error, `PokerRoom.${handler}`, (p) => this.ctx.waitUntil(p));
+      return false;
+    }
+  }
+
+  private handleMessage(sender: Connection, message: string) {
     const data = parseClientMessage(message);
     if (!data) return;
 
@@ -182,10 +208,19 @@ export class PokerRoom extends Server {
 
 // Routes /parties/main/:room to the PokerRoom Durable Object bound as `Main`.
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    if (!isAllowedOrigin(request.headers.get("Origin"))) {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const origin = request.headers.get("Origin");
+    if (!isAllowedOrigin(origin)) {
+      console.warn({ message: "origin refused", origin });
       return new Response("Forbidden", { status: 403 });
     }
-    return (await routePartykitRequest(request, env)) ?? new Response("Not found", { status: 404 });
+    try {
+      return (
+        (await routePartykitRequest(request, env)) ?? new Response("Not found", { status: 404 })
+      );
+    } catch (error) {
+      reportError(error, "fetch", (p) => ctx.waitUntil(p));
+      return new Response("Server error", { status: 500 });
+    }
   },
 } satisfies ExportedHandler<Env>;
