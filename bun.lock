@@ -7,7 +7,7 @@
       "dependencies": {
         "@fontsource/geist": "5.3.0",
         "@fontsource/geist-mono": "5.3.0",
-        "@ui-sdk/core": "0.1.0-beta.2",
+        "@ui-sdk/core": "0.1.0-beta.7",
         "@ui-sdk/react": "0.1.0-beta.7",
         "@vercel/analytics": "^2.0.1",
         "@vercel/speed-insights": "2.1.0",
@@ -357,7 +357,7 @@
 
     "@typescript/typescript-win32-x64": ["@typescript/typescript-win32-x64@7.0.2", "", { "os": "win32", "cpu": "x64" }, "sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g=="],
 
-    "@ui-sdk/core": ["@ui-sdk/core@0.1.0-beta.2", "", {}, "sha512-y89M4OKL2Oy1IvFS8FEozn/44BJD9FoRjfecWA4XwFhkSuQADcEcI+eoLdfRK1hkrJZhKkHvhJf4Jtfp1y7aJw=="],
+    "@ui-sdk/core": ["@ui-sdk/core@0.1.0-beta.7", "", {}, "sha512-f6Dotk5kwwiH2BRT6THRrn/Lv7eoG6Y+TWboCl9rQ4fHw4h3OliOSHF4kl4PzJEgaLyWSQFczRMvGm+YCpn77Q=="],
 
     "@ui-sdk/react": ["@ui-sdk/react@0.1.0-beta.7", "", { "peerDependencies": { "@types/react": ">=19.2.10", "@ui-sdk/core": "^0.1.0-beta.7", "react": ">=19", "react-dom": ">=19" }, "optionalPeers": ["@types/react"] }, "sha512-zC+0EvV4wj0VpowK56yqGJqZzKa4PbHogTlmsnzbsl19FTRovhLstuJEN2/RCUZwC/vpkDvTGOmFAych+wD5NA=="],
 
