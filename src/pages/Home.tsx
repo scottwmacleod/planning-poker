@@ -18,6 +18,11 @@ function usePrefetchRoomWhenIdle() {
   }, []);
 }
 
+// Waiting for the room chunk (usually already here) keeps the page transition from fading to blank.
+function goToRoom(id: string) {
+  prefetchRoom().then(() => navigate(roomPath(id)));
+}
+
 export default function Home() {
   const [joinId, setJoinId] = useState("");
   const canJoin = joinId.trim() !== "";
@@ -26,13 +31,13 @@ export default function Home() {
   function createRoom() {
     const id = nanoid(8);
     trackRoomCreated(id);
-    navigate(roomPath(id));
+    goToRoom(id);
   }
 
   function joinRoom(e: React.FormEvent) {
     e.preventDefault();
     const id = joinId.trim();
-    if (id) navigate(roomPath(id));
+    if (id) goToRoom(id);
   }
 
   return (

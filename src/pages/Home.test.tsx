@@ -8,7 +8,7 @@ vi.mock("../navigation", async (original) => ({
   navigate: push,
 }));
 vi.mock("nanoid", () => ({ nanoid: () => "newroom1" }));
-const prefetchRoom = vi.hoisted(() => vi.fn());
+const prefetchRoom = vi.hoisted(() => vi.fn(() => Promise.resolve()));
 vi.mock("../roomChunk", () => ({ prefetchRoom }));
 
 import { expectNoAxeViolations } from "../../test/axe";
@@ -54,7 +54,7 @@ describe("Home page", () => {
     expect(btn).toHaveTextContent("create room →");
     expect(btn).toHaveClass("bg-signal", "text-on-signal");
     await userEvent.click(btn);
-    expect(push).toHaveBeenCalledWith("/room/newroom1");
+    await vi.waitFor(() => expect(push).toHaveBeenCalledWith("/room/newroom1"));
   });
 
   it("shows join room as a disabled outline button until an ID is typed", () => {
@@ -72,7 +72,7 @@ describe("Home page", () => {
     expect(join).toBeEnabled();
     expect(join).toHaveClass("bg-signal", "text-on-signal");
     await userEvent.click(join);
-    expect(push).toHaveBeenCalledWith("/room/abc123");
+    await vi.waitFor(() => expect(push).toHaveBeenCalledWith("/room/abc123"));
   });
 
   it("treats a whitespace-only ID as empty", async () => {
