@@ -1,5 +1,6 @@
 import { type Deck, POSTHOG_TOKEN } from "../lib/types";
 import { capture, startPostHog } from "../vendor/sm-core/tooling/analytics/sm-posthog.js";
+import { landedOnRoom } from "./navigation";
 
 const ROOM_ID = /\/room\/[^/?#]+/g;
 
@@ -51,8 +52,16 @@ export function trackRoomCreated(roomId: string) {
   capture("room_created");
 }
 
-export function trackRoomJoined(roomId: string) {
-  capture("room_joined", { is_creator: createdRooms.has(roomId) });
+/**
+ * `socket_ms` runs from opening the socket to the first room state. `load_ms`
+ * runs from the start of the page load, sent only when the visit began on the room.
+ */
+export function trackRoomJoined(roomId: string, socketMs: number) {
+  capture("room_joined", {
+    is_creator: createdRooms.has(roomId),
+    socket_ms: Math.round(socketMs),
+    ...(landedOnRoom() ? { load_ms: Math.round(performance.now()) } : {}),
+  });
 }
 
 export function trackVoteCast(deck: Deck) {

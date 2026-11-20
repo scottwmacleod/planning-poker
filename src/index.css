@@ -64,6 +64,12 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* Home ↔ room cross-fade (navigate() in navigation.ts). */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--sm-duration-move);
+    animation-timing-function: var(--sm-ease-out);
+  }
   .deal-in {
     animation: deal-in 0s linear backwards;
     animation-delay: calc(var(--i, 0) * 80ms);

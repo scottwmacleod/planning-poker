@@ -25,12 +25,26 @@ describe("goal events", () => {
   it("marks the creator on room_joined, and nobody else", () => {
     trackRoomCreated("mine1234");
     capture.mockClear();
-    trackRoomJoined("mine1234");
-    trackRoomJoined("other999");
+    trackRoomJoined("mine1234", 120.4);
+    trackRoomJoined("other999", 80.6);
     expect(capture.mock.calls).toEqual([
-      ["room_joined", { is_creator: true }],
-      ["room_joined", { is_creator: false }],
+      ["room_joined", { is_creator: true, socket_ms: 120 }],
+      ["room_joined", { is_creator: false, socket_ms: 81 }],
     ]);
+  });
+
+  it("adds load_ms to room_joined only when the visit began on the room", () => {
+    window.history.replaceState(null, "", "/room/landed12");
+    try {
+      trackRoomJoined("landed12", 50);
+      expect(capture).toHaveBeenCalledExactlyOnceWith("room_joined", {
+        is_creator: false,
+        socket_ms: 50,
+        load_ms: expect.any(Number),
+      });
+    } finally {
+      window.history.replaceState(null, "", "/");
+    }
   });
 
   it("sends only the deck with a vote and only the count on reveal", () => {

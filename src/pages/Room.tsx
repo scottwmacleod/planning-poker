@@ -130,8 +130,12 @@ function SpectatorToggle({
 }
 
 export default function RoomPage({ id }: { id: string }) {
-  const [name, setName] = useState<string | null>(null);
-  const [isSpectator, setIsSpectator] = useState(false);
+  // Read on the first render, so a returning visitor's socket opens on mount
+  // and the name form never flashes up first.
+  const [name, setName] = useState<string | null>(() => localStorage.getItem("poker-name"));
+  const [isSpectator, setIsSpectator] = useState(
+    () => localStorage.getItem("poker-spectator") === "true",
+  );
   const [nameInput, setNameInput] = useState("");
   const [roomState, setRoomState] = useState<RoomState | null>(null);
   const [myId, setMyId] = useState<string>("");
@@ -149,17 +153,11 @@ export default function RoomPage({ id }: { id: string }) {
   const joinedRef = useRef(false); // `room_joined` fires once per visit, not per reconnect
 
   useEffect(() => {
-    const storedName = localStorage.getItem("poker-name");
-    const storedSpectator = localStorage.getItem("poker-spectator");
-    if (storedName) setName(storedName);
-    if (storedSpectator !== null) setIsSpectator(storedSpectator === "true");
-  }, []);
-
-  useEffect(() => {
     if (!name) return;
     liveNameRef.current = name;
     liveSpectatorRef.current = isSpectator;
 
+    const connectStart = performance.now();
     const socket = new PartySocket({
       host: roomServerHost(),
       room: id,
@@ -190,7 +188,7 @@ export default function RoomPage({ id }: { id: string }) {
       if (data.type === "state") {
         if (!joinedRef.current) {
           joinedRef.current = true;
-          trackRoomJoined(id);
+          trackRoomJoined(id, performance.now() - connectStart);
         }
         setRoomState({ participants: data.participants, phase: data.phase, deck: data.deck });
       }
