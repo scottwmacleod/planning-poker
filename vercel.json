@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "installCommand": "npm install -g bun@1.4.4 && bun install --frozen-lockfile",
-  "buildCommand": "bun --bun x vite build",
+  "installCommand": "curl -fsSL https://bun.sh/install | bash -s bun-v1.4.4 && ~/.bun/bin/bun install --frozen-lockfile",
+  "buildCommand": "~/.bun/bin/bun --bun x vite build",
   "rewrites": [
     {
       "source": "/_sm/static/:path(.*)",
