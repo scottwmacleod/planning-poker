@@ -207,6 +207,15 @@ describe("RoomPage", () => {
       expect(screen.queryByRole("textbox", { name: "Your name" })).not.toBeInTheDocument();
     });
 
+    it("returns focus to the name button after Enter or Escape", async () => {
+      await renameInRoom("Carol{Enter}");
+      expect(screen.getByRole("button", { name: /edit your name/i })).toHaveFocus();
+
+      const user = userEvent.setup();
+      await renameTo(user, "Dave{Escape}");
+      expect(screen.getByRole("button", { name: /edit your name/i })).toHaveFocus();
+    });
+
     it("sends rename on blur", async () => {
       const user = await renameInRoom("Carol");
       await user.click(document.body);

@@ -56,11 +56,23 @@ function NameEditor({
   onCommit: () => void;
   onCancel: () => void;
 }) {
+  // Saving with Enter or cancelling with Escape unmounts the input, so hand focus
+  // back to the name button. A blur from clicking elsewhere leaves focus there.
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const refocusButton = useRef(false);
+  useEffect(() => {
+    if (!editing && refocusButton.current) {
+      refocusButton.current = false;
+      buttonRef.current?.focus();
+    }
+  }, [editing]);
+
   if (editing) {
     return (
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          refocusButton.current = true;
           onCommit();
         }}
       >
@@ -74,7 +86,10 @@ function NameEditor({
           defaultValue={participant.name}
           onBlur={onCommit}
           onKeyDown={(e) => {
-            if (e.key === "Escape") onCancel();
+            if (e.key === "Escape") {
+              refocusButton.current = true;
+              onCancel();
+            }
           }}
           maxLength={24}
           autoComplete="nickname"
@@ -87,7 +102,7 @@ function NameEditor({
   }
 
   return (
-    <Button onClick={onStartEdit}>
+    <Button ref={buttonRef} onClick={onStartEdit}>
       {participant.name} <span aria-hidden="true">✎</span>
       <span className="sr-only">Edit your name</span>
     </Button>
