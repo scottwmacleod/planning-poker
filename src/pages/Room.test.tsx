@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClientMessage, Participant, RoomState } from "../../lib/types";
@@ -416,6 +416,27 @@ describe("RoomPage", () => {
       expect(writeText).toHaveBeenCalledWith(window.location.href);
       expect(screen.getByRole("button", { name: "copied" })).toBeInTheDocument();
       expect(screen.getByText("Room link copied to clipboard")).toBeInTheDocument();
+    });
+
+    it("restarts the copied window on a second click instead of resetting early", async () => {
+      mockClipboard(() => Promise.resolve());
+      await renderInRoom();
+      vi.useFakeTimers();
+      try {
+        const click = (name: string) =>
+          act(async () => fireEvent.click(screen.getByRole("button", { name })));
+
+        await click("copy link");
+        act(() => vi.advanceTimersByTime(1500));
+        await click("copied");
+        act(() => vi.advanceTimersByTime(1000));
+        expect(screen.getByRole("button", { name: "copied" })).toBeInTheDocument();
+
+        act(() => vi.advanceTimersByTime(1000));
+        expect(screen.getByRole("button", { name: "copy link" })).toBeInTheDocument();
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it("says it could not copy when the browser blocks the clipboard", async () => {

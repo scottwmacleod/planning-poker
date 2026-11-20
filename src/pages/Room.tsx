@@ -138,6 +138,7 @@ export default function RoomPage({ id }: { id: string }) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [roomFull, setRoomFull] = useState(false);
   const socketRef = useRef<PartySocket | null>(null);
+  const copyResetRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const nameInputRef = useRef<HTMLInputElement>(null);
   // These track what was actually sent to the server, so a socket reconnect
   // (which re-runs the 'open' handler below) rejoins with the latest values
@@ -197,6 +198,8 @@ export default function RoomPage({ id }: { id: string }) {
     return () => socket.close();
   }, [name, id, isSpectator]);
 
+  useEffect(() => () => clearTimeout(copyResetRef.current), []);
+
   function send(msg: ClientMessage) {
     socketRef.current?.send(JSON.stringify(msg));
   }
@@ -219,7 +222,9 @@ export default function RoomPage({ id }: { id: string }) {
     } catch {
       setCopyStatus("failed");
     }
-    setTimeout(() => setCopyStatus("idle"), 2000);
+    // A second click restarts the 2s window instead of stacking timers.
+    clearTimeout(copyResetRef.current);
+    copyResetRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
   }
 
   function commitRename() {
