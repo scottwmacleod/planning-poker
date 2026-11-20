@@ -3,6 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ClientMessage, Participant, RoomState } from "../../lib/types";
 import { expectNoAxeViolations } from "../../test/axe";
+
+const goHome = vi.hoisted(() => vi.fn());
+vi.mock("../navigation", async (original) => ({
+  ...(await original<typeof import("../navigation")>()),
+  navigate: goHome,
+}));
+
 import RoomPage from "./Room";
 
 // A stand-in for PartySocket: no network, just records what the page sends
@@ -249,10 +256,26 @@ describe("RoomPage", () => {
     it("titles the page planning-poker and shows the room code", async () => {
       await renderInRoom();
 
-      const h1 = screen.getByRole("heading", { level: 1, name: "planning-poker" });
+      const h1 = screen.getByRole("heading", { level: 1, name: /^planning-poker/ });
       expect(h1.querySelector('.sm-mark .sm-cursor[aria-hidden="true"]')).not.toBeNull();
       expect(h1).not.toHaveTextContent("_");
       expect(screen.getByText("abc123")).toBeInTheDocument();
+    });
+
+    it("links the logo to the homepage without a full page load", async () => {
+      const user = userEvent.setup();
+      await renderInRoom();
+      const link = screen.getByRole("link", { name: /leave room and go to the homepage/i });
+      expect(link).toHaveAttribute("href", "/");
+
+      await user.click(link);
+      expect(goHome).toHaveBeenCalledWith("/");
+
+      goHome.mockClear();
+      await user.keyboard("{Control>}");
+      await user.click(link);
+      await user.keyboard("{/Control}");
+      expect(goHome).not.toHaveBeenCalled();
     });
 
     it("labels the observer toggle in plain words without emoji", async () => {
