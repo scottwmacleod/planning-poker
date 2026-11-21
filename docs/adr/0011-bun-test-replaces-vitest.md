@@ -21,3 +21,7 @@ A file with `@vitest-environment node` gets no DOM: the preload reads the docblo
 ## Side by side
 
 On the same commit (Bun 1.4.5, 4 cores), Vitest and `bun test` ran the same 303 tests in the same 25 files, matched by file and full name, all passing. A planted bug in `navigate` failed the same one test under both. After merging `bun lint` from main the same holds for 304 tests. Locally Vitest took 7.4-7.8 s and `bun test --parallel` takes 3.1-3.7 s, bound by `Room.test.tsx` (about 2.3 s on its own).
+
+## Lint rules off for the preload
+
+`test/bun-setup.ts` is the one file where `.oxlintrc.json` turns rules off: `bun/no-side-effects-on-import`, `vitest/require-hook` and `vitest/require-top-level-describe`. Scott chose this on 21 Nov 2026 over adding suppressions. A preload exists to run code on import: the DOM and the `vi.mock` hoisting plugin must be in place before a test file's imports evaluate, which is earlier than any hook. Everything it calls lives in `dom.ts`, `vitest-compat.ts` and `vitest-hoist.ts`, which meet every rule. Keep the preload to those calls.
