@@ -33,7 +33,7 @@ function planted(into: string, name: string) {
 }
 
 function reported(file: string, rule: string) {
-  return new RegExp(`${RegExp.escape(file)}:[^\\n]*${RegExp.escape(rule)}`, "u");
+  return new RegExp(`^(?=[^\\n]*${RegExp.escape(file)}:)[^\\n]*${RegExp.escape(rule)}`, "mu");
 }
 
 describe("lint config", () => {
