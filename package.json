@@ -15,8 +15,8 @@
     "typecheck:tsc": "bun --bun x tsc --noEmit && bun --bun x tsc -p room-server",
     "lint": "bun x bun@1.4.5-canary.20261120.1 lint --no-script && biome lint . && bun fmt --no-script --check . && bun vendor/sm-core/tooling/lint/no-comments.mjs",
     "format": "bun fmt --no-script",
-    "test": "bun --bun x vitest run",
-    "test:watch": "bun --bun x vitest",
+    "test": "bun test --parallel",
+    "test:watch": "bun test --isolate --watch",
     "cf-typegen": "bun --bun x wrangler types room-server/worker-configuration.d.ts"
   },
   "dependencies": {
@@ -38,6 +38,8 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.12",
+    "@types/bun": "1.4.5",
+    "@types/jsdom": "30.0.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -48,7 +50,6 @@
     "tailwindcss": "^4.3.4",
     "typescript": "^7.0.2",
     "vite": "8.3.8",
-    "vitest": "^5.1.0",
     "wrangler": "^4.164.0"
   },
   "engines": {

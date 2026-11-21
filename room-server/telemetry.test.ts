@@ -9,7 +9,7 @@ const STACK = `Error: boom
 
 describe("parseStack", () => {
   it("lists frames oldest call first", () => {
-    expect(parseStack(STACK)).toEqual([
+    expect(parseStack(STACK)).toEqual<unknown>([
       expect.objectContaining({
         function: "Object.fetch",
         filename: "node_modules/partyserver/dist/index.js",
