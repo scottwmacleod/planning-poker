@@ -1114,18 +1114,9 @@
   },
   "test/lint.test.ts": {
     "import/no-nodejs-modules": {
-      "count": 3
-    },
-    "node/no-sync": {
-      "count": 6
+      "count": 2
     },
     "unicorn/prefer-module": {
-      "count": 1
-    },
-    "vitest/prefer-lowercase-title": {
-      "count": 1
-    },
-    "vitest/require-top-level-describe": {
       "count": 1
     }
   },
@@ -1215,14 +1206,6 @@
   },
   "vite.config.ts": {
     "typescript/strict-boolean-expressions": {
-      "count": 1
-    }
-  },
-  "vitest.setup.ts": {
-    "import/no-unassigned-import": {
-      "count": 1
-    },
-    "vitest/require-top-level-describe": {
       "count": 1
     }
   }
