@@ -32,6 +32,10 @@ function planted(into: string, name: string) {
   return path.relative(root, path.join(into, name));
 }
 
+function reported(file: string, rule: string) {
+  return new RegExp(`${RegExp.escape(file)}:[^\\n]*${RegExp.escape(rule)}`, "u");
+}
+
 describe("lint config", () => {
   const state = {
     dir: "",
@@ -47,10 +51,6 @@ describe("lint config", () => {
     css: ".a {\n  color: red;\n  color: blue;\n}\n",
   };
 
-  function findings(file: string) {
-    return state.bunLint.output.split("\n").filter((line) => line.startsWith(`${file}:`));
-  }
-
   beforeAll(async () => {
     state.dir = await mkdtemp(path.join(root, "test/.planted-"));
     state.uiDir = await mkdtemp(path.join(root, "src/components/ui/.planted-"));
@@ -63,7 +63,13 @@ describe("lint config", () => {
       writeFile(path.join(state.dir, "duplicate.css"), sources.css),
     ]);
     [state.bunLint, state.biome] = await Promise.all([
-      run("bun", [...linter, state.dir, state.uiDir]),
+      run("bun", [
+        ...linter,
+        ...["unused.ts", "hook.tsx", "sdk.ts", "clean.ts"].map((name) =>
+          path.join(state.dir, name),
+        ),
+        path.join(state.uiDir, "sdk.ts"),
+      ]),
       run(path.join(root, "node_modules/.bin/biome"), [
         "lint",
         planted(state.dir, "duplicate.css"),
@@ -79,23 +85,29 @@ describe("lint config", () => {
   });
 
   it("bun lint fails on an unused variable", () => {
-    expect(findings(planted(state.dir, "unused.ts")).join("\n")).toContain("no-unused-vars");
+    expect(state.bunLint.output).toMatch(
+      reported(planted(state.dir, "unused.ts"), "no-unused-vars"),
+    );
   });
 
   it("bun lint fails on a hook called conditionally", () => {
-    expect(findings(planted(state.dir, "hook.tsx")).join("\n")).toContain("rules-of-hooks");
+    expect(state.bunLint.output).toMatch(
+      reported(planted(state.dir, "hook.tsx"), "rules-of-hooks"),
+    );
   });
 
   it("bun lint fails on a ui-sdk import outside src/components/ui", () => {
-    expect(findings(planted(state.dir, "sdk.ts")).join("\n")).toContain("no-restricted-imports");
+    expect(state.bunLint.output).toMatch(
+      reported(planted(state.dir, "sdk.ts"), "no-restricted-imports"),
+    );
   });
 
   it("bun lint allows ui-sdk imports inside src/components/ui", () => {
-    expect(findings(planted(state.uiDir, "sdk.ts"))).toStrictEqual([]);
+    expect(state.bunLint.output).not.toContain(planted(state.uiDir, "sdk.ts"));
   });
 
   it("bun lint passes clean code", () => {
-    expect(findings(planted(state.dir, "clean.ts"))).toStrictEqual([]);
+    expect(state.bunLint.output).not.toContain(planted(state.dir, "clean.ts"));
   });
 
   it("biome fails on a duplicate CSS property, which bun lint can't read", () => {
