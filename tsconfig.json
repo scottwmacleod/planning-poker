@@ -6,5 +6,5 @@
     "resolveJsonModule": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "lib", "test", "vite.config.ts", "vitest.setup.ts"]
+  "include": ["src", "lib", "test", "vite.config.ts"]
 }

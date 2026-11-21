@@ -46,7 +46,7 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 | Command              | What it does                                                                       |
 | -------------------- | ---------------------------------------------------------------------------------- |
 | `bun run dev`        | Start the app and the room server together                                         |
-| `bun run test`       | Run the test suite once with Vitest (`bun test` runs Bun's own runner instead)     |
+| `bun run test`       | Run the test suite once with `bun test`, in parallel and random order              |
 | `bun run test:watch` | Run tests in watch mode                                                            |
 | `bun run typecheck`  | Type-check the app and the room server                                             |
 | `bun run check`      | Everything CI checks: typecheck, lint, tests, build and the sm-core copy           |

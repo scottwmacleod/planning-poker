@@ -34,7 +34,7 @@ Read [GLOSSARY.md](GLOSSARY.md) before naming anything, and use its terms in cod
 
 ## Making the change
 
-- Write a failing test first, then make it pass. Tests use Vitest and Testing Library and live next to the code or in `test/`.
+- Write a failing test first, then make it pass. Tests use `bun test` (with Vitest-style imports) and Testing Library and live next to the code or in `test/`.
 - Keep each pull request to one issue.
 - Your change is done when this passes:
 

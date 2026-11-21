@@ -2,7 +2,7 @@
 
 How the tests run, and the workarounds they rely on. Moved here from code comments on 21 Nov 2026.
 
-- **Tests run shuffled** (`sequence.shuffle` in `vite.config.ts`), so `vitest.setup.ts` resets anything one test could leak into the next.
+- **Tests run shuffled** (`randomize` in `bunfig.toml`), so `test/bun-setup.ts` resets anything one test could leak into the next. ADR-0010 covers the runner.
 - **The room server tests run in Node with `partyserver` mocked.** partyserver imports `cloudflare:workers`, which only exists in the Workers runtime, so `server.test.ts` swaps in a minimal `Server`. That tests our stand-in, not partyserver: #134 moves these tests into workerd.
 - **The room page tests replace PartySocket** with a stand-in that records what the page sends and lets a test fire `open` and `message` events by hand, including a second `open` to act out a reconnect.
 - **Clipboard stubs go after `userEvent.setup()`**, which installs its own clipboard stub.
