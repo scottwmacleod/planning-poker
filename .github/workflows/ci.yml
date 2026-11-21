@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   web:
-    uses: scottwmacleod/sm-core/.github/workflows/web-ci.yml@v26.11.19
+    uses: scottwmacleod/sm-core/.github/workflows/web-ci.yml@v26.11.21
     with:
       package-manager: bun
       typecheck-command: bun run typecheck
