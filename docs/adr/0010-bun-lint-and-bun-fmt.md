@@ -1,6 +1,6 @@
 # Lint with bun lint, format with bun fmt
 
-Decided by Scott on 2026-11-21 in the CI speed brief. Supersedes the "Biome stays" line in ADR-0003. The suite-wide record, with every rule turned off and why, is sm-core's ADR-0009.
+Decided by Scott on 2026-11-21 in the CI speed brief. Supersedes the "Biome stays" line in ADR-0003. The suite-wide record, with every rule turned off and why, is sm-core's ADR-0010.
 
 - `bun lint` lints JavaScript and TypeScript with every rule in `vendor/sm-core/tooling/oxlintrc.base.json` (704, type-aware). `.oxlintrc.json` adds the ui-sdk import ban (ADR-0008) and lets tests use `!`, as `biome.json` did. It runs from the pinned canary, `bun@1.4.5-canary.20261120.1`, because no stable Bun has it yet.
 - The 810 findings the code already had are in `oxlint-suppressions.json`. New code meets every rule. `bun lint` fails on a new finding and on a suppression that no longer matches, so the file only shrinks.
