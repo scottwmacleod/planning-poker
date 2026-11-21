@@ -47,7 +47,7 @@ export default function ParticipantList({
 
   if (compact) {
     return (
-      <ul className="flex items-center gap-2 overflow-x-auto py-2 px-1 scrollbar-hide font-mono">
+      <ul className="flex items-center gap-2 overflow-x-auto py-2 px-1 font-mono">
         {list.map((p) => {
           const status = statusOf(p, phase);
           return (
@@ -57,7 +57,7 @@ export default function ParticipantList({
             >
               <Sign status={status} />
               <span
-                className={`whitespace-nowrap max-w-[80px] truncate ${status === "observing" ? "text-ink-muted" : "text-ink"}`}
+                className={`whitespace-nowrap max-w-20 truncate ${status === "observing" ? "text-ink-muted" : "text-ink"}`}
               >
                 {p.name}
               </span>
