@@ -19,6 +19,8 @@
     "typecheck:tsc": "bun --bun x tsc --noEmit && bun --bun x tsc -p room-server",
     "lint": "biome check . && bun vendor/sm-core/tooling/lint/no-comments.mjs",
     "format": "biome format --write .",
+    "lint:bun": "bun --bun x bun@1.4.5-canary.20261120.1 lint --no-script",
+    "fmt:bun": "bun fmt --no-script --check --ignore-pattern '**/*.md' --ignore-pattern 'vendor/**'",
     "test": "bun --bun x vitest run",
     "test:watch": "bun --bun x vitest",
     "cf-typegen": "bun --bun x wrangler types room-server/worker-configuration.d.ts"
