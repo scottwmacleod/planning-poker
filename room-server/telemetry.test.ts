@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { exceptionEvent, parseStack, reportError, scrubRoomPath } from "./telemetry";
 
 const STACK = `Error: boom

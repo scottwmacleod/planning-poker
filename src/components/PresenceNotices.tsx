@@ -1,4 +1,5 @@
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+
 import type { Participant } from "../../lib/types";
 import { type PresenceChange, presenceChanges } from "../presence";
 
