@@ -29,10 +29,15 @@ export default function Button({
   className = "",
   ...props
 }: ButtonProps) {
+  const own = `${BASE} ${VARIANTS[variant]} ${SIZES[size]}`;
   return (
     <UiButton
       type={type}
-      className={`${BASE} ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+      className={
+        typeof className === "function"
+          ? (state) => `${own} ${className(state) ?? ""}`
+          : `${own} ${className}`
+      }
       {...props}
     />
   );
