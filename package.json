@@ -17,7 +17,7 @@
     "check": "bun run typecheck && bun run lint && bun run test && bun run build && node vendor/sm-core/verify.mjs",
     "typecheck": "bun check --no-script && bun check --no-script -p room-server",
     "typecheck:tsc": "bun --bun x tsc --noEmit && bun --bun x tsc -p room-server",
-    "lint": "biome check .",
+    "lint": "biome check . && bun vendor/sm-core/tooling/lint/no-comments.mjs",
     "format": "biome format --write .",
     "test": "bun --bun x vitest run",
     "test:watch": "bun --bun x vitest",
