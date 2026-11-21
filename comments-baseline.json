@@ -1,6 +1,4 @@
 {
-  "ignore": [
-    "room-server/worker-configuration.d.ts"
-  ],
+  "ignore": [],
   "files": {}
 }

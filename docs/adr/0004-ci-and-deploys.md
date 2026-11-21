@@ -8,4 +8,4 @@ The shared rules (one required check named `ci`, squash auto-merge, the `hold` l
 - **`audit` is not a required check.** A new advisory can turn it red on a PR that changed nothing related, and that shouldn't block the merge.
 - **`behind` runs weekly.** It opens one issue when `vendor/sm-core` is older than sm-core's latest release, or a pinned agent tool has a newer version, and closes it once both are current.
 - **Permissions are the least each job needs.** The workflow reads pull requests because web-ci lists a PR's changed files for `skip-paths`. Only the budgets job writes to pull requests, to keep one bundle-size comment per PR up to date.
-- **No code comments** (sm-core's `no-comments` check, run by `bun run lint`). `comments-baseline.json` starts at zero and ignores the generated `room-server/worker-configuration.d.ts`. Reasons go in names, tests and these ADRs.
+- **No code comments** (sm-core's `no-comments` check, run by `bun run lint`). `comments-baseline.json` starts at zero; the check skips the generated `room-server/worker-configuration.d.ts` by default. Reasons go in names, tests and these ADRs.
