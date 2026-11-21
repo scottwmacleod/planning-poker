@@ -17,6 +17,14 @@
   "overrides": [
     { "files": ["src/components/ui/**"], "rules": { "no-restricted-imports": "off" } },
     {
+      "files": ["test/bun-setup.ts"],
+      "rules": {
+        "bun/no-side-effects-on-import": "off",
+        "vitest/require-hook": "off",
+        "vitest/require-top-level-describe": "off"
+      }
+    },
+    {
       "files": ["**/*.test.ts", "**/*.test.tsx"],
       "rules": { "typescript/no-non-null-assertion": "off" }
     }

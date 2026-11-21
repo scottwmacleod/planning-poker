@@ -1,10 +1,11 @@
 {
   "extends": "./vendor/sm-core/tooling/tsconfig.base.json",
   "compilerOptions": {
+    "paths": { "vitest": ["./test/vitest.d.ts"] },
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["node"],
     "resolveJsonModule": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "lib", "test", "vite.config.ts", "vitest.setup.ts"]
+  "include": ["src", "lib", "test", "vite.config.ts"]
 }
