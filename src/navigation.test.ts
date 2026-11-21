@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { navigate, roomIdFrom, roomPath } from "./navigation";
 
 describe("room paths", () => {

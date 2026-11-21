@@ -38,21 +38,19 @@
     "logos/sm-wordmark-light.svg": "1a33784fac5e6c0eb775c1d6d635e71e78212aa9f44b93abd53996b0996e9288",
     "tooling/agents/domain.md": "593a7042218689f1d24df89df14eaf0a20e19e0d0a7d479a01947ac78f0784b9",
     "tooling/agents/issue-tracker.md": "6fdb3e9b00b7b0b115ecac3b1c00e3790f637f190abf598815368722c0a94692",
-    "tooling/agents/sm-conventions.md": "927581e4e73166632156c5eebbabb53a13614bde1f2f4d401729efedcff44d50",
+    "tooling/agents/sm-conventions.md": "d5449fa2c0d9e919c7de3354b94ec0dfceb18b7f0297657c867a2bd6d90f9300",
     "tooling/agents/triage-labels.md": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
     "tooling/analytics/sm-posthog.js": "274288b1eca703ab5f3957df7779d4c4012c9afc21ad87553d1abd965707c601",
-    "tooling/biome.base.json": "fd515ccc95c6dc8c4d83aa11a1e3a294f87450e53cab5a8557937ec36ff91909",
+    "tooling/biome.base.json": "29b12b157fb6b1267e5cfc53bbf4682a9e2b09d1f72782c9393707895f0be7b4",
     "tooling/github/ISSUE_TEMPLATE/bug-report.yml": "cba0e5ecf4f3adf557dd14c38574296c0dcc7313a20979f456271f0d61aa2ee6",
     "tooling/github/ISSUE_TEMPLATE/feature-request.yml": "4370767af448db380988df2101d565f88db6ec9b5d6b0cc7842935bd2ce7bca8",
     "tooling/github/pull_request_template.md": "a6fb792ae2ffc6e0a2afbe7a16ae4a5a5c34b31601def41544e373f57d1a6a6c",
-    "tooling/hooks/fallback.mjs": "13e2fddc17c0b101aa699788d7e0a234fafd075d065772cdd84b9225fde1fa97",
-    "tooling/hooks/hk/Config.pkl": "c0bdbbf03ea766e6b8389d2491eb29e959c337aea7d674e43595709b79fbe9cc",
-    "tooling/hooks/hk/LICENSE": "4580e1e27578e6fb28a76385413b4504b3b57d88b75f634a87d3b42c4eb6a459",
-    "tooling/hooks/install.mjs": "434c887489b441291b9aea2269054d89cf4aa9d67d353a19b072cde4b848e255",
-    "tooling/hooks/pre-commit": "0d94315420aa07e27c7a78baa67ff4367cfa97fe23a41280115191d4e0bcc35f",
-    "tooling/hooks/pre-push": "ca6756a76de889be3934c7bc64692126ca1614744eacb4e4ae9800e6c3c85674",
-    "tooling/hooks/sm.pkl": "e882422f8641847c268a88789a1f0e71be564478173d05753ac0e59f1664bfb4",
-    "tooling/lint/no-comments.mjs": "99136db93bbe2ca450b5036409afd63350c5e57202f6a51b244040aef5e5394b",
+    "tooling/hooks/install.mjs": "7336b6f13263fdd38989fbf0bb61aa556b3a4961216faac5ee8815d881d30b34",
+    "tooling/hooks/pre-push": "7a0b0b716b79cccf870b4cd1b8d92db54d4715800aad0c1b8e839e747b25e225",
+    "tooling/hooks/pre-push.mjs": "9840521531f2346e72a3fae5b12a244d841a0a31a2ed6f427180078ef0f994fd",
+    "tooling/lint/no-comments.mjs": "ccb881e2d0d667dc564d0f028bb25c998e728783d745a17b14d8b91d215da054",
+    "tooling/oxfmtrc.json": "2674ae20f49dbe30a07cb1a0a3b0f0c2bbffb1a0c3ffc87b193433f7ce8abb65",
+    "tooling/oxlintrc.base.json": "3f4d0db2b097ed1f6b5a10865156e4380441f894ca9d33aa616fb21441c1676f",
     "tooling/pins.json": "32d52554ce7936aec077a2bdca2db3244332ba94197cd78b3308bde170823ecd",
     "tooling/skills/delete-comment/SKILL.md": "5ab497613162190431f599a44581497004b11c5082746cc4c71ab89b93c23b5f",
     "tooling/tsconfig.base.json": "c3687993fe468fcc71e4626cbbd4748cb8e34ff5c3e81612a6d2cb5423f87962"
@@ -65,6 +63,7 @@
     "docs/agents/triage-labels.md": "tooling/agents/triage-labels.md",
     "docs/agents/domain.md": "tooling/agents/domain.md",
     "docs/agents/sm-conventions.md": "tooling/agents/sm-conventions.md",
-    ".claude/skills/delete-comment/SKILL.md": "tooling/skills/delete-comment/SKILL.md"
+    ".claude/skills/delete-comment/SKILL.md": "tooling/skills/delete-comment/SKILL.md",
+    ".oxfmtrc.json": "tooling/oxfmtrc.json"
   }
 }

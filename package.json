@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "packageManager": "bun@1.4.5",
-  "engines": {
-    "bun": ">=1.4.5"
-  },
   "scripts": {
     "prepare": "bun vendor/sm-core/tooling/hooks/install.mjs",
     "dev": "bun --bun x concurrently \"bun --bun x vite\" \"bun --bun x wrangler dev\"",
@@ -17,8 +13,8 @@
     "check": "bun run typecheck && bun run lint && bun run test && bun run build && node vendor/sm-core/verify.mjs",
     "typecheck": "bun check --no-script && bun check --no-script -p room-server",
     "typecheck:tsc": "bun --bun x tsc --noEmit && bun --bun x tsc -p room-server",
-    "lint": "biome check . && bun vendor/sm-core/tooling/lint/no-comments.mjs",
-    "format": "biome format --write --no-errors-on-unmatched --files-ignore-unknown=true",
+    "lint": "bun x bun@1.4.5-canary.20261120.1 lint --no-script && biome lint . && bun fmt --no-script --check . && bun vendor/sm-core/tooling/lint/no-comments.mjs",
+    "format": "bun fmt --no-script",
     "test": "bun --bun x vitest run",
     "test:watch": "bun --bun x vitest",
     "cf-typegen": "bun --bun x wrangler types room-server/worker-configuration.d.ts"
@@ -54,5 +50,9 @@
     "vite": "8.3.8",
     "vitest": "^5.1.0",
     "wrangler": "^4.164.0"
-  }
+  },
+  "engines": {
+    "bun": ">=1.4.5"
+  },
+  "packageManager": "bun@1.4.5"
 }

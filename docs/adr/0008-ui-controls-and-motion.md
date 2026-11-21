@@ -4,7 +4,7 @@ Moved here from code comments on 21 Nov 2026.
 
 ## Controls
 
-- **Only `src/components/ui/` imports `@ui-sdk/*`**, and Biome's `noRestrictedImports` enforces it. ui-sdk is in beta, so an upstream change touches one folder. Everything else imports controls from `src/components/ui`.
+- **Only `src/components/ui/` imports `@ui-sdk/*`**, and `bun lint`'s `no-restricted-imports` enforces it (Biome's `noRestrictedImports` before ADR-0010). ui-sdk is in beta, so an upstream change touches one folder. Everything else imports controls from `src/components/ui`.
 - **ui-sdk's CSS layer is declared before Tailwind** in `src/index.css`, so it sits below Tailwind and our classes always win.
 - **`Button`** follows the sm_ core component table: 2px corners, mono type, lime `signal` for the one main action on a screen and `outline` for the rest. Variants are a plain class map, and callers add layout classes only. Keyboard, disabled and form behaviour come from ui-sdk's button part.
 - **`Checkbox` keeps the native input**, drawn to match a selected vote card, so keyboard, form and screen reader behaviour come for free.
