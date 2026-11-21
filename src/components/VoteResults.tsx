@@ -81,9 +81,7 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
                   {direction === "high" ? "↑ high" : "↓ low"}
                 </span>
               )}
-              <span className="text-xs text-ink-muted truncate max-w-[64px] text-center">
-                {p.name}
-              </span>
+              <span className="text-xs text-ink-muted truncate max-w-16 text-center">{p.name}</span>
             </div>
           );
         })}
