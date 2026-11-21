@@ -18,7 +18,7 @@
     "typecheck": "bun check --no-script && bun check --no-script -p room-server",
     "typecheck:tsc": "bun --bun x tsc --noEmit && bun --bun x tsc -p room-server",
     "lint": "biome check . && bun vendor/sm-core/tooling/lint/no-comments.mjs",
-    "format": "biome format --write .",
+    "format": "biome format --write --no-errors-on-unmatched --files-ignore-unknown=true",
     "test": "bun --bun x vitest run",
     "test:watch": "bun --bun x vitest",
     "cf-typegen": "bun --bun x wrangler types room-server/worker-configuration.d.ts"

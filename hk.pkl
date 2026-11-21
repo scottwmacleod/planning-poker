@@ -1,0 +1,1 @@
+amends "vendor/sm-core/tooling/hooks/sm.pkl"
