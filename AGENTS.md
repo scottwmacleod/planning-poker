@@ -17,6 +17,7 @@ Typecheck runs `bun check --no-script` on the app and on `room-server` (Bun 1.4.
 - Merging to `main` deploys the room server (`deploy-worker` in `ci.yml`). Auto-merge merges with the `SM_MERGE_TOKEN` secret, because a merge made with `GITHUB_TOKEN` starts no workflows; the daily run on `main` deploys too, which covers Dependabot merges.
 - Ask Scott before changing `wrangler.jsonc` or `.github/workflows/`, as well as the shared list in `sm-conventions.md`.
 - `bun lint` comes from the pinned canary and `bun fmt` formats (ADR-0010). Biome lints only CSS and the few JavaScript rules `bun lint` lacks. Existing findings sit in `oxlint-suppressions.json`, which may only shrink: fix new code, never add to it.
+- `bun lint` also loads `@shadcn/lint` for Tailwind classes: unknown classes, raw palette colours and arbitrary values fail. When no scale step fits, name the value as a `--poker-*` token in `src/index.css` and use it as an arbitrary variable, like `text-(length:--poker-text-card)`; don't allow-list it.
 - `room-server/server.ts` is the worker's entry module: it may export only the fetch handler and Durable Object classes. Shared constants go in `lib/types.ts`.
 - A PR body follows `/pr`, plus the template's browser test checklist below the product marker.
 
