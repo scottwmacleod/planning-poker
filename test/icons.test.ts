@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 const root = path.join(__dirname, "..");
 const read = (f: string) => readFileSync(path.join(root, f));
 
-// The icons are byte-for-byte copies of the sm-core logos, so they can't drift.
 describe("site icons", () => {
   it.each([
     ["public/favicon.svg", "vendor/sm-core/logos/planning-poker-favicon.svg"],

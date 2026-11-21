@@ -20,7 +20,6 @@ export type RoomState = {
   deck: Deck;
 };
 
-// Client → Server messages
 export type ClientMessage =
   | { type: "join"; name: string; isSpectator: boolean }
   | { type: "vote"; value: string }
@@ -30,17 +29,10 @@ export type ClientMessage =
   | { type: "newRound" }
   | { type: "changeDeck"; deck: Deck };
 
-// Server → Client messages
 export type ServerMessage = { type: "state" } & RoomState;
 
-// WebSocket close code the server uses when a room is at its size limit.
 export const ROOM_FULL_CODE = 4000;
 
-/** Connections a room accepts before turning new ones away with ROOM_FULL_CODE. */
 export const MAX_CONNECTIONS_PER_ROOM = 50;
 
-/**
- * PostHog project token for the `sm_` project, used by the app and the room server.
- * Public by design: a project token can only write events.
- */
 export const POSTHOG_TOKEN = "phc_rKDLfEFrPFjYd4botU7tS9oy4MsNPHbjwsGqTSr4GLB5";

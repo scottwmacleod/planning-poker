@@ -32,7 +32,6 @@ describe("Bun version", () => {
 });
 
 describe("Node version", () => {
-  // Node only runs vendor/sm-core/verify.mjs, which stays dependency-free.
   it("pins the current LTS, Node 26, in .nvmrc", () => {
     expect(nvmrc).toBe("26");
   });

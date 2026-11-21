@@ -4,9 +4,6 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "typ
   label: string;
 }
 
-// A native checkbox drawn to match a selected vote card: square, control-line
-// outline, then signal-tint fill with a signal-ink border and tick when checked.
-// Keeping the native input keeps keyboard, form and screen reader behaviour.
 export default function Checkbox({ label, className = "", ...props }: CheckboxProps) {
   return (
     <label className={`flex cursor-pointer items-center gap-space-3 ${className}`}>

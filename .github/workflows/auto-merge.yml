@@ -1,11 +1,5 @@
 name: auto-merge
 
-# Squash auto-merge for every PR from this repo's own branches, from sm-core's
-# shared workflow. A PR labelled `hold` never gets auto-merge, so it waits for
-# Scott. Dependabot PRs go through dependabot-automerge.yml instead.
-# SM_MERGE_TOKEN turns auto-merge on with Scott's token, so the merge starts
-# ci on main and deploys the room server. Without it, the daily run deploys.
-
 on:
   pull_request:
     branches: [main]

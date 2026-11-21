@@ -14,9 +14,6 @@ const DECK_BUTTONS: { deck: Deck; label: string }[] = [
   { deck: "tshirt", label: "t-shirt" },
 ];
 
-// Both rows are ui-sdk toggle groups: one tab stop each, arrow keys and
-// Home/End move between toggles, Enter or Space presses. `deselectable={false}`
-// means pressing the pressed toggle does nothing, so a vote or deck can't be cleared.
 export default function CardDeck({
   deck,
   selectedCard,

@@ -1,8 +1,5 @@
 name: audit
 
-# bun audit, from sm-core. Not a required check: a new advisory can turn it
-# red on an unrelated PR.
-
 on:
   pull_request:
     paths: ["**/package.json", "bun.lock"]

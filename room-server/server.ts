@@ -13,12 +13,9 @@ import { reportError } from "./telemetry";
 
 const MAX_NAME_LENGTH = 24;
 
-// Browsers always send Origin, so this stops other websites using the server.
-// It doesn't stop scripts, which can send any Origin they like.
 const ALLOWED_ORIGINS = [
   /^https:\/\/planning-poker-eta-neon\.vercel\.app$/,
   /^https:\/\/planning-poker\.scottmacleod\.co$/,
-  // Vercel preview and branch deployments, e.g. planning-poker-git-<branch>-scottwmacleods-projects.vercel.app
   /^https:\/\/planning-poker-[a-z0-9-]+-scottwmacleods-projects\.vercel\.app$/,
   /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
 ];
@@ -29,13 +26,11 @@ function isAllowedOrigin(origin: string | null): boolean {
 
 const isDeck = (v: unknown): v is Deck => typeof v === "string" && Object.hasOwn(DECKS, v);
 
-// Trimmed and capped, or null if nothing is left.
 function cleanName(v: unknown): string | null {
   if (typeof v !== "string") return null;
   return v.trim().slice(0, MAX_NAME_LENGTH) || null;
 }
 
-// Returns a well-formed message, or null for anything the protocol doesn't allow.
 function parseClientMessage(raw: string): ClientMessage | null {
   let data: unknown;
   try {
@@ -103,11 +98,6 @@ export class PokerRoom extends Server {
     this.report("onMessage", () => this.handleMessage(sender, message));
   }
 
-  /**
-   * Runs a handler and reports anything it throws to PostHog. The error stops
-   * here: partyserver would otherwise log it with the room id, and Workers Logs
-   * go to PostHog too. Returns false if the handler threw.
-   */
   private report(handler: string, run: () => void): boolean {
     try {
       run();
@@ -206,7 +196,6 @@ export class PokerRoom extends Server {
   }
 }
 
-// Routes /parties/main/:room to the PokerRoom Durable Object bound as `Main`.
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const origin = request.headers.get("Origin");

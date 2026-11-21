@@ -114,8 +114,6 @@ function Sign({ status }: { status: Status }) {
   );
 }
 
-// Right-hand side of a row: visible text where the design has some, plus
-// screen-reader text for every state.
 function StatusText({
   p,
   status,

@@ -7,8 +7,6 @@ interface FieldProps extends ComponentProps<typeof Input> {
   label: string;
 }
 
-// A visible label above an input, in the lowercase mono voice.
-// ui-sdk's field ties the label (and any later error text) to the input.
 export default function Field({ id, label, ...props }: FieldProps) {
   return (
     <UiField className="flex flex-col gap-space-2">

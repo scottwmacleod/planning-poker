@@ -46,15 +46,12 @@ describe("outside contributions", () => {
 });
 
 describe("auto-merge workflow", () => {
-  // sm-core's auto-merge.yml only arms PRs from branches in this repo, not forks.
   it("uses sm-core's shared auto-merge, which skips forks and held PRs", () => {
     const caller = read(".github/workflows/auto-merge.yml");
     expect(caller).toContain("uses: scottwmacleod/sm-core/.github/workflows/auto-merge.yml@");
     expect(caller).toContain("hold-label: hold");
   });
 
-  // A merge made with GITHUB_TOKEN starts no workflows on main, so the room
-  // server wouldn't deploy. The merge token makes the merge start them.
   it("passes the merge token so a merge deploys the room server", () => {
     expect(read(".github/workflows/auto-merge.yml")).toMatch(
       /merge-token: \$\{\{ secrets\.SM_MERGE_TOKEN \}\}/,

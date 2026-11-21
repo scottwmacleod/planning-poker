@@ -1,0 +1,10 @@
+# Loading the room page
+
+The room page (socket client, card deck, results) is its own lazy chunk, so visitors to the home page don't download it. The aim is that opening a room never waits on that chunk. Moved here from code comments on 21 Nov 2026.
+
+- **From the home page**, `Home` prefetches the chunk once the browser is idle (`requestIdleCallback` with a 3 s timeout; Safari has no `requestIdleCallback`, so it gets a 1 s `setTimeout`). Pointing at, touching or focusing the create or join controls prefetches it too. Creating or joining waits for the chunk (usually already there) before navigating, so the cross-fade never fades to a blank page.
+- **On a direct room link**, a small inline script in `index.html` (added by the `roomPreload` plugin in `vite.config.ts`) adds `modulepreload` links for the room chunk and its imports, so the browser fetches it beside the main chunk instead of after it. The script goes first in `<head>`, because a classic script after the stylesheet waits for the stylesheet to load. It reuses `ROOM_PATH` from `src/navigation.ts`.
+- **`main.tsx` waits for the room chunk** before the first render on a room path, so the first render shows the room without suspending. If the fetch fails, the room's lazy load tries again and shows the error. This can't be a top-level `await`: the room chunk imports the main chunk, so that would deadlock.
+- **`Room` in `src/roomChunk.tsx` renders the loaded component directly** once the chunk is in. A `lazy` component suspends on its first render even when its chunk is ready, and React then holds the fallback for up to 300 ms. A failed fetch is tried again on the next call.
+- **The `Suspense` fallback is `null`.** The page background shows for the moment the chunk loads.
+- **Navigation** uses the History API with no router library, since there are two routes. `navigate()` cross-fades with View Transitions where they exist and motion is welcome, and renders the new page inside the transition callback with `flushSync` so the transition captures it.
