@@ -60,7 +60,7 @@ export default function CardDeck({
             <Toggle
               key={val}
               value={val}
-              className={`focus-ring press relative w-12 h-18 sm:w-16 sm:h-24 rounded-1 font-mono font-semibold tabular-nums text-lg sm:text-[22px] select-none touch-manipulation data-disabled:opacity-40 data-disabled:cursor-not-allowed ${
+              className={`focus-ring press relative w-12 h-18 sm:w-16 sm:h-24 rounded-1 font-mono font-semibold tabular-nums text-lg sm:text-(length:--poker-text-card) select-none touch-manipulation data-disabled:opacity-40 data-disabled:cursor-not-allowed ${
                 isSelected
                   ? "bg-signal-tint border-2 border-signal-ink text-signal-ink"
                   : "bg-surface border border-control-line text-ink hover:border-ink"

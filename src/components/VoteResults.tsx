@@ -72,7 +72,7 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
                 role="img"
                 aria-label={label}
                 style={{ "--i": i } as React.CSSProperties}
-                className={`deal-in w-16 h-24 rounded-1 flex items-center justify-center text-[22px] font-semibold tabular-nums ${face}`}
+                className={`deal-in w-16 h-24 rounded-1 flex items-center justify-center text-(length:--poker-text-card) font-semibold tabular-nums ${face}`}
               >
                 <span aria-hidden="true">{p.vote ?? "−"}</span>
               </div>

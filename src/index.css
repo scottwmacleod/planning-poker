@@ -8,6 +8,10 @@
 @import "../vendor/sm-core/sm-core.css";
 @import "../vendor/sm-core/sm-tailwind.css";
 
+:root {
+  --poker-text-card: 22px;
+}
+
 body {
   background: var(--sm-ground);
   color: var(--sm-ink);
