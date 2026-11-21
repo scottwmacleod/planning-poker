@@ -1,9 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
+
 import { startAnalytics } from "./analytics";
+import App from "./App";
 import { roomIdFrom } from "./navigation";
 import { prefetchRoom } from "./roomChunk";
+
 import "./index.css";
 
 const root = document.getElementById("root");

@@ -50,8 +50,8 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 | `bun run test:watch` | Run tests in watch mode                                                            |
 | `bun run typecheck`  | Type-check the app and the room server                                             |
 | `bun run check`      | Everything CI checks: typecheck, lint, tests, build and the sm-core copy           |
-| `bun run lint`       | Lint and check formatting with Biome                                               |
-| `bun run format`     | Format every file with Biome                                                       |
+| `bun run lint`       | Lint with `bun lint` and Biome (CSS), and check formatting with `bun fmt`          |
+| `bun run format`     | Format every file with `bun fmt`                                                   |
 | `bun run build`      | Production build of the app into `dist/`                                           |
 | `bun run preview`    | Serve the production build locally                                                 |
 | `bun run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |

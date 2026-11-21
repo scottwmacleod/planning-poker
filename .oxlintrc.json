@@ -1,0 +1,24 @@
+{
+  "extends": ["./vendor/sm-core/tooling/oxlintrc.base.json"],
+  "ignorePatterns": ["**/dist", "**/.wrangler", "room-server/worker-configuration.d.ts", "vendor"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@ui-sdk/**"],
+            "message": "Import controls from src/components/ui. Only that folder may import ui-sdk."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    { "files": ["src/components/ui/**"], "rules": { "no-restricted-imports": "off" } },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "rules": { "typescript/no-non-null-assertion": "off" }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
 import type { Participant } from "../../lib/types";
 import ParticipantList from "./ParticipantList";
 

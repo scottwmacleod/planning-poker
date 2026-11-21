@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Suspense } from "react";
+
 import { roomIdFrom, usePathname } from "./navigation";
 import Home from "./pages/Home";
 import { Room } from "./roomChunk";

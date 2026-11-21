@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import type { Plugin, UserConfig } from "vite";
+
 import { ROOM_PATH } from "./src/navigation";
 
 function roomPreload(): Plugin {
@@ -27,8 +28,8 @@ function roomPreload(): Plugin {
   };
 }
 
-export default defineConfig({
+export default {
   plugins: [react(), tailwindcss(), roomPreload()],
   envPrefix: ["VITE_", "NEXT_PUBLIC_"],
   build: { sourcemap: true },
-});
+} satisfies UserConfig;

@@ -1,0 +1,1229 @@
+{
+  "lib/types.ts": {
+    "typescript/consistent-type-definitions": {
+      "count": 2
+    }
+  },
+  "room-server/server.test.ts": {
+    "import/first": {
+      "count": 2
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "max-params": {
+      "count": 1
+    },
+    "no-empty-function": {
+      "count": 3
+    },
+    "no-shadow": {
+      "count": 1
+    },
+    "typescript/consistent-type-imports": {
+      "count": 1
+    },
+    "typescript/explicit-member-accessibility": {
+      "count": 3
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 2
+    },
+    "typescript/no-unsafe-call": {
+      "count": 1
+    },
+    "typescript/no-unsafe-type-assertion": {
+      "count": 9
+    },
+    "typescript/parameter-properties": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    },
+    "typescript/unbound-method": {
+      "count": 16
+    },
+    "unicorn/consistent-function-scoping": {
+      "count": 2
+    },
+    "unicorn/new-for-builtins": {
+      "count": 2
+    },
+    "vitest/expect-expect": {
+      "count": 2
+    },
+    "vitest/no-conditional-in-test": {
+      "count": 2
+    },
+    "vitest/prefer-called-with": {
+      "count": 3
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 5
+    },
+    "vitest/prefer-expect-resolves": {
+      "count": 1
+    },
+    "vitest/prefer-import-in-mock": {
+      "count": 2
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 1
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 8
+    },
+    "vitest/valid-expect": {
+      "count": 1
+    }
+  },
+  "room-server/server.ts": {
+    "import/consistent-type-specifier-style": {
+      "count": 6
+    },
+    "import/no-default-export": {
+      "count": 1
+    },
+    "no-console": {
+      "count": 2
+    },
+    "prefer-named-capture-group": {
+      "count": 2
+    },
+    "require-unicode-regexp": {
+      "count": 4
+    },
+    "typescript/explicit-member-accessibility": {
+      "count": 4
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 3
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 3
+    },
+    "typescript/no-dynamic-delete": {
+      "count": 1
+    },
+    "typescript/no-unsafe-type-assertion": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 2
+    },
+    "unicorn/switch-case-braces": {
+      "count": 5
+    }
+  },
+  "room-server/telemetry.test.ts": {
+    "no-console": {
+      "count": 2
+    },
+    "no-empty-function": {
+      "count": 1
+    },
+    "typescript/strict-void-return": {
+      "count": 5
+    },
+    "unicorn/no-useless-undefined": {
+      "count": 1
+    },
+    "vitest/prefer-called-once": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 4
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 2
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 2
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 4
+    }
+  },
+  "room-server/telemetry.ts": {
+    "no-console": {
+      "count": 1
+    },
+    "no-continue": {
+      "count": 1
+    },
+    "no-empty-function": {
+      "count": 1
+    },
+    "prefer-named-capture-group": {
+      "count": 4
+    },
+    "promise/no-promise-in-callback": {
+      "count": 1
+    },
+    "promise/prefer-await-to-then": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 2
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 3
+    },
+    "unicorn/no-array-reverse": {
+      "count": 1
+    }
+  },
+  "src/App.test.tsx": {
+    "import/first": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 5
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 6
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 3
+    },
+    "vitest/prefer-expect-resolves": {
+      "count": 2
+    },
+    "vitest/prefer-import-in-mock": {
+      "count": 2
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 2
+    },
+    "vitest/require-top-level-describe": {
+      "count": 1
+    }
+  },
+  "src/App.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    }
+  },
+  "src/analytics.test.ts": {
+    "typescript/no-unsafe-assignment": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 2
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 2
+    },
+    "vitest/prefer-import-in-mock": {
+      "count": 1
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 4
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 2
+    },
+    "vitest/require-top-level-describe": {
+      "count": 1
+    }
+  },
+  "src/analytics.ts": {
+    "bun/no-useless-spread-fallback": {
+      "count": 1
+    },
+    "curly": {
+      "count": 1
+    },
+    "import/consistent-type-specifier-style": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 6
+    },
+    "typescript/no-unsafe-type-assertion": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    },
+    "unicorn/no-array-callback-reference": {
+      "count": 1
+    }
+  },
+  "src/components/CardDeck.test.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
+      "count": 26
+    },
+    "require-unicode-regexp": {
+      "count": 2
+    },
+    "unicorn/consistent-function-scoping": {
+      "count": 1
+    },
+    "unicorn/no-array-for-each": {
+      "count": 4
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 13
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 2
+    }
+  },
+  "src/components/CardDeck.tsx": {
+    "import/consistent-type-specifier-style": {
+      "count": 1
+    },
+    "import/no-default-export": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 2
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    },
+    "typescript/strict-void-return": {
+      "count": 1
+    }
+  },
+  "src/components/ParticipantList.test.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 3
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "src/components/ParticipantList.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "no-use-before-define": {
+      "count": 5
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/no-multi-comp": {
+      "count": 3
+    },
+    "typescript/consistent-return": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    },
+    "unicorn/switch-case-braces": {
+      "count": 4
+    }
+  },
+  "src/components/PresenceNotices.tsx": {
+    "import/consistent-type-specifier-style": {
+      "count": 2
+    },
+    "import/no-default-export": {
+      "count": 1
+    },
+    "no-plusplus": {
+      "count": 1
+    },
+    "oxc/no-map-spread": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/no-multi-comp": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 2
+    },
+    "typescript/no-unsafe-type-assertion": {
+      "count": 1
+    }
+  },
+  "src/components/VoteResults.test.tsx": {
+    "no-empty-function": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 7
+    },
+    "typescript/no-unsafe-type-assertion": {
+      "count": 2
+    },
+    "typescript/strict-void-return": {
+      "count": 1
+    },
+    "vitest/prefer-called-times": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 2
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 3
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 1
+    }
+  },
+  "src/components/VoteResults.tsx": {
+    "import/consistent-type-specifier-style": {
+      "count": 2
+    },
+    "import/no-default-export": {
+      "count": 1
+    },
+    "jsx-a11y/prefer-tag-over-role": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 4
+    },
+    "no-use-before-define": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/no-unsafe-type-assertion": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 2
+    },
+    "unicorn/no-array-reduce": {
+      "count": 1
+    },
+    "unicorn/no-array-sort": {
+      "count": 3
+    },
+    "unicorn/no-nested-ternary": {
+      "count": 4
+    },
+    "unicorn/prefer-at": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Button.test.tsx": {
+    "no-div-regex": {
+      "count": 1
+    },
+    "react/jsx-boolean-value": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 2
+    },
+    "vitest/no-conditional-in-test": {
+      "count": 1
+    },
+    "vitest/prefer-called-times": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 3
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 4
+    }
+  },
+  "src/components/ui/Button.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Checkbox.test.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 2
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Checkbox.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Field.test.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Field.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Input.test.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "src/components/ui/Input.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    }
+  },
+  "src/index.test.ts": {
+    "bun/prefer-url-for-sibling-files": {
+      "count": 1
+    },
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 2
+    },
+    "prefer-named-capture-group": {
+      "count": 2
+    },
+    "require-unicode-regexp": {
+      "count": 9
+    },
+    "unicorn/prefer-module": {
+      "count": 2
+    }
+  },
+  "src/main.tsx": {
+    "bun/no-side-effects-on-import": {
+      "count": 3
+    },
+    "promise/catch-or-return": {
+      "count": 1
+    },
+    "promise/prefer-await-to-then": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 1
+    },
+    "typescript/no-floating-promises": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 1
+    },
+    "unicorn/prefer-query-selector": {
+      "count": 1
+    },
+    "unicorn/prefer-top-level-await": {
+      "count": 1
+    },
+    "vitest/require-hook": {
+      "count": 1
+    }
+  },
+  "src/navigation.test.ts": {
+    "typescript/no-confusing-void-expression": {
+      "count": 1
+    },
+    "unicorn/consistent-function-scoping": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 4
+    },
+    "vitest/prefer-called-times": {
+      "count": 1
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 1
+    }
+  },
+  "src/navigation.ts": {
+    "no-use-before-define": {
+      "count": 1
+    },
+    "node/no-sync": {
+      "count": 1
+    },
+    "prefer-named-capture-group": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 5
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 2
+    },
+    "typescript/no-unnecessary-condition": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 6
+    },
+    "vitest/require-hook": {
+      "count": 1
+    }
+  },
+  "src/pages/Home.test.tsx": {
+    "import/first": {
+      "count": 2
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 1
+    },
+    "typescript/consistent-type-imports": {
+      "count": 1
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 3
+    },
+    "typescript/promise-function-async": {
+      "count": 1
+    },
+    "vitest/expect-expect": {
+      "count": 1
+    },
+    "vitest/prefer-called-with": {
+      "count": 3
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 6
+    },
+    "vitest/prefer-import-in-mock": {
+      "count": 3
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 2
+    },
+    "vitest/require-top-level-describe": {
+      "count": 1
+    }
+  },
+  "src/pages/Home.tsx": {
+    "import/no-default-export": {
+      "count": 1
+    },
+    "promise/catch-or-return": {
+      "count": 1
+    },
+    "promise/prefer-await-to-then": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-no-target-blank": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 4
+    },
+    "typescript/no-deprecated": {
+      "count": 1
+    },
+    "typescript/no-floating-promises": {
+      "count": 1
+    },
+    "typescript/no-misused-promises": {
+      "count": 5
+    },
+    "typescript/strict-void-return": {
+      "count": 5
+    },
+    "unicorn/consistent-function-scoping": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 1
+    }
+  },
+  "src/pages/Room.test.tsx": {
+    "import/first": {
+      "count": 1
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-shadow": {
+      "count": 2
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "require-await": {
+      "count": 5
+    },
+    "require-unicode-regexp": {
+      "count": 13
+    },
+    "typescript/consistent-type-imports": {
+      "count": 1
+    },
+    "typescript/explicit-member-accessibility": {
+      "count": 10
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 10
+    },
+    "typescript/no-floating-promises": {
+      "count": 6
+    },
+    "typescript/no-unsafe-argument": {
+      "count": 1
+    },
+    "typescript/parameter-properties": {
+      "count": 1
+    },
+    "typescript/prefer-readonly": {
+      "count": 1
+    },
+    "typescript/promise-function-async": {
+      "count": 4
+    },
+    "typescript/require-await": {
+      "count": 5
+    },
+    "unicorn/consistent-function-scoping": {
+      "count": 5
+    },
+    "unicorn/no-array-for-each": {
+      "count": 3
+    },
+    "unicorn/no-useless-undefined": {
+      "count": 3
+    },
+    "unicorn/prefer-global-this": {
+      "count": 1
+    },
+    "vitest/expect-expect": {
+      "count": 3
+    },
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-expect-assertions": {
+      "count": 31
+    },
+    "vitest/prefer-import-in-mock": {
+      "count": 2
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 2
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 12
+    },
+    "vitest/require-mock-type-parameters": {
+      "count": 2
+    },
+    "vitest/require-top-level-describe": {
+      "count": 1
+    }
+  },
+  "src/pages/Room.tsx": {
+    "import/consistent-type-specifier-style": {
+      "count": 6
+    },
+    "import/no-default-export": {
+      "count": 1
+    },
+    "import/no-named-as-default": {
+      "count": 1
+    },
+    "jsx-a11y/no-autofocus": {
+      "count": 2
+    },
+    "jsx-a11y/prefer-tag-over-role": {
+      "count": 2
+    },
+    "max-lines": {
+      "count": 1
+    },
+    "no-use-before-define": {
+      "count": 3
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/no-multi-comp": {
+      "count": 2
+    },
+    "typescript/consistent-return": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "typescript/no-confusing-void-expression": {
+      "count": 9
+    },
+    "typescript/no-deprecated": {
+      "count": 1
+    },
+    "typescript/no-unnecessary-condition": {
+      "count": 1
+    },
+    "typescript/no-unsafe-argument": {
+      "count": 1
+    },
+    "typescript/no-unsafe-assignment": {
+      "count": 1
+    },
+    "typescript/strict-boolean-expressions": {
+      "count": 4
+    },
+    "unicorn/consistent-function-scoping": {
+      "count": 1
+    },
+    "unicorn/no-useless-undefined": {
+      "count": 1
+    },
+    "unicorn/prefer-global-this": {
+      "count": 1
+    }
+  },
+  "src/presence.test.ts": {
+    "vitest/prefer-describe-function-title": {
+      "count": 1
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 4
+    }
+  },
+  "src/presence.ts": {
+    "typescript/consistent-type-definitions": {
+      "count": 1
+    }
+  },
+  "src/roomChunk.tsx": {
+    "import/consistent-type-specifier-style": {
+      "count": 1
+    },
+    "no-empty-function": {
+      "count": 2
+    },
+    "promise/always-return": {
+      "count": 1
+    },
+    "promise/prefer-await-to-callbacks": {
+      "count": 1
+    },
+    "promise/prefer-await-to-then": {
+      "count": 1
+    },
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
+      "count": 1
+    },
+    "react/only-export-components": {
+      "count": 1
+    },
+    "typescript/consistent-type-imports": {
+      "count": 1
+    },
+    "typescript/explicit-module-boundary-types": {
+      "count": 2
+    },
+    "typescript/promise-function-async": {
+      "count": 2
+    },
+    "typescript/use-unknown-in-catch-callback-variable": {
+      "count": 1
+    }
+  },
+  "src/vite-env.d.ts": {
+    "import/unambiguous": {
+      "count": 1
+    },
+    "promise/prefer-await-to-callbacks": {
+      "count": 1
+    }
+  },
+  "test/axe.ts": {
+    "typescript/explicit-module-boundary-types": {
+      "count": 1
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 1
+    }
+  },
+  "test/ci.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 3
+    },
+    "prefer-destructuring": {
+      "count": 1
+    },
+    "prefer-named-capture-group": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 2
+    },
+    "typescript/no-unsafe-assignment": {
+      "count": 1
+    },
+    "typescript/no-unsafe-member-access": {
+      "count": 1
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "test/contributing.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 1
+    },
+    "prefer-named-capture-group": {
+      "count": 2
+    },
+    "require-unicode-regexp": {
+      "count": 5
+    },
+    "typescript/prefer-regexp-exec": {
+      "count": 1
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    },
+    "unicorn/prefer-string-replace-all": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 3
+    }
+  },
+  "test/docs-links.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 3
+    },
+    "prefer-named-capture-group": {
+      "count": 2
+    },
+    "require-unicode-regexp": {
+      "count": 2
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "test/env-example.test.ts": {
+    "bun/no-console-window-flash": {
+      "count": 1
+    },
+    "import/no-nodejs-modules": {
+      "count": 3
+    },
+    "node/no-sync": {
+      "count": 5
+    },
+    "oxc/no-map-spread": {
+      "count": 1
+    },
+    "prefer-named-capture-group": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 4
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    }
+  },
+  "test/icons.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 2
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    }
+  },
+  "test/lint.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 3
+    },
+    "node/no-sync": {
+      "count": 6
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    },
+    "vitest/require-top-level-describe": {
+      "count": 1
+    }
+  },
+  "test/motion.test.ts": {
+    "bun/prefer-url-for-sibling-files": {
+      "count": 1
+    },
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 10
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    }
+  },
+  "test/runtime-version.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 1
+    },
+    "prefer-named-capture-group": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 3
+    },
+    "typescript/no-unsafe-argument": {
+      "count": 1
+    },
+    "typescript/no-unsafe-assignment": {
+      "count": 2
+    },
+    "typescript/no-unsafe-call": {
+      "count": 1
+    },
+    "typescript/no-unsafe-member-access": {
+      "count": 4
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 2
+    },
+    "vitest/prefer-strict-equal": {
+      "count": 1
+    },
+    "vitest/require-to-throw-message": {
+      "count": 1
+    },
+    "vitest/valid-expect": {
+      "count": 1
+    }
+  },
+  "test/vite-app.test.ts": {
+    "import/no-nodejs-modules": {
+      "count": 2
+    },
+    "node/no-sync": {
+      "count": 1
+    },
+    "require-unicode-regexp": {
+      "count": 1
+    },
+    "typescript/no-unsafe-assignment": {
+      "count": 2
+    },
+    "typescript/no-unsafe-call": {
+      "count": 1
+    },
+    "typescript/no-unsafe-member-access": {
+      "count": 3
+    },
+    "unicorn/prefer-module": {
+      "count": 1
+    },
+    "vitest/prefer-lowercase-title": {
+      "count": 1
+    }
+  },
+  "vite.config.ts": {
+    "typescript/strict-boolean-expressions": {
+      "count": 1
+    }
+  },
+  "vitest.setup.ts": {
+    "import/no-unassigned-import": {
+      "count": 1
+    },
+    "vitest/require-top-level-describe": {
+      "count": 1
+    }
+  }
+}
