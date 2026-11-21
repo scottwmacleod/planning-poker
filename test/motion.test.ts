@@ -26,8 +26,6 @@ describe("motion styles in index.css", () => {
     expect(css).not.toMatch(/cursor-blink|@keyframes blink/);
   });
 
-  // Modern Web Guidance `motion`: default to static and opt in to movement,
-  // rather than declaring it and cancelling it under `reduce` (#111).
   const optIn = css.slice(css.indexOf("@media (prefers-reduced-motion: no-preference)"));
 
   it("never cancels motion under reduced motion, so a stronger selector can't slip past", () => {

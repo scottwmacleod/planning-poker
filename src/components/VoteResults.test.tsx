@@ -36,7 +36,6 @@ describe("VoteResults motion", () => {
     });
     const bars = container.querySelectorAll("li .bar-grow");
     expect(bars).toHaveLength(2);
-    // two cards dealt 80ms apart settle first: bars start after the last of 3 cards
     expect((bars[0] as HTMLElement).style.getPropertyValue("--n")).toBe("3");
     expect((bars[1] as HTMLElement).style.getPropertyValue("--n")).toBe("4");
     expect(screen.getByRole("button", { name: "new round" })).toHaveClass("press");

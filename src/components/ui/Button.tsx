@@ -1,11 +1,6 @@
 import { Button as UiButton } from "@ui-sdk/react/button";
 import type { ComponentProps } from "react";
 
-// Shared button, per the sm_ core component table: 2px corners, mono type,
-// lime `signal` for the one main action on a screen and `outline` for the rest.
-// Variants are a plain class map; callers add layout classes only (width, margin).
-// Behaviour (keyboard, disabled, form type) comes from ui-sdk's button part.
-
 const BASE =
   "focus-ring rounded-1 border font-mono touch-manipulation transition-colors disabled:cursor-not-allowed";
 

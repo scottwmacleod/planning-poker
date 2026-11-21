@@ -20,7 +20,6 @@ describe(".env.example", () => {
   const envExample = path.join(root, ".env.example");
 
   it("is not ignored by git", () => {
-    // git check-ignore exits 0 when the path is ignored, 1 when it isn't.
     const { status } = spawnSync("git", ["check-ignore", "-q", ".env.example"], { cwd: root });
     expect(status).toBe(1);
   });

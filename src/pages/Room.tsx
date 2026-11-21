@@ -15,10 +15,6 @@ import { Button, Checkbox, Field, Input } from "../components/ui";
 import VoteResults from "../components/VoteResults";
 import { navigate } from "../navigation";
 
-// Read when connecting rather than at import, so tests can stub the env per case.
-// Vite exposes NEXT_PUBLIC_* too (see envPrefix in vite.config.ts), so the Vercel
-// variable keeps working. The old NEXT_PUBLIC_PARTYKIT_HOST is only a fallback
-// until it is removed from Vercel.
 function roomServerHost() {
   return (
     import.meta.env.NEXT_PUBLIC_ROOM_SERVER_HOST ??
@@ -57,8 +53,6 @@ function NameEditor({
   onCommit: () => void;
   onCancel: () => void;
 }) {
-  // Saving with Enter or cancelling with Escape unmounts the input, so hand focus
-  // back to the name button. A blur from clicking elsewhere leaves focus there.
   const buttonRef = useRef<HTMLButtonElement>(null);
   const refocusButton = useRef(false);
   useEffect(() => {
@@ -130,8 +124,6 @@ function SpectatorToggle({
 }
 
 export default function RoomPage({ id }: { id: string }) {
-  // Read on the first render, so a returning visitor's socket opens on mount
-  // and the name form never flashes up first.
   const [name, setName] = useState<string | null>(() => localStorage.getItem("poker-name"));
   const [isSpectator, setIsSpectator] = useState(
     () => localStorage.getItem("poker-spectator") === "true",
@@ -145,12 +137,9 @@ export default function RoomPage({ id }: { id: string }) {
   const socketRef = useRef<PartySocket | null>(null);
   const copyResetRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const nameInputRef = useRef<HTMLInputElement>(null);
-  // These track what was actually sent to the server, so a socket reconnect
-  // (which re-runs the 'open' handler below) rejoins with the latest values
-  // instead of the stale ones `name`/`isSpectator` were initialized to.
   const liveNameRef = useRef<string | null>(null);
   const liveSpectatorRef = useRef(false);
-  const joinedRef = useRef(false); // `room_joined` fires once per visit, not per reconnect
+  const joinedRef = useRef(false);
 
   useEffect(() => {
     if (!name) return;
@@ -175,7 +164,6 @@ export default function RoomPage({ id }: { id: string }) {
       socket.send(JSON.stringify(msg));
     });
 
-    // A full room would turn every reconnect away too, so stop trying.
     socket.addEventListener("close", (e: CloseEvent) => {
       if (e.code === ROOM_FULL_CODE) {
         socket.close();
@@ -214,14 +202,11 @@ export default function RoomPage({ id }: { id: string }) {
 
   async function copyLink() {
     try {
-      // `navigator.clipboard` is missing on non-HTTPS pages, and writeText
-      // rejects when the browser denies permission.
       await navigator.clipboard.writeText(window.location.href);
       setCopyStatus("copied");
     } catch {
       setCopyStatus("failed");
     }
-    // A second click restarts the 2s window instead of stacking timers.
     clearTimeout(copyResetRef.current);
     copyResetRef.current = setTimeout(() => setCopyStatus("idle"), 2000);
   }
@@ -299,8 +284,6 @@ export default function RoomPage({ id }: { id: string }) {
     );
   }
 
-  // Plain clicks stay in the app; modified clicks keep the browser's open-in-new-tab behaviour.
-  // Leaving unmounts the room, which closes the socket so others see the leave notice.
   function goHome(e: MouseEvent<HTMLAnchorElement>) {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
@@ -314,12 +297,10 @@ export default function RoomPage({ id }: { id: string }) {
 
   return (
     <main className="flex min-h-dvh flex-col bg-ground text-ink">
-      {/* Screen reader phase announcer */}
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         {roomState.phase === "voting" ? "Voting in progress" : "Cards revealed"}
       </p>
 
-      {/* Header */}
       <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-line shrink-0">
         <div className="flex items-center gap-3">
           <h1 className="text-sm">
@@ -356,7 +337,6 @@ export default function RoomPage({ id }: { id: string }) {
         </div>
       </header>
 
-      {/* Mobile: participants strip */}
       <div className="md:hidden border-b border-line px-3">
         <ParticipantList
           participants={roomState.participants}
@@ -366,11 +346,9 @@ export default function RoomPage({ id }: { id: string }) {
         />
       </div>
 
-      {/* Body */}
       <div className="relative flex flex-1 overflow-hidden">
         <PresenceNotices participants={roomState.participants} selfId={myId} />
 
-        {/* Desktop: sidebar */}
         <aside className="hidden md:block w-64 shrink-0 p-6 border-r border-line overflow-y-auto">
           <ParticipantList
             participants={roomState.participants}
@@ -379,7 +357,6 @@ export default function RoomPage({ id }: { id: string }) {
           />
         </aside>
 
-        {/* Main content */}
         <section className="flex-1 flex flex-col items-center justify-center gap-6 sm:gap-8 p-4 sm:p-6 overflow-y-auto">
           {roomState.phase === "voting" ? (
             <>

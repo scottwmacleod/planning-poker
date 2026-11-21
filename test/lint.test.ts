@@ -7,7 +7,6 @@ import { afterAll, describe, expect, it } from "vitest";
 const root = path.resolve(__dirname, "..");
 const biome = path.join(root, "node_modules/.bin/biome");
 
-// Biome's stdin mode always exits 0 with --write and 1 without, so plant real files.
 const dir = mkdtempSync(path.join(root, "test/.planted-"));
 const uiDir = mkdtempSync(path.join(root, "src/components/ui/.planted-"));
 afterAll(() => {

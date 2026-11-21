@@ -17,7 +17,6 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
   const players = Object.values(participants)
     .filter((p) => !p.isSpectator)
     .sort((a, b) => {
-      // Non-voters go last; everyone else is low to high in deck order.
       if ((a.vote === null) !== (b.vote === null)) return a.vote === null ? 1 : -1;
       return a.vote === null || b.vote === null ? 0 : rank(a.vote) - rank(b.vote);
     });

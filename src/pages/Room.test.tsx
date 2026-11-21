@@ -12,8 +12,6 @@ vi.mock("../navigation", async (original) => ({
 
 import RoomPage from "./Room";
 
-// A stand-in for PartySocket: no network, just records what the page sends
-// and lets the test fire 'open' / 'message' events by hand.
 const { FakeSocket, sockets } = vi.hoisted(() => {
   const sockets: InstanceType<typeof FakeSocket>[] = [];
 
@@ -97,7 +95,6 @@ async function renameTo(user: ReturnType<typeof userEvent.setup>, keys: string) 
   await user.type(input, keys);
 }
 
-// Render with a stored name, open the socket and deliver the first state.
 async function renderInRoom(roomState = state()) {
   localStorage.setItem("poker-name", "Alice");
   render(<RoomPage id="abc123" />);
@@ -319,7 +316,6 @@ describe("RoomPage", () => {
 
       await user.click(screen.getByRole("button", { name: /switch to observing/i }));
 
-      // PartySocket reconnects on the same instance and fires 'open' again.
       act(() => socket().open());
 
       const joins = sentOf("join");
@@ -423,7 +419,6 @@ describe("RoomPage", () => {
   });
 
   describe("copy link", () => {
-    // userEvent.setup() installs its own clipboard stub, so these run after it.
     function mockClipboard(writeText: () => Promise<void>) {
       Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
     }

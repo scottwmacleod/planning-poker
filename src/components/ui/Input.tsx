@@ -14,7 +14,6 @@ interface InputProps extends Omit<ComponentProps<typeof UiInput>, "size" | "clas
   className?: string;
 }
 
-// ui-sdk's input part: a native <input> that wires itself to the Field around it.
 export default function Input({
   size = "md",
   type = "text",

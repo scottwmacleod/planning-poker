@@ -5,8 +5,6 @@ import { Button, Field } from "../components/ui";
 import { navigate, roomPath } from "../navigation";
 import { prefetchRoom } from "../roomChunk";
 
-// Fetch the room chunk once the browser is idle, so opening a room doesn't wait on it.
-// Safari has no requestIdleCallback, so it gets a short timeout instead.
 function usePrefetchRoomWhenIdle() {
   useEffect(() => {
     if ("requestIdleCallback" in window) {
@@ -18,7 +16,6 @@ function usePrefetchRoomWhenIdle() {
   }, []);
 }
 
-// Waiting for the room chunk (usually already here) keeps the page transition from fading to blank.
 function goToRoom(id: string) {
   prefetchRoom().then(() => navigate(roomPath(id)));
 }
@@ -54,7 +51,6 @@ export default function Home() {
         </div>
 
         <div className="flex w-full max-w-sm flex-col gap-space-5">
-          {/* Pointing at, touching or focusing create or join fetches the room chunk early. */}
           <Button
             variant="signal"
             size="lg"
@@ -80,7 +76,6 @@ export default function Home() {
               onChange={(e) => setJoinId(e.target.value)}
               onFocus={prefetchRoom}
               placeholder="e.g. abc12345"
-              // Ids are case-sensitive: stop phones capitalising or correcting them.
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}

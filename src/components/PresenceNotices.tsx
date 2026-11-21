@@ -2,7 +2,6 @@ import { type CSSProperties, useCallback, useEffect, useRef, useState } from "re
 import type { Participant } from "../../lib/types";
 import { type PresenceChange, presenceChanges } from "../presence";
 
-/** How long a notice stays up. `.notice-out` fades it over the last 300ms. */
 const NOTICE_MS = 4000;
 
 type Notice = PresenceChange & { id: number };
@@ -23,12 +22,6 @@ function NoticeLine({ notice, onExpire }: { notice: Notice; onExpire: (id: numbe
   );
 }
 
-/**
- * "Bob joined" / "Alice left" lines under the room header, read out politely to
- * screen readers. It compares each new set of participants with the last one,
- * so the people already in the room when it first renders don't show as joined.
- * It keeps its own state so a notice expiring re-renders only this strip.
- */
 export default function PresenceNotices({
   participants,
   selfId,
@@ -57,7 +50,6 @@ export default function PresenceNotices({
     setNotices((current) => current.filter((n) => n.id !== id));
   }, []);
 
-  // Always rendered, so screen readers pick up lines added to it.
   return (
     <div
       role="log"

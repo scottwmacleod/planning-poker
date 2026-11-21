@@ -1,8 +1,6 @@
 import axe from "axe-core";
 import { expect } from "vitest";
 
-// jsdom does no layout, so axe can't measure colour contrast here.
-// Contrast is checked in sm-core (every token pair) and by Lighthouse and pa11y in CI.
 const options: axe.RunOptions = { rules: { "color-contrast": { enabled: false } } };
 
 export async function expectNoAxeViolations(container: Element) {

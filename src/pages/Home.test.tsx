@@ -61,7 +61,6 @@ describe("Home page", () => {
     render(<Home />);
     const join = screen.getByRole("button", { name: "join room" });
     expect(join).toBeDisabled();
-    // A disabled signal button drops its lime for the control outline.
     expect(join).toHaveClass("disabled:bg-transparent", "disabled:border-control-line");
   });
 

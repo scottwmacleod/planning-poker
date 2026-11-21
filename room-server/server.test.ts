@@ -1,8 +1,6 @@
 import type { Connection } from "partyserver";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// partyserver imports `cloudflare:workers`, which only exists inside the
-// Workers runtime. Swap in a minimal Server so the room logic runs in Node.
 const { routePartykitRequest, reportError } = vi.hoisted(() => ({
   routePartykitRequest: vi.fn(),
   reportError: vi.fn(),
@@ -453,7 +451,6 @@ describe("errors", () => {
     expect(() => join(room, makeConn("conn-1"), "Alice")).not.toThrow();
     expect(reportError).toHaveBeenCalledWith(boom, "PokerRoom.onMessage", expect.any(Function));
 
-    // The reporter hands its send to the Durable Object's waitUntil.
     const send = Promise.resolve();
     reportError.mock.calls[0]![2](send);
     expect(waitUntil).toHaveBeenCalledWith(send);
@@ -539,8 +536,6 @@ describe("worker fetch", () => {
 });
 
 describe("worker entry", () => {
-  // workerd refuses to start when the entry module exports anything other than
-  // handlers and Durable Object classes, so `wrangler dev` and deploys fail.
   it("exports only the fetch handler and Durable Object classes", async () => {
     const entry = await import("./server");
     for (const [name, value] of Object.entries(entry)) {

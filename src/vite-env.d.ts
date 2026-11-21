@@ -5,7 +5,6 @@ interface ImportMetaEnv {
   readonly NEXT_PUBLIC_PARTYKIT_HOST?: string;
 }
 
-// The synced sm-core loader is plain JavaScript with no declaration file.
 declare module "*/sm-posthog.js" {
   export function startPostHog(config: {
     token: string;
