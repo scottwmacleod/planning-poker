@@ -116,4 +116,20 @@ describe("Button", () => {
     await userEvent.click(btn);
     expect(onClick).toHaveBeenCalledOnce();
   });
+
+  it("keeps its own classes when the caller's classes depend on the button's state", () => {
+    const className = vi.fn((state: { disabled: boolean }) =>
+      state.disabled ? "opacity-50" : "w-full",
+    );
+    render(
+      <Button variant="signal" disabled className={className}>
+        join room
+      </Button>,
+    );
+    const btn = screen.getByRole("button", { name: "join room" });
+    expect(btn).toHaveClass("rounded-1", "bg-signal", "px-3", "opacity-50");
+    expect(btn).not.toHaveClass("w-full");
+    expect(btn.className).not.toMatch(/=>|state/);
+    expect(className).toHaveBeenCalledWith(expect.objectContaining({ disabled: true }));
+  });
 });
