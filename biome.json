@@ -31,7 +31,9 @@
       "!**/node_modules",
       "!**/.wrangler",
       "!room-server/worker-configuration.d.ts",
-      "!vendor"
+      "!vendor",
+      "!.claude/skills/delete-comment",
+      "!comments-baseline.json"
     ]
   },
   "overrides": [
