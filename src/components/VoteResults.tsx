@@ -1,4 +1,5 @@
 import { DECKS, type Deck, type Participant } from "../../lib/types";
+import type { CssVars } from "../cssVars";
 import { Button } from "./ui";
 
 interface VoteResultsProps {
@@ -66,12 +67,13 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
               : direction
                 ? "border-2 border-wip bg-wip-tint text-wip"
                 : "border border-control-line bg-surface text-ink";
+          const deal: CssVars = { "--i": i };
           return (
             <div key={p.id} className="flex flex-col items-center gap-1">
               <div
                 role="img"
                 aria-label={label}
-                style={{ "--i": i } as React.CSSProperties}
+                style={deal}
                 className={`deal-in w-16 h-24 rounded-1 flex items-center justify-center text-(length:--poker-text-card) font-semibold tabular-nums ${face}`}
               >
                 <span aria-hidden="true">{p.vote ?? "−"}</span>
@@ -91,18 +93,14 @@ export default function VoteResults({ participants, deck, onNewRound }: VoteResu
         <ul className="flex flex-col gap-1 w-full max-w-xs text-sm">
           {distribution.map(([v, c], i) => {
             const isWinner = v === winner;
+            const bar: CssVars = { "--bar": `${(c / top) * 100}%`, "--n": players.length + i };
             return (
               <li key={v} className="flex items-center gap-3">
                 <span className="w-8 text-right text-ink">{v}</span>
                 <span aria-hidden="true" className="flex-1 h-2 bg-line">
                   <span
-                    className={`bar-grow block h-full ${isWinner ? "bg-signal-ink" : "bg-ink-muted"}`}
-                    style={
-                      {
-                        width: `${(c / top) * 100}%`,
-                        "--n": players.length + i,
-                      } as React.CSSProperties
-                    }
+                    className={`bar-grow block h-full w-(--bar) ${isWinner ? "bg-signal-ink" : "bg-ink-muted"}`}
+                    style={bar}
                   />
                 </span>
                 <span className={`w-8 ${isWinner ? "text-signal-ink" : "text-ink-muted"}`}>

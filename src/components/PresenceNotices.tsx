@@ -1,9 +1,11 @@
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { Participant } from "../../lib/types";
+import type { CssVars } from "../cssVars";
 import { type PresenceChange, presenceChanges } from "../presence";
 
 const NOTICE_MS = 4000;
+const noticeTiming: CssVars = { "--notice-ms": `${NOTICE_MS}ms` };
 
 type Notice = PresenceChange & { id: number };
 
@@ -16,7 +18,7 @@ function NoticeLine({ notice, onExpire }: { notice: Notice; onExpire: (id: numbe
   return (
     <p
       className="notice-out rounded-1 border border-line bg-ground px-3 py-1 font-mono text-sm text-ink-muted"
-      style={{ "--notice-ms": `${NOTICE_MS}ms` } as CSSProperties}
+      style={noticeTiming}
     >
       <span className="text-ink">{notice.name}</span> {notice.kind}
     </p>
