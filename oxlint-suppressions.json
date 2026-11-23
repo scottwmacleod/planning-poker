@@ -369,7 +369,7 @@
   },
   "src/components/PresenceNotices.tsx": {
     "import/consistent-type-specifier-style": {
-      "count": 2
+      "count": 1
     },
     "import/no-default-export": {
       "count": 1
@@ -391,9 +391,6 @@
     },
     "typescript/no-confusing-void-expression": {
       "count": 2
-    },
-    "typescript/no-unsafe-type-assertion": {
-      "count": 1
     }
   },
   "src/components/VoteResults.test.tsx": {
@@ -451,9 +448,6 @@
       "count": 1
     },
     "typescript/explicit-module-boundary-types": {
-      "count": 1
-    },
-    "typescript/no-unsafe-type-assertion": {
       "count": 1
     },
     "typescript/strict-boolean-expressions": {
