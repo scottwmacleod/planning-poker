@@ -22,7 +22,7 @@ describe("CardDeck", () => {
     it("gives every card the shared press class", () => {
       render(<CardDeck {...defaultProps} />);
       DECKS.fibonacci.forEach((card) => {
-        expect(screen.getByRole("button", { name: String(card) })).toHaveClass("press");
+        expect(screen.getByRole("radio", { name: String(card) })).toHaveClass("press");
       });
     });
   });
@@ -31,41 +31,41 @@ describe("CardDeck", () => {
     it("renders all fibonacci cards", () => {
       render(<CardDeck {...defaultProps} />);
       DECKS.fibonacci.forEach((card) => {
-        expect(screen.getByRole("button", { name: String(card) })).toBeInTheDocument();
+        expect(screen.getByRole("radio", { name: String(card) })).toBeInTheDocument();
       });
     });
 
     it("renders all tshirt cards", () => {
       render(<CardDeck {...defaultProps} deck="tshirt" />);
       DECKS.tshirt.forEach((card) => {
-        expect(screen.getByRole("button", { name: String(card) })).toBeInTheDocument();
+        expect(screen.getByRole("radio", { name: String(card) })).toBeInTheDocument();
       });
     });
 
     it("does not render tshirt cards when deck is fibonacci", () => {
       render(<CardDeck {...defaultProps} deck="fibonacci" />);
-      expect(screen.queryByRole("button", { name: "XS" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("radio", { name: "XS" })).not.toBeInTheDocument();
     });
   });
 
   describe("voting", () => {
     it("calls onVote with card value when clicked", async () => {
       render(<CardDeck {...defaultProps} />);
-      await userEvent.click(screen.getByRole("button", { name: "5" }));
+      await userEvent.click(screen.getByRole("radio", { name: "5" }));
       expect(defaultProps.onVote).toHaveBeenCalledWith("5");
     });
 
     it("does not call onVote when disabled", async () => {
       render(<CardDeck {...defaultProps} disabled />);
-      await userEvent.click(screen.getByRole("button", { name: "5" }));
+      await userEvent.click(screen.getByRole("radio", { name: "5" }));
       expect(defaultProps.onVote).not.toHaveBeenCalled();
     });
 
     it("keeps disabled cards reachable, says they are unavailable and fades them", async () => {
       render(<CardDeck {...defaultProps} disabled />);
-      const five = screen.getByRole("button", { name: "5" });
+      const five = screen.getByRole("radio", { name: "5" });
       expect(five).toHaveAttribute("aria-disabled", "true");
-      expect(five).toHaveClass("data-disabled:opacity-40");
+      expect(five).toHaveClass("aria-disabled:opacity-40");
       five.focus();
       await userEvent.keyboard("{Enter}");
       expect(defaultProps.onVote).not.toHaveBeenCalled();
@@ -73,31 +73,37 @@ describe("CardDeck", () => {
 
     it("does not unvote when the selected card is pressed again", async () => {
       render(<CardDeck {...defaultProps} selectedCard="5" />);
-      await userEvent.click(screen.getByRole("button", { name: "5" }));
-      expect(screen.getByRole("button", { name: "5" })).toHaveAttribute("aria-pressed", "true");
+      await userEvent.click(screen.getByRole("radio", { name: "5" }));
+      expect(screen.getByRole("radio", { name: "5" })).toHaveAttribute("aria-checked", "true");
       expect(defaultProps.onVote).not.toHaveBeenCalledWith("");
     });
 
-    it("selected card uses the signal tint and a signal-ink border", () => {
+    it("selected card uses the accent tint and an accent-ink border", () => {
+      expect.hasAssertions();
       render(<CardDeck {...defaultProps} selectedCard="5" />);
-      const card = screen.getByRole("button", { name: "5" });
-      expect(card).toHaveAttribute("aria-pressed", "true");
-      expect(card).toHaveClass("bg-signal-tint", "border-signal-ink");
+      const card = screen.getByRole("radio", { name: "5" });
+      expect(card).toHaveAttribute("aria-checked", "true");
+      expect(card).toHaveAttribute("data-state", "on");
+      expect(card).toHaveClass(
+        "data-[state=on]:bg-accent",
+        "data-[state=on]:border-accent-foreground",
+      );
     });
 
-    it("unselected cards use the surface fill and control-line border", () => {
+    it("unselected cards use the card fill and input border", () => {
+      expect.hasAssertions();
       render(<CardDeck {...defaultProps} selectedCard="5" />);
-      const card = screen.getByRole("button", { name: "3" });
-      expect(card).toHaveAttribute("aria-pressed", "false");
-      expect(card).toHaveClass("bg-surface", "border-control-line");
-      expect(card).not.toHaveClass("bg-signal-tint");
+      const card = screen.getByRole("radio", { name: "3" });
+      expect(card).toHaveAttribute("aria-checked", "false");
+      expect(card).toHaveAttribute("data-state", "off");
+      expect(card).toHaveClass("bg-card", "border-input");
     });
 
     it("no card selected when selectedCard is null", () => {
       render(<CardDeck {...defaultProps} selectedCard={null} />);
       DECKS.fibonacci.forEach((card) => {
-        expect(screen.getByRole("button", { name: String(card) })).toHaveAttribute(
-          "aria-pressed",
+        expect(screen.getByRole("radio", { name: String(card) })).toHaveAttribute(
+          "aria-checked",
           "false",
         );
       });
@@ -106,7 +112,7 @@ describe("CardDeck", () => {
 
     it("marks the selected card with a + sign that is hidden from screen readers", () => {
       render(<CardDeck {...defaultProps} selectedCard="5" />);
-      const sign = screen.getByRole("button", { name: "5" }).querySelector('[aria-hidden="true"]');
+      const sign = screen.getByRole("radio", { name: "5" }).querySelector('[aria-hidden="true"]');
       expect(sign).toHaveTextContent("+");
     });
 
@@ -117,25 +123,31 @@ describe("CardDeck", () => {
   });
 
   describe("keyboard navigation", () => {
-    const card = (name: string) => screen.getByRole("button", { name });
+    const card = (name: string) => screen.getByRole("radio", { name });
 
-    it("puts the cards in one named ui-sdk toggle group", () => {
+    it("puts the cards in one named radio group", () => {
       render(<CardDeck {...defaultProps} />);
-      const group = screen.getByRole("group", { name: "Cards" });
+      const group = screen.getByRole("radiogroup", { name: "Cards" });
       expect(group).toHaveAttribute("data-slot", "toggle-group");
       expect(group).toContainElement(card("5"));
     });
 
-    it("makes only one card a tab stop, starting at the first card", () => {
+    it("makes the cards one tab stop, starting at the first card", async () => {
+      expect.hasAssertions();
       render(<CardDeck {...defaultProps} />);
-      expect(card("1")).toHaveAttribute("tabindex", "0");
-      expect(card("3")).toHaveAttribute("tabindex", "-1");
+      await userEvent.tab();
+      await userEvent.tab();
+      expect(card("1")).toHaveFocus();
+      await userEvent.tab();
+      expect(document.body).toHaveFocus();
     });
 
-    it("makes the selected card the tab stop", () => {
+    it("tabs to the selected card", async () => {
+      expect.hasAssertions();
       render(<CardDeck {...defaultProps} selectedCard="8" />);
-      expect(card("8")).toHaveAttribute("tabindex", "0");
-      expect(card("1")).toHaveAttribute("tabindex", "-1");
+      await userEvent.tab();
+      await userEvent.tab();
+      expect(card("8")).toHaveFocus();
     });
 
     it("moves focus to the next card with the right arrow", async () => {
@@ -143,8 +155,6 @@ describe("CardDeck", () => {
       card("1").focus();
       await userEvent.keyboard("{ArrowRight}");
       expect(card("3")).toHaveFocus();
-      expect(card("3")).toHaveAttribute("tabindex", "0");
-      expect(card("1")).toHaveAttribute("tabindex", "-1");
     });
 
     it("moves focus to the previous card with the left arrow", async () => {
@@ -192,39 +202,39 @@ describe("CardDeck", () => {
   describe("deck switching", () => {
     it("calls onChangeDeck when fibonacci button clicked", async () => {
       render(<CardDeck {...defaultProps} deck="tshirt" />);
-      await userEvent.click(screen.getByRole("button", { name: "fibonacci" }));
+      await userEvent.click(screen.getByRole("radio", { name: "fibonacci" }));
       expect(defaultProps.onChangeDeck).toHaveBeenCalledWith("fibonacci");
     });
 
     it("calls onChangeDeck when t-shirt button clicked", async () => {
       render(<CardDeck {...defaultProps} deck="fibonacci" />);
-      await userEvent.click(screen.getByRole("button", { name: "t-shirt" }));
+      await userEvent.click(screen.getByRole("radio", { name: "t-shirt" }));
       expect(defaultProps.onChangeDeck).toHaveBeenCalledWith("tshirt");
     });
 
     it("is one tab stop: arrows move between decks and Enter switches", async () => {
       render(<CardDeck {...defaultProps} deck="fibonacci" />);
-      const group = screen.getByRole("group", { name: "Card deck" });
+      const group = screen.getByRole("radiogroup", { name: "Card deck" });
       expect(group).toHaveAttribute("data-slot", "toggle-group");
       await userEvent.tab();
-      expect(screen.getByRole("button", { name: "fibonacci" })).toHaveFocus();
+      expect(screen.getByRole("radio", { name: "fibonacci" })).toHaveFocus();
       await userEvent.keyboard("{ArrowRight}");
-      expect(screen.getByRole("button", { name: "t-shirt" })).toHaveFocus();
+      expect(screen.getByRole("radio", { name: "t-shirt" })).toHaveFocus();
       expect(defaultProps.onChangeDeck).not.toHaveBeenCalled();
       await userEvent.keyboard("{Enter}");
       expect(defaultProps.onChangeDeck).toHaveBeenCalledWith("tshirt");
       await userEvent.tab();
-      expect(screen.getByRole("button", { name: "fibonacci" })).not.toHaveFocus();
-      expect(screen.getByRole("button", { name: "t-shirt" })).not.toHaveFocus();
+      expect(screen.getByRole("radio", { name: "fibonacci" })).not.toHaveFocus();
+      expect(screen.getByRole("radio", { name: "t-shirt" })).not.toHaveFocus();
     });
 
     it("active deck button has active styles", () => {
+      expect.hasAssertions();
       render(<CardDeck {...defaultProps} deck="fibonacci" />);
-      expect(screen.getByRole("button", { name: "fibonacci" })).toHaveClass(
-        "bg-surface",
-        "text-ink",
-      );
-      expect(screen.getByRole("button", { name: "t-shirt" })).not.toHaveClass("bg-surface");
+      const fibonacci = screen.getByRole("radio", { name: "fibonacci" });
+      expect(fibonacci).toHaveAttribute("data-state", "on");
+      expect(fibonacci).toHaveClass("data-[state=on]:bg-card", "data-[state=on]:text-foreground");
+      expect(screen.getByRole("radio", { name: "t-shirt" })).toHaveAttribute("data-state", "off");
     });
   });
 });

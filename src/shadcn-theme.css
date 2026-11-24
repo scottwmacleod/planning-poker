@@ -1,0 +1,20 @@
+@theme inline {
+  --color-background: var(--sm-ground);
+  --color-foreground: var(--sm-ink);
+  --color-card: var(--sm-surface);
+  --color-card-foreground: var(--sm-ink);
+  --color-popover: var(--sm-surface);
+  --color-popover-foreground: var(--sm-ink);
+  --color-primary: var(--sm-signal);
+  --color-primary-foreground: var(--sm-on-signal);
+  --color-secondary: var(--sm-surface-hover);
+  --color-secondary-foreground: var(--sm-ink);
+  --color-muted: var(--sm-surface-sunken);
+  --color-muted-foreground: var(--sm-ink-muted);
+  --color-accent: var(--sm-signal-tint);
+  --color-accent-foreground: var(--sm-signal-ink);
+  --color-destructive: var(--sm-danger);
+  --color-border: var(--sm-line);
+  --color-input: var(--sm-control-line);
+  --color-ring: var(--sm-signal-ink);
+}

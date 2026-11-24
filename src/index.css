@@ -7,6 +7,7 @@
 
 @import "../vendor/sm-core/sm-core.css";
 @import "../vendor/sm-core/sm-tailwind.css";
+@import "./shadcn-theme.css";
 
 :root {
   --poker-text-card: 22px;

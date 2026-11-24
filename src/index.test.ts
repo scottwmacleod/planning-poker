@@ -29,6 +29,18 @@ describe("index.css design tokens", () => {
   });
 });
 
+describe("shadcn-theme.css", () => {
+  it("only points shadcn's colour names at sm-core tokens", async () => {
+    expect.hasAssertions();
+    const theme = await Bun.file(new URL("shadcn-theme.css", import.meta.url)).text();
+    const values = [...theme.matchAll(/^\s*--color-[\w-]+:\s*(?<value>[^;]+);/gmu)].map(
+      (m) => m.groups?.value,
+    );
+    expect(values).toHaveLength(18);
+    for (const value of values) expect(value).toMatch(/^var\(--sm-[\w-]+\)$/u);
+  });
+});
+
 describe("viewport height", () => {
   it("sizes pages to the dynamic viewport, never 100vh", () => {
     const pages = ["pages/Home.tsx", "pages/Room.tsx"].map((f) =>

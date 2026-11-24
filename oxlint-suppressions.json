@@ -316,15 +316,6 @@
     },
     "typescript/explicit-module-boundary-types": {
       "count": 1
-    },
-    "typescript/no-confusing-void-expression": {
-      "count": 2
-    },
-    "typescript/strict-boolean-expressions": {
-      "count": 1
-    },
-    "typescript/strict-void-return": {
-      "count": 1
     }
   },
   "src/components/ParticipantList.test.tsx": {
@@ -593,6 +584,19 @@
       "count": 1
     },
     "typescript/explicit-module-boundary-types": {
+      "count": 1
+    }
+  },
+  "src/components/ui/ToggleGroup.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    }
+  },
+  "src/components/ui/ToggleGroupItem.tsx": {
+    "react/jsx-filename-extension": {
+      "count": 1
+    },
+    "react/jsx-props-no-spreading": {
       "count": 1
     }
   },

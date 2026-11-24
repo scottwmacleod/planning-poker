@@ -363,7 +363,7 @@ describe("RoomPage", () => {
         }),
       );
 
-      expect(screen.getByRole("group", { name: "Card deck" })).toBeInTheDocument();
+      expect(screen.getByRole("radiogroup", { name: "Card deck" })).toBeInTheDocument();
       expect(screen.getByText(/of 2 voted/)).toHaveTextContent("1 of 2 voted");
       expect(screen.queryByRole("button", { name: "new round" })).not.toBeInTheDocument();
 
@@ -374,7 +374,7 @@ describe("RoomPage", () => {
     it("voting phase hides the deck for an observer", async () => {
       await renderInRoom(observerState());
 
-      expect(screen.queryByRole("group", { name: "Card deck" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("radiogroup", { name: "Card deck" })).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "flip cards" })).toBeInTheDocument();
       expect(screen.getByText("observing", { selector: "section p" })).toBeInTheDocument();
     });
@@ -383,7 +383,7 @@ describe("RoomPage", () => {
       const user = userEvent.setup();
       await renderInRoom(state({ phase: "revealed", participants: { me: me({ vote: "5" }) } }));
 
-      expect(screen.queryByRole("group", { name: "Card deck" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("radiogroup", { name: "Card deck" })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "flip cards" })).not.toBeInTheDocument();
 
       await user.click(screen.getByRole("button", { name: "new round" }));

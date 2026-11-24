@@ -1,5 +1,6 @@
 import { DECKS, type Deck } from "../../lib/types";
-import { Toggle, ToggleGroup } from "./ui";
+import { ToggleGroup } from "./ui/ToggleGroup";
+import { ToggleGroupItem } from "./ui/ToggleGroupItem";
 
 interface CardDeckProps {
   deck: Deck;
@@ -26,53 +27,40 @@ export default function CardDeck({
   return (
     <div className="flex flex-col items-center gap-4 sm:gap-6 w-full">
       <ToggleGroup
+        variant="segment"
         aria-label="Card deck"
-        value={[deck]}
-        onValueChange={([d]) => d && onChangeDeck(d)}
-        deselectable={false}
-        className="flex font-mono text-sm"
+        value={deck}
+        onValueChange={(value) => {
+          const picked = DECK_BUTTONS.find((b) => b.deck === value);
+          if (picked) onChangeDeck(picked.deck);
+        }}
+        className="text-sm"
       >
-        {DECK_BUTTONS.map(({ deck: d, label }, i) => (
-          <Toggle
-            key={d}
-            value={d}
-            className={`focus-ring px-4 py-1.5 border border-line touch-manipulation ${i > 0 ? "-ml-px" : ""} ${
-              deck === d ? "bg-surface text-ink" : "text-ink-muted hover:text-ink"
-            }`}
-          >
+        {DECK_BUTTONS.map(({ deck: d, label }) => (
+          <ToggleGroupItem key={d} value={d}>
             {label}
-          </Toggle>
+          </ToggleGroupItem>
         ))}
       </ToggleGroup>
 
       <ToggleGroup
         aria-label="Cards"
-        value={selectedCard === null ? [] : [selectedCard]}
-        onValueChange={([val]) => val && onVote(val)}
-        deselectable={false}
+        value={selectedCard ?? ""}
+        onValueChange={onVote}
         disabled={disabled}
-        className="flex flex-wrap justify-center gap-2 sm:gap-3 px-2"
+        className="flex-wrap justify-center gap-2 sm:gap-3 px-2"
       >
         {cards.map((card) => {
           const val = String(card);
-          const isSelected = selectedCard === val;
           return (
-            <Toggle
-              key={val}
-              value={val}
-              className={`focus-ring press relative w-12 h-18 sm:w-16 sm:h-24 rounded-1 font-mono font-semibold tabular-nums text-lg sm:text-(length:--poker-text-card) select-none touch-manipulation data-disabled:opacity-40 data-disabled:cursor-not-allowed ${
-                isSelected
-                  ? "bg-signal-tint border-2 border-signal-ink text-signal-ink"
-                  : "bg-surface border border-control-line text-ink hover:border-ink"
-              }`}
-            >
-              {isSelected && (
+            <ToggleGroupItem key={val} value={val}>
+              {selectedCard === val && (
                 <span aria-hidden="true" className="absolute top-1 left-1.5 text-xs leading-none">
                   +
                 </span>
               )}
               {val}
-            </Toggle>
+            </ToggleGroupItem>
           );
         })}
       </ToggleGroup>
