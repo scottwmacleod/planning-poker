@@ -483,10 +483,12 @@ describe("worker fetch", () => {
       origin ? { headers: { Origin: origin } } : undefined,
     );
 
+  let warn: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     routePartykitRequest.mockReset();
     reportError.mockReset();
-    vi.spyOn(console, "warn").mockImplementation(() => {});
+    warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -518,6 +520,21 @@ describe("worker fetch", () => {
     const res = await worker.fetch(requestFrom(origin), env, ctx);
     expect(res.status).toBe(403);
     expect(routePartykitRequest).not.toHaveBeenCalled();
+  });
+
+  it("warns with the origin for an unknown browser origin", async () => {
+    expect.hasAssertions();
+    await worker.fetch(requestFrom("https://evil.example"), env, ctx);
+    expect(warn).toHaveBeenCalledWith({
+      message: "origin refused",
+      origin: "https://evil.example",
+    });
+  });
+
+  it("refuses a request with no origin without logging a warning", async () => {
+    expect.hasAssertions();
+    await worker.fetch(requestFrom(), env, ctx);
+    expect(warn).not.toHaveBeenCalled();
   });
 
   it("returns 404 for anything else", async () => {

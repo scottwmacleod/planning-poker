@@ -201,7 +201,10 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const origin = request.headers.get("Origin");
     if (!isAllowedOrigin(origin)) {
-      console.warn({ message: "origin refused", origin });
+      const isUnknownBrowserOrigin = origin !== null;
+      if (isUnknownBrowserOrigin) {
+        console.warn({ message: "origin refused", origin: origin.slice(0, 200) });
+      }
       return new Response("Forbidden", { status: 403 });
     }
     try {
