@@ -41,6 +41,10 @@ Single-context: `GLOSSARY.md` plus `docs/adr/` at the root. See `docs/agents/dom
 
 ### Shared skills
 
-The UI skills, Modern Web Guidance (agent-browser) and prune-tests live in `.claude/skills/`, with versions in `skills-lock.json`. When to use each, the pinned versions and the setup are in `sm-conventions.md`. Update them with `npx skills update -p -y`.
+The UI skills, agent-browser and prune-tests live in `.claude/skills/`, with versions in `skills-lock.json`. When to use each is in `sm-conventions.md`; the browser-check setup is in `docs/agents/ui-browser-checks.md`. Update them with `npx skills update -p -y`, in every product in the same sitting.
+
+### Implement loop
+
+Repo rules for `/implement`: queue, branch, PR and merge mechanics, limits, and human-stop triggers. See `docs/agents/implement.md`.
 
 For browser checks, `bun run build && bun run preview` serves the built app on port 4173. Run `bun run dev:room-server` beside it so rooms connect.
