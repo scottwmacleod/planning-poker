@@ -2,24 +2,23 @@
 
 Copy-ready patterns for the relationships in [SKILL.md](SKILL.md). The values are starting points, so tune them on a recording.
 
-## Overlap: CSS stagger with an index variable
+## Overlap: CSS stagger with a delay variable
 
-For one-shot entrances (a hero, a personal site intro). The delay is computed per element from a custom property, so you don't need one class per item.
+For one-shot entrances (a hero, a personal site intro). Each element carries its own delay in a custom property, so you don't need one class per item. The gaps shrink as the group goes on (120ms, then 80ms), so it reads as a wave, not a metronome.
 
 ```tsx
 <div className="stagger">
-  <h1 style={{ "--i": 0 }}>Title</h1>
-  <p style={{ "--i": 0 }}>First paragraph, same beat as the title</p>
-  <p style={{ "--i": 1 }}>Supporting paragraph</p>
-  <div style={{ "--i": 2 }}>CTAs</div>
-</div>;
+  <h1 style={{ "--delay": "0ms" }}>Title</h1>
+  <p style={{ "--delay": "0ms" }}>First paragraph, same beat as the title</p>
+  <p style={{ "--delay": "120ms" }}>Supporting paragraph</p>
+  <div style={{ "--delay": "200ms" }}>CTAs</div>
+</div>
 ```
 
 ```css
 .stagger > * {
-  --step: 120ms;
   animation: enter 0.6s ease both;
-  animation-delay: calc(var(--step) * var(--i));
+  animation-delay: var(--delay, 0ms);
 }
 
 @keyframes enter {
@@ -35,9 +34,7 @@ For one-shot entrances (a hero, a personal site intro). The delay is computed pe
     animation-delay: 0ms;
   }
   @keyframes fade {
-    from {
-      opacity: 0;
-    }
+    from { opacity: 0; }
   }
 }
 ```
@@ -81,17 +78,17 @@ const decoration = {
   <motion.h1 variants={lead}>Title</motion.h1>
   <motion.p variants={support}>Subtitle</motion.p>
   <motion.div variants={support}>CTAs</motion.div>
-</motion.section>;
+</motion.section>
 ```
 
-- Each role gets its own variant (distance, duration). The stagger only sets _when_ each one starts.
+- Each role gets its own variant (distance, duration). The stagger only sets *when* each one starts.
 - `stagger(0.05, { from: "center" })` radiates out from the middle. Use a number index to radiate from the item the user interacted with.
 - Older Motion versions use `staggerChildren: 0.06` instead of `delayChildren: stagger(...)`.
-- For long lists, give items beyond the first ~6 the same delay as the 6th, so the group never takes longer than ~300ms.
+- For long lists, give items beyond the first 5 the same delay as the 5th, so the group never takes longer than ~300ms.
 
 ## Together: remove the exiting element from the flow
 
-Siblings close the gap _while_ the removed item fades, not after.
+Siblings close the gap *while* the removed item fades, not after.
 
 ```tsx
 <ul>
@@ -107,7 +104,7 @@ Siblings close the gap _while_ the removed item fades, not after.
       </motion.li>
     ))}
   </AnimatePresence>
-</ul>;
+</ul>
 ```
 
 Without a library: before running the exit, read the element's offset, set `position: absolute` with that `top`/`left` on it (the parent needs `position: relative`), then animate it out. Animate the siblings with FLIP or let them reflow.
@@ -147,13 +144,13 @@ const fadeDuration = useMemo(() => {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        transition={{ duration: fadeDuration, ease: [0.26, 0.08, 0.25, 1] }}
+        transition={{ duration: fadeDuration, ease: "easeOut" }}
       >
         {content}
       </motion.div>
     </AnimatePresence>
   </div>
-</motion.div>;
+</motion.div>
 ```
 
 - The height uses a strong `ease-out`, and the content uses a lighter curve from the same family, so the swap stays visible without falling out of sync.
@@ -186,7 +183,7 @@ const variants = {
     </motion.div>
   </AnimatePresence>
   <motion.div layout>{/* Back / Continue follow the height change */}</motion.div>
-</MotionConfig>;
+</MotionConfig>
 ```
 
 `custom` goes on **both** `AnimatePresence` and the child. The exiting child reads the latest direction from `AnimatePresence`. Without that, it uses the direction it had when it mounted.
@@ -202,21 +199,19 @@ For small containers or similar views, swap the 110% slide for a crossfade with 
 
 .checkmark {
   animation: draw 0.4s cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
-  animation-delay: 0.6s; /* = the square's duration */
+  animation-delay: 0.5s; /* just before the square's 0.6s ends */
 }
 
 @keyframes draw {
-  to {
-    stroke-dashoffset: 0;
-  }
+  to { stroke-dashoffset: 0; }
 }
 ```
 
-With `pathLength="100"` on both paths, `stroke-dasharray: 100; stroke-dashoffset: 100` hides each one with round numbers. To make the handoff read as one gesture, start the checkmark slightly before the square finishes (e.g. 0.5s).
+With `pathLength="100"` on both paths, `stroke-dasharray: 100; stroke-dashoffset: 100` hides each one with round numbers. Starting the checkmark 0.1s before the square finishes makes the handoff read as one gesture.
 
 ## Sequence: morph between two rich states with a crossfade
 
-`mode="wait"` is the safe default when a container changes width _and_ height between dense views. To keep a crossfade anyway:
+`mode="wait"` is the safe default when a container changes width *and* height between dense views. To keep a crossfade anyway:
 
 1. Render the active view twice. Copy A animates only the **enter**. Copy B is `position: absolute`, sits at `opacity: 0`, and only becomes visible while **exiting**: its exit is a keyframe that starts at `opacity: 1` and fades out.
 2. Give the exiting copy its own transform depending on where the container is going. Scale it up if the next state is larger and down if it's smaller, with `scaleX` pulling it toward the center when the container narrows so it doesn't bleed out of the edges.
@@ -234,10 +229,10 @@ You can't customize the path a `layoutId` animation takes, but you can move the 
   {selected.map((img) => (
     <motion.img key={img.id} layoutId={img.id} src={img.src} />
   ))}
-</motion.div>;
+</motion.div>
 ```
 
-The images morph into the bin _and_ drop with it. Show the bin's front face with a delay timed to when the images have almost landed, so they never visibly pass through it.
+The images morph into the bin *and* drop with it. Show the bin's front face with a delay timed to when the images have almost landed, so they never visibly pass through it.
 
 ## Imperative orchestration (`useAnimate`)
 
@@ -246,7 +241,6 @@ Use this only when several elements coordinate across several events and you nee
 ```tsx
 const [scope, animate] = useAnimate();
 const running = useRef<ReturnType<typeof animate>[]>([]);
-const ready = useRef(false); // a flag that never renders, so no useState
 
 function play(steps: ReturnType<typeof animate>[]) {
   running.current.forEach((a) => a.stop()); // never stack sequences
@@ -255,7 +249,6 @@ function play(steps: ReturnType<typeof animate>[]) {
 }
 
 const onEnter = async () => {
-  ready.current = false;
   await play([
     animate("[data-animate='icon']", { y: -4 }, { duration: 0.3 }),
     ...[...scope.current.querySelectorAll("[data-animate='line']")].map((el, i) =>
@@ -266,34 +259,26 @@ const onEnter = async () => {
       ),
     ),
   ]);
-  ready.current = true;
 };
 
 const onClick = () => {
-  if (!ready.current) return;
   // A repeat action skips the buildup: the same proportions, earlier in the timeline
   play([animate("[data-animate='bg']", { scale: [1, 0.96, 1.02, 1] }, { duration: 0.4 })]);
 };
 
 const onLeave = async () => {
-  await play([
-    /* reset every element */
-  ]);
+  await play([/* reset every element */]);
   startIdle(); // only once the reset has finished
 };
 
 function startIdle() {
   // Tracked in `running`, so the next onEnter stops the loop
   running.current = [
-    animate(
-      "[data-animate='icon']",
-      { y: [0, -3, 0] },
-      {
-        delay: 2.5,
-        repeat: Infinity,
-        repeatDelay: 6,
-      },
-    ),
+    animate("[data-animate='icon']", { y: [0, -3, 0] }, {
+      delay: 2.5,
+      repeat: Infinity,
+      repeatDelay: 6,
+    }),
   ];
 }
 ```

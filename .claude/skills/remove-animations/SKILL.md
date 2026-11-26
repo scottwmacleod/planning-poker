@@ -1,5 +1,4 @@
 ---
-
 name: remove-animations
 description: Find the animations an interface doesn't need and remove them — motion on keyboard actions, high-frequency surfaces, functional data, and decoration with no purpose — then clean up what they leave behind. Edits code, but only to subtract; it never adds or retunes motion. Use when the user says the app "feels slow", "has too much animation", "feels over-animated", wants to "tone down the motion", or asks what animations to remove. For finding places that should animate, use find-animation-opportunities; for fixing animations that should stay, use improve-animations or review-animations.
 ---
@@ -53,7 +52,7 @@ Can you name its purpose — feedback, spatial consistency, state indication, pr
 │        └── No → DELETE.
 └── Yes → Is it seen tens of times a day (hover, frequent toggles, list expansion)?
           ├── Yes → REDUCE to the near-imperceptible version (see "Reducing").
-          └── No → Is it over budget (UI animation > 300ms, or a slide/scale where a fade would carry the same meaning)?
+          └── No → Is it over budget (UI animation > 300ms outside the modal, drawer, sheet, and toast exceptions, or a slide/scale where a fade would carry the same meaning)?
                    ├── Yes → REDUCE.
                    └── No → KEEP.
 ```
@@ -64,13 +63,13 @@ Marketing pages get more latitude than product UI: explanation and a single hero
 
 Reduce means a smaller version of the same motion, never a different animation:
 
-| Today                                                        | Reduced to                                                          |
-| ------------------------------------------------------------ | ------------------------------------------------------------------- |
-| Hover with scale, lift, or shadow growth                     | Color/opacity change only, ≤150ms, `ease`                           |
-| Slide or scale entrance on a frequent surface                | Opacity only, 150ms, `ease-out`                                     |
-| UI animation over 300ms                                      | 200–250ms, same curve                                               |
-| Stagger over 80ms per item, or over 300ms total              | Cap at 30ms per item, or drop the stagger and fade the group as one |
-| Infinite loop (pulse, shimmer, glow) on a persistent element | Run once, or remove the loop and keep the static end state          |
+| Today | Reduced to |
+| --- | --- |
+| Hover with scale, lift, or shadow growth | Color/opacity change only, ≤150ms, existing curve |
+| Slide or scale entrance on a frequent surface | Opacity only, 150ms, existing curve |
+| UI animation over 300ms (not a modal, drawer, sheet, or toast) | 200–250ms, same curve |
+| Stagger over 80ms per item, or over 300ms total | Cap at 30ms per item, or drop the stagger and fade the group as one |
+| Infinite loop (pulse, shimmer, glow) on a persistent element | Run once, or remove the loop and keep the static end state |
 
 If reducing would leave motion so small it stops carrying its purpose, delete it instead.
 
@@ -79,27 +78,23 @@ If reducing would leave motion so small it stops carrying its purpose, delete it
 Sweep for these — each is a known class of motion that rarely survives the gate:
 
 **Keyboard and high-frequency**
-
 - Command palette, menu, or dialog opened by a shortcut with an enter/exit animation
 - Tab switches, segmented controls, and sidebar navigation that slide or crossfade
 - Route or page transitions inside the app (not on marketing pages)
 - Hover transforms on rows and list items users sweep the cursor across
 
 **Decoration**
-
 - Fade-in-on-scroll on every section (`whileInView`, IntersectionObserver reveal classes, AOS, `animate-fade-in` utilities)
 - Hover `scale` or lift on cards that aren't the primary action
 - Infinite loops: pulsing badges, gradient orbs, glowing borders, spinning icons that aren't loading indicators
 - Staggered entrances on lists the user loads many times a day
 
 **Functional data**
-
 - Charts that redraw from zero on every mount or refresh
 - Numbers that count up on page load rather than on a change
 - Table rows that animate in when data loads
 
 **Over-engineering**
-
 - Spinners on operations that resolve in under 300ms — the flash reads as a glitch
 - Skeleton shimmer on content that loads in under 300ms
 - `transition: all` — delete it and list only the properties that actually need to transition, or none
@@ -134,7 +129,7 @@ If the motion library is no longer imported anywhere, say so and propose removin
 1. **Recon.** Identify the stack, motion libraries, where motion lives (global CSS, tokens, Tailwind config, component props), and the product's personality — a crisp dashboard keeps less than a playful consumer app. Build a frequency map of the animated surfaces.
 2. **Sweep** the hunt list. Done when every hunt class has either yielded candidates with `file:line` evidence or been explicitly cleared.
 3. **Gate** every candidate through the tree. Record the deciding branch.
-4. **Check hazards** for each Delete and Reduce.
+4. **Check hazards** for each Delete and Reduce. Done when each one lists the hazards that applied, or "none".
 5. **Edit.** Apply the deletions and reductions, then the cleanup.
 6. **Verify.** Run the type checker and tests if the project has them. Grep for every removed keyframe, class, and variant name to confirm nothing still references it.
 7. **Report** in the format below.
@@ -145,15 +140,15 @@ If the motion library is no longer imported anywhere, say so and propose removin
 
 One row per change, ordered by how often the user hits it:
 
-| #   | Location             | Was                                  | Verdict                              | Deciding branch    |
-| --- | -------------------- | ------------------------------------ | ------------------------------------ | ------------------ |
-| 1   | `CommandMenu.tsx:24` | 200ms scale + fade on open/close     | Deleted                              | Keyboard-triggered |
-| 2   | `ProjectCard.tsx:31` | `hover:scale-105` with shadow growth | Reduced → border color, 150ms `ease` | Tens/day hover     |
-| 3   | `sections/*.tsx`     | `whileInView` fade-up on 9 sections  | Deleted, `initial` opacity removed   | No purpose         |
+| # | Location | Was | Verdict | Deciding branch |
+| --- | --- | --- | --- | --- |
+| 1 | `CommandMenu.tsx:24` | 200ms scale + fade on open/close | Deleted | Keyboard-triggered |
+| 2 | `ProjectCard.tsx:31` | `hover:scale-105` with shadow growth | Reduced → border color, 150ms, same curve | Tens/day hover |
+| 3 | `sections/*.tsx` | `whileInView` fade-up on 9 sections | Deleted, `initial` opacity removed | No purpose |
 
 ### Part 2 — Kept (REQUIRED)
 
-List 2–5 animations you considered and deliberately kept, each with the purpose that saved it:
+List up to 5 animations you considered and deliberately kept, each with the purpose that saved it. If none survived the gate, say so:
 
 - `Toast.tsx:41` — enter from bottom edge. **Kept: prevents a jarring change; occasional frequency.**
 - `Onboarding.tsx:88` — success confetti. **Kept: rare, first-time moment.**

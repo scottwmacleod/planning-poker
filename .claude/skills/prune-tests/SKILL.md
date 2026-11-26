@@ -1,5 +1,4 @@
 ---
-
 name: prune-tests
 description: Prune tests that guard no behavior.
 argument-hint: "[optional path]"
