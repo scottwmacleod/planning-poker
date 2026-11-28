@@ -1,5 +1,5 @@
 import { type Deck, POSTHOG_TOKEN } from "../lib/types";
-import { capture, startPostHog } from "../vendor/sm-core/tooling/analytics/sm-posthog.js";
+import { capture, startPostHog } from "../vendor/base/tooling/analytics/sm-posthog.js";
 import { landedOnRoom } from "./navigation";
 
 const ROOM_ID = /\/room\/[^/?#]+/g;

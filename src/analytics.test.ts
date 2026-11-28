@@ -10,7 +10,7 @@ import {
 } from "./analytics";
 
 const { capture } = vi.hoisted(() => ({ capture: vi.fn() }));
-vi.mock("../vendor/sm-core/tooling/analytics/sm-posthog.js", () => ({
+vi.mock("../vendor/base/tooling/analytics/sm-posthog.js", () => ({
   capture,
   startPostHog: vi.fn(),
 }));

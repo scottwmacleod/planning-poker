@@ -13,7 +13,7 @@ See [docs/adr/0001-partyserver-on-cloudflare.md](docs/adr/0001-partyserver-on-cl
 
 ## Local setup
 
-You need Bun 1.4.5 (the `packageManager` version in `package.json`, which CI and Vercel use) and Node.js 26 (the version in `.nvmrc`), which runs only the sm-core copy check. No Cloudflare or Vercel account is needed.
+You need Bun 1.4.5 (the `packageManager` version in `package.json`, which CI and Vercel use) and Node.js 26 (the version in `.nvmrc`). No Cloudflare or Vercel account is needed.
 
 ```bash
 git clone https://github.com/scottwmacleod/planning-poker.git
@@ -49,14 +49,14 @@ The only setting is where the frontend finds the room server. Copy [`.env.exampl
 | `bun run test`       | Run the test suite once with `bun test`, in parallel and random order              |
 | `bun run test:watch` | Run tests in watch mode                                                            |
 | `bun run typecheck`  | Type-check the app and the room server                                             |
-| `bun run check`      | Everything CI checks: typecheck, lint, tests, build and the sm-core copy           |
+| `bun run check`      | Everything CI checks: typecheck, lint, tests and build                             |
 | `bun run lint`       | Lint with `bun lint` and Biome (CSS), and check formatting with `bun fmt`          |
 | `bun run format`     | Format every file with `bun fmt`                                                   |
 | `bun run build`      | Production build of the app into `dist/`                                           |
 | `bun run preview`    | Serve the production build locally                                                 |
 | `bun run cf-typegen` | Regenerate `room-server/worker-configuration.d.ts` after changing `wrangler.jsonc` |
 
-CI runs the same gates through sm-core's shared workflows, plus a dry run of the room server bundle, on every pull request. They roll up into one required check, `ci`, which must pass before a PR can merge.
+CI runs the same gates through the repo's reusable workflows, plus a dry run of the room server bundle, on every pull request. They roll up into one required check, `ci`, which must pass before a PR can merge.
 
 ## Deployment
 

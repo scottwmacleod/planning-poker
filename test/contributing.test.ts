@@ -47,9 +47,9 @@ describe("outside contributions", () => {
 });
 
 describe("auto-merge workflow", () => {
-  it("uses sm-core's shared auto-merge, which skips forks and held PRs", () => {
+  it("uses the repo's reusable auto-merge, which skips forks and held PRs", () => {
     const caller = read(".github/workflows/auto-merge.yml");
-    expect(caller).toContain("uses: scottwmacleod/sm-core/.github/workflows/auto-merge.yml@");
+    expect(caller).toContain("uses: ./.github/workflows/reusable-auto-merge.yml");
     expect(caller).toContain("hold-label: hold");
   });
 

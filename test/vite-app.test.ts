@@ -18,7 +18,7 @@ describe("index.html", () => {
     );
   });
 
-  it("links the sm-core p_ icons", () => {
+  it("links the base copy's p_ icons", () => {
     expect(html).toContain('<link rel="icon" type="image/svg+xml" href="/favicon.svg"');
     expect(html).toContain(
       '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"',

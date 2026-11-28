@@ -8,10 +8,10 @@ const read = (f: string) => readFileSync(path.join(root, f));
 
 describe("site icons", () => {
   it.each([
-    ["public/favicon.svg", "vendor/sm-core/logos/planning-poker-favicon.svg"],
-    ["public/favicon-32.png", "vendor/sm-core/logos/planning-poker-favicon-32.png"],
-    ["public/apple-touch-icon.png", "vendor/sm-core/logos/planning-poker-apple-touch-icon.png"],
-  ])("%s is the sm-core copy", (icon, source) => {
+    ["public/favicon.svg", "vendor/base/logos/planning-poker-favicon.svg"],
+    ["public/favicon-32.png", "vendor/base/logos/planning-poker-favicon-32.png"],
+    ["public/apple-touch-icon.png", "vendor/base/logos/planning-poker-apple-touch-icon.png"],
+  ])("%s is the base copy", (icon, source) => {
     expect(read(icon).equals(read(source))).toBe(true);
   });
 

@@ -25,7 +25,7 @@ Each issue may carry one line in its body: `**Touches:** ` followed by comma-sep
 1. **Branch.** `agent/<n>-<slug>` from fresh `origin/main`, in its own checkout. In T3, start builders with `delegate_task` (call `orchestrator_capabilities` once per thread first), which gives each its own checkout; do not run `git worktree add` there. Outside T3, use the `Agent` tool with `isolation: "worktree"`.
 2. **Build.** Builder subagent (model `sonnet`) implements with `/tdd`, runs single tests as it goes, commits on the branch. It never opens a PR and never touches the issue labels.
 3. **Verify (main thread, independent).** The main thread itself runs these and reads the output; a builder saying "tests pass" is not evidence:
-   - `bun run check` (typecheck, Biome, bun test, the build and the sm-core copy check)
+   - `bun run check` (typecheck, Biome, bun test and the build)
    - `npx wrangler deploy --dry-run` when the diff touches `room-server/` or `lib/types.ts`
    - then reads the diff against every acceptance criterion. If anything fails or is missing, spawn a fix subagent (`sonnet`) and verify again.
 4. **Review.** Reviewer subagent (model `opus`) runs `/code-review` on the branch and returns findings only; it never edits.
@@ -49,9 +49,9 @@ When a limit is hit (3 review rounds, 3 CI fix attempts, or an unresolvable conf
 
 Checked by the main thread against the PR diff. If any fires: open the PR with the `hold` label, replace `ready-for-agent` with `ready-for-human` on the issue, comment why, and continue with other issues. Dependents stay blocked until a human merges.
 
-The `hold` label is the stop. `.github/workflows/auto-merge.yml` (sm-core's shared workflow) never turns auto-merge on for a PR that carries it; adding the label later turns auto-merge off, and removing it turns auto-merge back on. A human merges a held PR by removing the label or merging it by hand. Never remove `hold` yourself.
+The `hold` label is the stop. `.github/workflows/auto-merge.yml` (with `reusable-auto-merge.yml`) never turns auto-merge on for a PR that carries it; adding the label later turns auto-merge off, and removing it turns auto-merge back on. A human merges a held PR by removing the label or merging it by hand. Never remove `hold` yourself.
 
-- Renames or removes the `ci` job in `.github/workflows/ci.yml`, which is the required check, or changes the sm-core tag its shared workflows run at.
+- Renames or removes the `ci` job in `.github/workflows/ci.yml`, which is the required check, or changes the reusable workflows it runs (`.github/workflows/reusable-*.yml`).
 - Adds or edits anything that publishes or releases: a release workflow, `bun publish`, tokens, `secrets.*`.
 - Uses `pull_request_target` or `workflow_run`, or widens workflow `permissions:` beyond `contents: read`.
 - Changes `wrangler.jsonc`, or the `deploy-worker` job in `ci.yml`. Merging to `main` deploys the room server.

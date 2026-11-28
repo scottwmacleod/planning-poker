@@ -19,7 +19,7 @@ Don't add a new dependency, change `wrangler.jsonc`, or change anything in `.git
 
 ## Running it locally
 
-You need Bun 1.4.5 (see `packageManager` in `package.json`) and Node.js 26 (see `.nvmrc`), which runs only the sm-core copy check. No Cloudflare or Vercel account is needed.
+You need Bun 1.4.5 (see `packageManager` in `package.json`) and Node.js 26 (see `.nvmrc`). No Cloudflare or Vercel account is needed.
 
 ```bash
 git clone https://github.com/<your-username>/planning-poker.git
