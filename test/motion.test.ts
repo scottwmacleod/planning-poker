@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 const css = readFileSync(path.resolve(__dirname, "..", "src/index.css"), "utf8");
 
 describe("motion styles in index.css", () => {
-  it("eases with sm-core's ease-out, not a copy", () => {
+  it("eases with the base copy's ease-out, not a second copy", () => {
     expect(css).not.toMatch(/--ease-out:/);
     expect(css).toContain("var(--sm-ease-out)");
   });
@@ -23,7 +23,7 @@ describe("motion styles in index.css", () => {
     expect(css).toMatch(/\.bar-grow\s*{[^}]*transform-origin:\s*left/);
   });
 
-  it("leaves the cursor blink to sm-core's .sm-cursor", () => {
+  it("leaves the cursor blink to the base copy's .sm-cursor", () => {
     expect(css).not.toMatch(/cursor-blink|@keyframes blink/);
   });
 

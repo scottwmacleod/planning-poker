@@ -43,10 +43,9 @@ describe("Node version", () => {
 });
 
 describe("scripts", () => {
-  it("call Bun, not npm, npx or node, apart from the sm-core copy check", () => {
+  it("call Bun, not npm, npx or node", () => {
     for (const [name, script] of Object.entries<string>(pkg.scripts)) {
-      const rest = script.replaceAll("node vendor/sm-core/verify.mjs", "");
-      expect(rest, name).not.toMatch(/\b(npm|npx|node)\b/);
+      expect(script, name).not.toMatch(/\b(npm|npx|node)\b/);
     }
   });
 });

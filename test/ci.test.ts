@@ -7,12 +7,11 @@ import { describe, expect, it } from "vitest";
 const root = path.resolve(__dirname, "..");
 const workflows = path.join(root, ".github/workflows");
 const read = (file: string) => readFileSync(path.join(workflows, file), "utf8");
-const synced = JSON.parse(readFileSync(path.join(root, "vendor/sm-core/manifest.json"), "utf8"));
 
 describe("CI workflows", () => {
-  it.each(readdirSync(workflows))("%s calls sm-core at the synced release", (file) => {
-    for (const [, tag] of read(file).matchAll(/scottwmacleod\/sm-core\/\S+@(\S+)/g)) {
-      expect(tag).toBe(`v${synced.version}`);
+  it.each(readdirSync(workflows))("%s calls only this repo's own reusable workflows", (file) => {
+    for (const [, target] of read(file).matchAll(/^\s+uses: (\S+\.yml)\S*$/gmu)) {
+      expect(target).toMatch(/^\.\/\.github\/workflows\/reusable-[\w-]+\.yml$/u);
     }
   });
 

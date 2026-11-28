@@ -35,7 +35,7 @@ describe("Home page", () => {
     expect(field).toHaveAttribute("enterkeyhint", "go");
   });
 
-  it("titles the page with the planning-poker mark and its sm-core cursor", () => {
+  it("titles the page with the planning-poker mark and its sm_ cursor", () => {
     render(<Home />);
     const h1 = screen.getByRole("heading", { level: 1, name: "planning-poker" });
     const mark = h1.querySelector(".sm-mark");
@@ -87,7 +87,7 @@ describe("Home page", () => {
     expect(input).toHaveClass("bg-surface", "border-control-line", "rounded-1", "focus-ring");
   });
 
-  it("puts the sm-core credit in the footer, opening scottmacleod.co in a new tab", () => {
+  it("puts the sm_ credit in the footer, opening scottmacleod.co in a new tab", () => {
     render(<Home />);
     const link = screen.getByRole("link", {
       name: "Shipped by sm_, scottmacleod.co (opens in a new tab)",

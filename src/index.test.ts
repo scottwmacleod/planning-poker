@@ -6,9 +6,9 @@ import { describe, expect, it } from "vitest";
 const css = readFileSync(path.join(__dirname, "index.css"), "utf8");
 
 describe("index.css design tokens", () => {
-  it("takes every token from the sm-core copy", () => {
-    expect(css).toContain('@import "../vendor/sm-core/sm-core.css"');
-    expect(css).toContain('@import "../vendor/sm-core/sm-tailwind.css"');
+  it("takes every token from the base copy", () => {
+    expect(css).toContain('@import "../vendor/base/sm-core.css"');
+    expect(css).toContain('@import "../vendor/base/sm-tailwind.css"');
   });
 
   it("defines no colour, radius or font value of its own", () => {

@@ -5,8 +5,8 @@
 @import "@fontsource/geist-mono/latin-400.css";
 @import "@fontsource/geist-mono/latin-600.css";
 
-@import "../vendor/sm-core/sm-core.css";
-@import "../vendor/sm-core/sm-tailwind.css";
+@import "../vendor/base/sm-core.css";
+@import "../vendor/base/sm-tailwind.css";
 
 :root {
   --poker-text-card: 22px;
